@@ -1,19 +1,387 @@
-<!doctype html>
+<!DOCTYPE html>
 <html>
-	<head>
-		<meta charset="utf-8" />
-		<meta name="viewport" content="width=device-width" />
-		<title>My static Space</title>
-		<link rel="stylesheet" href="style.css" />
-	</head>
-	<body>
-		<div class="card">
-			<h1>Welcome to your static Space!</h1>
-			<p>You can modify this app directly by editing <i>index.html</i> in the Files and versions tab.</p>
-			<p>
-				Also don't forget to check the
-				<a href="https://huggingface.co/docs/hub/spaces" target="_blank">Spaces documentation</a>.
-			</p>
-		</div>
-	</body>
+<head>
+  <meta charset="UTF-8">
+  <title>多店面管理評價速查</title>
+  <style>
+    body {
+      font-family: "Segoe UI", sans-serif;
+      margin: 0;
+      background: #fff1e0;
+    }
+    header {
+      background: linear-gradient(to right, #fff4e6, #ff6f61);
+      color: white;
+      padding: 2rem;
+      margin: 2rem auto 0;
+      width: 90%;
+      max-width: 1000px;
+      border-radius: 20px;
+      text-align: center;
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+    }
+    header h2 {
+      font-size: 2rem;
+      margin-bottom: 0.5rem;
+    }
+    .container {
+      background: white;
+      margin: 2rem auto;
+      padding: 2rem;
+      width: 90%;
+      max-width: 1000px;
+      border-radius: 12px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    }
+    #controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      margin-bottom: 1rem;
+      align-items: center;
+      justify-content: space-between;
+    }
+    input, select, button {
+      padding: 10px;
+      font-size: 1rem;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+    }
+    button {
+      background: linear-gradient(to right, #667eea, #764ba2);
+      color: white;
+      cursor: pointer;
+      border: none;
+    }
+    #map {
+      height: 400px;
+      margin-top: 1rem;
+      border-radius: 12px;
+    }
+    #results {
+      margin-top: 2rem;
+    }
+    .card-container {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.5rem;
+      margin-top: 1rem;
+    }
+    .card {
+      background: #fff;
+      border-radius: 10px;
+      padding: 1rem;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      transition: transform 0.3s ease;
+      cursor: pointer;
+    }
+    .card:hover, .card.active {
+      transform: scale(1.05);
+      box-shadow: 0 6px 15px rgba(0,0,0,0.2);
+    }
+    .card h4 {
+      margin: 0 0 0.5rem 0;
+    }
+    .card p {
+      margin: 0.25rem 0;
+    }
+    .reviews-container {
+      margin-top: 1rem;
+      border-top: 1px solid #eee;
+      padding-top: 1rem;
+    }
+    .reviews-container h5 {
+      margin: 0 0 0.5rem 0;
+      font-size: 1rem;
+    }
+    .reviews-container ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+    .reviews-container li {
+      margin-bottom: 1rem;
+      font-size: 0.9rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 1px solid #f5f5f5;
+    }
+    .reviews-container li:last-child {
+      border-bottom: none;
+    }
+    .reviews-container li p {
+      margin: 0.2rem 0;
+    }
+    .low-rating-review {
+      background-color: #ff6f61;
+      border: 1px solid #ffdde1;
+      padding: 0.5rem;
+      border-radius: 8px;
+    }
+    .custom-infowindow {
+      background: url('https://raw.githubusercontent.com/elvis860812/image-assets/main/custom-speech-bubble.png') no-repeat center center;
+      background-size: contain;
+      width: 240px;
+      height: 140px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 1.5rem;
+      font-size: 14px;
+      font-weight: bold;
+      position: relative;
+      text-align: center;
+    }
+    .custom-infowindow .close-btn {
+      position: absolute;
+      top: 6px;
+      right: 10px;
+      cursor: pointer;
+      font-weight: bold;
+      font-size: 18px;
+    }
+    /* Loader styles */
+    .loader-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(255, 255, 255, 0.8);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+    .loader-content {
+      text-align: center;
+      padding: 2rem;
+      background: #fff;
+      border-radius: 15px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+    .spinner {
+      border: 8px solid #f3f3f3; /* Light grey */
+      border-top: 8px solid #ff6f61; /* Primary color */
+      border-radius: 50%;
+      width: 60px;
+      height: 60px;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 1rem;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h2>🍽️ 多店面管理評價速查</h2>
+    <p>輸入店名，即時掌握各分店評價</p>
+  </header>
+
+  <div id="loader" class="loader-overlay" style="display: none;">
+    <div class="loader-content">
+      <div class="spinner"></div>
+      <p>正在搜尋，請稍候...</p>
+    </div>
+  </div>
+
+  <div class="container">
+    <div id="controls">
+      <input id="searchQuery" type="text" placeholder="請輸入店家名稱（例：麥當勞）" style="flex:1;">
+      <button onclick="searchStores()">搜尋</button>
+    </div>
+
+    <div id="map"></div>
+    <div id="results">
+      <h3>推薦店家</h3>
+      <div class="card-container" id="restaurantCards">
+        <p>請輸入地址開始搜尋附近餐廳</p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let map, geocoder, placesService; // 將 placesService 宣告在更廣的作用域
+    const markers = [];
+    const markerMap = new Map();
+    let activeInfoWindow = null;
+    let userLocation = null;
+
+    function initMap() {
+      const defaultLoc = { lat: 25.0330, lng: 121.5654 }; // 預設台北市中心
+      map = new google.maps.Map(document.getElementById("map"), {
+        zoom: 12,
+        center: defaultLoc
+      });
+      geocoder = new google.maps.Geocoder();
+      placesService = new google.maps.places.PlacesService(map);
+
+      // 頁面載入時請求 GPS 位置
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(position => {
+          userLocation = {
+            lat: position.coords.latitude,
+            lng: position.coords.longitude
+          };
+          map.setCenter(userLocation);
+          map.setZoom(15);
+          new google.maps.Marker({ map, position: userLocation, icon: 'https://maps.google.com/mapfiles/ms/icons/blue-dot.png', title: '您的位置' });
+        }, () => {
+          console.log("使用者拒絕提供位置資訊。");
+        });
+      }
+
+      // 讓使用者可以在輸入框中按下 Enter 鍵來觸發搜尋
+      document.getElementById('searchQuery').addEventListener('keyup', function(event) {
+        if (event.key === 'Enter') {
+          event.preventDefault(); // 防止可能的表單提交行為
+          searchStores();
+        }
+      });
+    }
+
+    async function searchStores() {
+      const query = document.getElementById("searchQuery").value;
+      if (!query) return alert("請輸入店家名稱");
+
+      const loader = document.getElementById('loader');
+      loader.style.display = 'flex';
+
+      let searchUrl = `/api/search?query=${encodeURIComponent(query)}`;
+      if (userLocation) {
+        searchUrl += `&lat=${userLocation.lat}&lng=${userLocation.lng}`;
+      }
+
+      try {
+        const response = await fetch(searchUrl);
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.error || '伺服器錯誤');
+        }
+        
+        const container = document.getElementById("restaurantCards");
+        container.innerHTML = "";
+        markers.forEach(m => m.setMap(null));
+        markers.length = 0;
+        markerMap.clear();
+
+        if (activeInfoWindow) {
+            activeInfoWindow.close();
+            activeInfoWindow = null;
+        }
+
+        if (data.center) {
+            const center = new google.maps.LatLng(data.center.lat, data.center.lng);
+            map.setCenter(center);
+        }
+
+        if (data.results && data.results.length > 0) {
+            data.results.forEach(place => {
+                createMarker(place);
+                createCard(place);
+            });
+        } else {
+            container.innerHTML = "<p>找不到符合條件的店家。</p>";
+        }
+
+      } catch (error) {
+        console.error("搜尋失敗:", error);
+        alert("搜尋失敗：" + error.message);
+      } finally {
+        loader.style.display = 'none';
+      }
+    }
+
+    function createCard(place) {
+        const container = document.getElementById("restaurantCards");
+        const card = document.createElement("div");
+        card.className = "card";
+
+        let reviewsHtml = '';
+        if (place.reviews && place.reviews.length > 0) {
+            reviewsHtml = '<div class="reviews-container">';
+            reviewsHtml += '<h5>最新評論：</h5>';
+            reviewsHtml += '<ul>';
+            place.reviews.forEach(review => {
+                const ratingClass = review.rating <= 3 ? 'class="low-rating-review"' : '';
+                reviewsHtml += `
+                    <li ${ratingClass}>
+                        <p><strong>${review.author_name}</strong> (⭐ ${review.rating})</p>
+                        <p style="white-space: pre-wrap;">${review.text}</p>
+                    </li>
+                `;
+            });
+            reviewsHtml += '</ul></div>';
+        }
+
+        card.innerHTML = `
+            <h4>${place.name}</h4>
+            <p>⭐ ${place.rating || '無評分'} (${place.user_ratings_total || 0} 則評論)</p>
+            <p>📍 <a href="${place.url}" target="_blank">${place.vicinity}</a></p>
+            ${reviewsHtml}
+        `;
+
+        card.onclick = () => {
+            const marker = markerMap.get(place.place_id);
+            if (marker) {
+                new google.maps.event.trigger(marker, 'click');
+                document.querySelectorAll('.card').forEach(c => c.classList.remove('active'));
+                card.classList.add('active');
+            }
+        };
+        container.appendChild(card);
+    }
+
+    function createMarker(place) {
+        const marker = new google.maps.Marker({
+            map,
+            position: place.geometry.location,
+            title: place.name
+        });
+
+        const infoWindowContent = `
+            <div class="custom-infowindow">
+                <span class="close-btn" onclick="this.parentElement.parentElement.style.display='none';">&times;</span>
+                <strong>${place.name}</strong><br>
+                ⭐ ${place.rating || 'N/A'} | 評論: ${place.user_ratings_total || 0}<br>
+                <a href="${place.url}" target="_blank">在 Google 地圖上查看</a>
+            </div>
+        `;
+
+        const infoWindow = new google.maps.InfoWindow({
+            content: infoWindowContent,
+            ariaLabel: place.name,
+        });
+
+        marker.addListener("click", () => {
+            if (activeInfoWindow) {
+                activeInfoWindow.close();
+            }
+            infoWindow.open({
+                anchor: marker,
+                map,
+            });
+            activeInfoWindow = infoWindow;
+            map.panTo(marker.getPosition());
+        });
+
+        markers.push(marker);
+        markerMap.set(place.place_id, marker);
+    }
+
+    // 當用戶點擊地圖其他地方時，關閉 InfoWindow
+    google.maps.event.addDomListener(map, 'click', () => {
+        if (activeInfoWindow) {
+            activeInfoWindow.close();
+            activeInfoWindow = null;
+        }
+        document.querySelectorAll('.card').forEach(c => c.classList.remove('active'));
+    });
+
+  </script>
+  <script async defer src="https://maps.googleapis.com/maps/api/js?key={{ api_key }}&callback=initMap&libraries=places,marker&v=weekly"></script>
+</body>
 </html>
