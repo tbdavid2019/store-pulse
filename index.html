@@ -1,8 +1,38 @@
 <!DOCTYPE html>
-<html>
+<html lang="zh-TW">
 <head>
   <meta charset="UTF-8">
-  <title>多店面管理評價速查</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="搜尋與比較連鎖店面的 Google Maps 評價，快速掌握各分店聲量">
+  <title>Store Pulse 店面脈搏 - 多店面評價速查</title>
+  
+  <!-- PWA 支援 -->
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#ff6f61">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Store Pulse">
+  
+  <!-- 圖標 -->
+  <link rel="icon" type="image/x-icon" href="icons/favicon.ico">
+  <link rel="icon" type="image/svg+xml" href="icons/favicon.svg">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192x192.png">
+  <link rel="icon" type="image/png" sizes="512x512" href="icons/icon-512x512.png">
+  
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://tbdavid2019-store-pulse.hf.space">
+  <meta property="og:title" content="Store Pulse 店面脈搏">
+  <meta property="og:description" content="搜尋與比較連鎖店面的 Google Maps 評價，快速掌握各分店聲量">
+  <meta property="og:image" content="icons/icon-512x512.png">
+  
+  <!-- Twitter -->
+  <meta property="twitter:card" content="summary_large_image">
+  <meta property="twitter:url" content="https://tbdavid2019-store-pulse.hf.space">
+  <meta property="twitter:title" content="Store Pulse 店面脈搏">
+  <meta property="twitter:description" content="搜尋與比較連鎖店面的 Google Maps 評價，快速掌握各分店聲量">
+  <meta property="twitter:image" content="icons/icon-512x512.png">
   <style>
     body {
       font-family: "Segoe UI", sans-serif;
@@ -387,6 +417,62 @@
             activeInfoWindow = null;
         }
         document.querySelectorAll('.card').forEach(c => c.classList.remove('active'));
+    });
+
+    // 註冊 Service Worker (PWA 支援)
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('service-worker.js')
+                .then(registration => {
+                    console.log('Service Worker 註冊成功:', registration);
+                })
+                .catch(error => {
+                    console.log('Service Worker 註冊失敗:', error);
+                });
+        });
+    }
+
+    // 添加安裝提示
+    let deferredPrompt;
+    const installButton = document.createElement('button');
+    installButton.textContent = '📱 安裝 App';
+    installButton.style.cssText = `
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        background: linear-gradient(to right, #667eea, #764ba2);
+        color: white;
+        border: none;
+        padding: 12px 20px;
+        border-radius: 25px;
+        font-size: 14px;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        display: none;
+        z-index: 1000;
+        font-family: inherit;
+    `;
+
+    window.addEventListener('beforeinstallprompt', (e) => {
+        e.preventDefault();
+        deferredPrompt = e;
+        installButton.style.display = 'block';
+        document.body.appendChild(installButton);
+    });
+
+    installButton.addEventListener('click', async () => {
+        if (deferredPrompt) {
+            deferredPrompt.prompt();
+            const { outcome } = await deferredPrompt.userChoice;
+            console.log(`User response to the install prompt: ${outcome}`);
+            deferredPrompt = null;
+            installButton.style.display = 'none';
+        }
+    });
+
+    window.addEventListener('appinstalled', () => {
+        console.log('PWA 已安裝成功');
+        installButton.style.display = 'none';
     });
 
   </script>

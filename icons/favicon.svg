@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32">
+  <!-- 白色背景 -->
+  <rect width="32" height="32" fill="white" rx="6"/>
+  
+  <!-- Google 綠色圓形 -->
+  <circle cx="16" cy="16" r="13" fill="#34a853"/>
+  
+  <!-- 簡化的地圖標記 -->
+  <g transform="translate(16, 16)">
+    <!-- 標記主體 -->
+    <circle cx="0" cy="-2" r="6" fill="white"/>
+    <polygon points="-2,2 0,8 2,2" fill="white"/>
+    
+    <!-- 小商店 -->
+    <g transform="translate(0, -2)">
+      <rect x="-2" y="-1" width="4" height="2" fill="#4285f4"/>
+      <polygon points="-2,-1 0,-3 2,-1" fill="#ea4335"/>
+    </g>
+  </g>
+  
+  <!-- 評分點 -->
+  <g transform="translate(16, 26)">
+    <circle cx="-4" cy="0" r="1" fill="#ffc107"/>
+    <circle cx="-2" cy="0" r="1" fill="#ffc107"/>
+    <circle cx="0" cy="0" r="1" fill="#ffc107"/>
+    <circle cx="2" cy="0" r="1" fill="#ffc107"/>
+    <circle cx="4" cy="0" r="1" fill="#c8c8c8"/>
+  </g>
+</svg>
