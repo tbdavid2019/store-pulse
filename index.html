@@ -242,57 +242,65 @@
       });
     }
 
-    async function searchStores() {
+    function searchStores() {
       const query = document.getElementById("searchQuery").value;
       if (!query) return alert("請輸入店家名稱");
 
       const loader = document.getElementById('loader');
       loader.style.display = 'flex';
 
-      let searchUrl = `/api/search?query=${encodeURIComponent(query)}`;
-      if (userLocation) {
-        searchUrl += `&lat=${userLocation.lat}&lng=${userLocation.lng}`;
+      // 清除之前的結果
+      const container = document.getElementById("restaurantCards");
+      container.innerHTML = "";
+      markers.forEach(m => m.setMap(null));
+      markers.length = 0;
+      markerMap.clear();
+
+      if (activeInfoWindow) {
+        activeInfoWindow.close();
+        activeInfoWindow = null;
       }
 
-      try {
-        const response = await fetch(searchUrl);
-        const data = await response.json();
+      // 使用 Google Places Text Search
+      const request = {
+        query: query,
+        location: userLocation || new google.maps.LatLng(25.0330, 121.5654),
+        radius: 50000,
+        fields: ['name', 'geometry', 'place_id', 'rating', 'user_ratings_total', 'vicinity', 'url']
+      };
 
-        if (!response.ok) {
-          throw new Error(data.error || '伺服器錯誤');
-        }
-        
-        const container = document.getElementById("restaurantCards");
-        container.innerHTML = "";
-        markers.forEach(m => m.setMap(null));
-        markers.length = 0;
-        markerMap.clear();
-
-        if (activeInfoWindow) {
-            activeInfoWindow.close();
-            activeInfoWindow = null;
-        }
-
-        if (data.center) {
-            const center = new google.maps.LatLng(data.center.lat, data.center.lng);
-            map.setCenter(center);
-        }
-
-        if (data.results && data.results.length > 0) {
-            data.results.forEach(place => {
-                createMarker(place);
-                createCard(place);
-            });
-        } else {
-            container.innerHTML = "<p>找不到符合條件的店家。</p>";
-        }
-
-      } catch (error) {
-        console.error("搜尋失敗:", error);
-        alert("搜尋失敗：" + error.message);
-      } finally {
+      placesService.textSearch(request, (results, status) => {
         loader.style.display = 'none';
-      }
+        
+        if (status === google.maps.places.PlacesServiceStatus.OK && results) {
+          // 限制最多 10 個結果
+          const limitedResults = results.slice(0, 10);
+          
+          // 設置地圖中心為第一個結果
+          if (limitedResults.length > 0) {
+            map.setCenter(limitedResults[0].geometry.location);
+            map.setZoom(13);
+          }
+
+          // 為每個結果獲取詳細信息（包含評論）
+          limitedResults.forEach((place, index) => {
+            const detailsRequest = {
+              placeId: place.place_id,
+              fields: ['name', 'rating', 'user_ratings_total', 'vicinity', 'geometry', 'place_id', 'reviews', 'url']
+            };
+
+            placesService.getDetails(detailsRequest, (placeDetails, detailsStatus) => {
+              if (detailsStatus === google.maps.places.PlacesServiceStatus.OK) {
+                createMarker(placeDetails);
+                createCard(placeDetails);
+              }
+            });
+          });
+        } else {
+          container.innerHTML = "<p>找不到符合條件的店家。請嘗試其他關鍵字。</p>";
+          console.log('Places service status:', status);
+        }
+      });
     }
 
     function createCard(place) {
@@ -382,6 +390,6 @@
     });
 
   </script>
-  <script async defer src="https://maps.googleapis.com/maps/api/js?key={{ api_key }}&callback=initMap&libraries=places,marker&v=weekly"></script>
+  <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB9zIkabAHoudMDAwbKom6URgjmUuejEpo&callback=initMap&libraries=places,marker&v=weekly"></script>
 </body>
 </html>
