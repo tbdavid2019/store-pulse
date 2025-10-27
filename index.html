@@ -239,6 +239,35 @@
     let activeInfoWindow = null;
     let userLocation = null;
 
+    const EARTH_RADIUS_METERS = 6371000;
+
+    function toRadians(degrees) {
+      return degrees * (Math.PI / 180);
+    }
+
+    function calculateDistanceMeters(origin, destination) {
+      if (!origin || !destination) {
+        return Number.POSITIVE_INFINITY;
+      }
+
+      const lat1 = origin.lat;
+      const lng1 = origin.lng;
+      const lat2 = typeof destination.lat === 'function' ? destination.lat() : destination.lat;
+      const lng2 = typeof destination.lng === 'function' ? destination.lng() : destination.lng;
+
+      if ([lat1, lng1, lat2, lng2].some(value => typeof value !== 'number')) {
+        return Number.POSITIVE_INFINITY;
+      }
+
+      const dLat = toRadians(lat2 - lat1);
+      const dLng = toRadians(lng2 - lng1);
+      const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+                Math.cos(toRadians(lat1)) * Math.cos(toRadians(lat2)) *
+                Math.sin(dLng / 2) * Math.sin(dLng / 2);
+      const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+      return EARTH_RADIUS_METERS * c;
+    }
+
     function initMap() {
       const defaultLoc = { lat: 25.0330, lng: 121.5654 }; // 預設台北市中心
       map = new google.maps.Map(document.getElementById("map"), {
@@ -260,6 +289,10 @@
           new google.maps.Marker({ map, position: userLocation, icon: 'https://maps.google.com/mapfiles/ms/icons/blue-dot.png', title: '您的位置' });
         }, () => {
           console.log("使用者拒絕提供位置資訊。");
+        }, {
+          enableHighAccuracy: true,
+          timeout: 10000,
+          maximumAge: 300000
         });
       }
 
@@ -295,25 +328,36 @@
       const request = {
         query: query,
         location: userLocation || new google.maps.LatLng(25.0330, 121.5654),
-        radius: 50000,
+        radius: 40000,
         fields: ['name', 'geometry', 'place_id', 'rating', 'user_ratings_total', 'vicinity', 'url']
       };
 
       placesService.textSearch(request, (results, status) => {
         loader.style.display = 'none';
         
-        if (status === google.maps.places.PlacesServiceStatus.OK && results) {
+        if (status === google.maps.places.PlacesServiceStatus.OK && results && results.length) {
+          let processedResults = results.slice();
+
+          if (userLocation) {
+            processedResults.forEach(place => {
+              place.distanceFromUser = calculateDistanceMeters(userLocation, place.geometry.location);
+            });
+            processedResults.sort((a, b) => (a.distanceFromUser || Infinity) - (b.distanceFromUser || Infinity));
+          }
+
           // 限制最多 10 個結果
-          const limitedResults = results.slice(0, 10);
-          
-          // 設置地圖中心為第一個結果
-          if (limitedResults.length > 0) {
+          const limitedResults = processedResults.slice(0, 10);
+
+          if (userLocation) {
+            map.setCenter(userLocation);
+            map.setZoom(14);
+          } else if (limitedResults.length > 0) {
             map.setCenter(limitedResults[0].geometry.location);
             map.setZoom(13);
           }
 
           // 為每個結果獲取詳細信息（包含評論）
-          limitedResults.forEach((place, index) => {
+          limitedResults.forEach(place => {
             const detailsRequest = {
               placeId: place.place_id,
               fields: ['name', 'rating', 'user_ratings_total', 'vicinity', 'geometry', 'place_id', 'reviews', 'url']
@@ -321,6 +365,9 @@
 
             placesService.getDetails(detailsRequest, (placeDetails, detailsStatus) => {
               if (detailsStatus === google.maps.places.PlacesServiceStatus.OK) {
+                if (typeof place.distanceFromUser === 'number') {
+                  placeDetails.distanceFromUser = place.distanceFromUser;
+                }
                 createMarker(placeDetails);
                 createCard(placeDetails);
               }
@@ -355,10 +402,15 @@
             reviewsHtml += '</ul></div>';
         }
 
+        const distanceText = typeof place.distanceFromUser === 'number'
+            ? `<p>📏 距離：約 ${(place.distanceFromUser / 1000).toFixed(1)} 公里</p>`
+            : '';
+
         card.innerHTML = `
             <h4>${place.name}</h4>
             <p>⭐ ${place.rating || '無評分'} (${place.user_ratings_total || 0} 則評論)</p>
             <p>📍 <a href="${place.url}" target="_blank">${place.vicinity}</a></p>
+            ${distanceText}
             ${reviewsHtml}
         `;
 
@@ -380,12 +432,16 @@
             title: place.name
         });
 
+        const distanceInfo = typeof place.distanceFromUser === 'number'
+            ? `<br>距離：約 ${(place.distanceFromUser / 1000).toFixed(1)} 公里`
+            : '';
+
         const infoWindowContent = `
             <div class="custom-infowindow">
                 <span class="close-btn" onclick="this.parentElement.parentElement.style.display='none';">&times;</span>
                 <strong>${place.name}</strong><br>
                 ⭐ ${place.rating || 'N/A'} | 評論: ${place.user_ratings_total || 0}<br>
-                <a href="${place.url}" target="_blank">在 Google 地圖上查看</a>
+                <a href="${place.url}" target="_blank">在 Google 地圖上查看</a>${distanceInfo}
             </div>
         `;
 
