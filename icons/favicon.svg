@@ -1,29 +1,27 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32">
-  <!-- 白色背景 -->
-  <rect width="32" height="32" fill="white" rx="6"/>
-  
-  <!-- Google 綠色圓形 -->
-  <circle cx="16" cy="16" r="13" fill="#34a853"/>
-  
-  <!-- 簡化的地圖標記 -->
-  <g transform="translate(16, 16)">
-    <!-- 標記主體 -->
-    <circle cx="0" cy="-2" r="6" fill="white"/>
-    <polygon points="-2,2 0,8 2,2" fill="white"/>
-    
-    <!-- 小商店 -->
-    <g transform="translate(0, -2)">
-      <rect x="-2" y="-1" width="4" height="2" fill="#4285f4"/>
-      <polygon points="-2,-1 0,-3 2,-1" fill="#ea4335"/>
-    </g>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="orangeGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FF7A1A" />
+      <stop offset="60%" stop-color="#FF5A00" />
+      <stop offset="100%" stop-color="#E54400" />
+    </linearGradient>
+    <mask id="heartMask">
+      <rect width="512" height="512" fill="black" />
+      <path d="M256 464c-8 0-16-3-22-9-115-104-186-170-186-251 0-66 50-116 116-116 38 0 74 18 92 46 18-28 54-46 92-46 66 0 116 50 116 116 0 81-71 147-186 251-6 6-14 9-22 9z" fill="white"/>
+      <path d="M0 256 h135 l26 58 46-170 56 226 36-140 26 48 24-22 h160" fill="none" stroke="black" stroke-width="28" stroke-linecap="round" stroke-linejoin="round"/>
+    </mask>
+  </defs>
+  <rect width="512" height="512" rx="112" fill="url(#orangeGrad)" />
+
+  <g fill="#FFFFFF" text-anchor="middle">
+    <text x="256" y="160" font-size="142" font-weight="900" letter-spacing="-4" font-family="-apple-system, BlinkMacSystemFont, Arial, sans-serif">888</text>
   </g>
   
-  <!-- 評分點 -->
-  <g transform="translate(16, 26)">
-    <circle cx="-4" cy="0" r="1" fill="#ffc107"/>
-    <circle cx="-2" cy="0" r="1" fill="#ffc107"/>
-    <circle cx="0" cy="0" r="1" fill="#ffc107"/>
-    <circle cx="2" cy="0" r="1" fill="#ffc107"/>
-    <circle cx="4" cy="0" r="1" fill="#c8c8c8"/>
+  <g transform="translate(256, 266) scale(0.43) translate(-256, -256)">
+    <rect width="512" height="512" fill="#FFFFFF" mask="url(#heartMask)" />
+  </g>
+
+  <g fill="#FFFFFF" text-anchor="middle">
+    <text x="256" y="426" font-size="76" font-weight="900" letter-spacing="2" font-family="PingFang TC, Noto Sans TC, Microsoft JhengHei, sans-serif" stroke="#FFFFFF" stroke-width="2" stroke-linejoin="round">商店脈搏</text>
   </g>
 </svg>

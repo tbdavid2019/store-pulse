@@ -1,47 +1,27 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
-  <!-- 白色背景 -->
-  <rect width="512" height="512" fill="white" rx="80"/>
-  
-  <!-- Google Maps 風格綠色圓形背景 -->
-  <circle cx="256" cy="256" r="220" fill="#34a853"/>
-  
-  <!-- 地圖標記 -->
-  <g transform="translate(256, 256)">
-    <!-- 標記陰影 -->
-    <circle cx="4" cy="-26" r="30" fill="rgba(0,0,0,0.2)"/>
-    <polygon points="-4,7 4,27 12,7" fill="rgba(0,0,0,0.2)"/>
-    
-    <!-- 標記主體 -->
-    <circle cx="0" cy="-30" r="30" fill="white" stroke="#ddd" stroke-width="3"/>
-    
-    <!-- 標記尖端 -->
-    <polygon points="-8,3 0,23 8,3" fill="white" stroke="#ddd" stroke-width="2"/>
-    
-    <!-- 商店建築在標記內 -->
-    <g transform="translate(0, -30)">
-      <!-- 建築主體 (Google 藍色) -->
-      <rect x="-10" y="-5" width="20" height="15" fill="#4285f4"/>
-      
-      <!-- 屋頂 (Google 紅色) -->
-      <polygon points="-12,-5 0,-15 12,-5" fill="#ea4335"/>
-      
-      <!-- 門 (白色) -->
-      <rect x="-3" y="3" width="6" height="8" fill="white"/>
-    </g>
+  <defs>
+    <linearGradient id="orangeGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FF7A1A" />
+      <stop offset="60%" stop-color="#FF5A00" />
+      <stop offset="100%" stop-color="#E54400" />
+    </linearGradient>
+    <mask id="heartMask">
+      <rect width="512" height="512" fill="black" />
+      <path d="M256 464c-8 0-16-3-22-9-115-104-186-170-186-251 0-66 50-116 116-116 38 0 74 18 92 46 18-28 54-46 92-46 66 0 116 50 116 116 0 81-71 147-186 251-6 6-14 9-22 9z" fill="white"/>
+      <path d="M0 256 h135 l26 58 46-170 56 226 36-140 26 48 24-22 h160" fill="none" stroke="black" stroke-width="28" stroke-linecap="round" stroke-linejoin="round"/>
+    </mask>
+  </defs>
+  <rect width="512" height="512" rx="112" fill="url(#orangeGrad)" />
+
+  <g fill="#FFFFFF" text-anchor="middle">
+    <text x="256" y="160" font-size="142" font-weight="900" letter-spacing="-4" font-family="-apple-system, BlinkMacSystemFont, Arial, sans-serif">888</text>
   </g>
   
-  <!-- 評分指示器 (小圓點) -->
-  <g transform="translate(256, 316)">
-    <circle cx="-40" cy="0" r="4" fill="#ffc107"/>
-    <circle cx="-20" cy="0" r="4" fill="#ffc107"/>
-    <circle cx="0" cy="0" r="4" fill="#ffc107"/>
-    <circle cx="20" cy="0" r="4" fill="#ffc107"/>
-    <circle cx="40" cy="0" r="4" fill="#c8c8c8"/>
+  <g transform="translate(256, 266) scale(0.43) translate(-256, -256)">
+    <rect width="512" height="512" fill="#FFFFFF" mask="url(#heartMask)" />
   </g>
-  
-  <!-- 標題文字 -->
-  <text x="256" y="420" font-family="Arial, sans-serif" font-size="28" font-weight="bold" 
-        text-anchor="middle" fill="#34a853">
-    Store Pulse
-  </text>
+
+  <g fill="#FFFFFF" text-anchor="middle">
+    <text x="256" y="426" font-size="76" font-weight="900" letter-spacing="2" font-family="PingFang TC, Noto Sans TC, Microsoft JhengHei, sans-serif" stroke="#FFFFFF" stroke-width="2" stroke-linejoin="round">商店脈搏</text>
+  </g>
 </svg>
