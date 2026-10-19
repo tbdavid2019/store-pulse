@@ -82,8 +82,8 @@ function validatePayload(payload: unknown): { placeId: string; mode: AnalysisMod
   if (mode !== 'recent' && mode !== 'low_rating') {
     throw new Error('mode must be recent or low_rating');
   }
-  if (windowDays !== 30 && windowDays !== 90) {
-    throw new Error('window_days must be 30 or 90');
+  if (isNaN(windowDays) || windowDays < 1 || windowDays > 3650) {
+    throw new Error('window_days must be between 1 and 3650');
   }
   if (!body.place || typeof body.place !== 'object' || String(body.place.place_id || '') !== placeId) {
     throw new Error('place must match place_id');

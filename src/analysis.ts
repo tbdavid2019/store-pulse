@@ -238,20 +238,6 @@ export async function summarize(
       if (raw && typeof raw === 'object' && 'response' in (raw as Record<string, any>)) {
         raw = (raw as Record<string, any>).response;
       }
-      if (typeof raw === 'string') {
-        try {
-          raw = JSON.parse(raw);
-        } catch {
-          const match = (raw as string).match(/```(?:json)?\s*([\s\S]*?)\s*```/);
-          if (match) {
-            try {
-              raw = JSON.parse(match[1]);
-            } catch {
-              // fallback
-            }
-          }
-        }
-      }
       return parseModelObservations(raw, evidence, aiModel);
     } catch (err: any) {
       if (err instanceof SummaryError) throw err;
@@ -270,14 +256,37 @@ export async function summarize(
   };
 }
 
+export function extractJsonFromText(text: string): any {
+  if (typeof text !== 'string') return text;
+  const trimmed = text.trim();
+  try {
+    return JSON.parse(trimmed);
+  } catch {}
+
+  // Strip markdown code fences ```json ... ``` or ``` ... ```
+  const match = trimmed.match(/```(?:json)?\s*([\s\S]*?)\s*```/i);
+  if (match) {
+    try {
+      return JSON.parse(match[1].trim());
+    } catch {}
+  }
+
+  // Find outermost curly braces { ... }
+  const firstBrace = trimmed.indexOf('{');
+  const lastBrace = trimmed.lastIndexOf('}');
+  if (firstBrace !== -1 && lastBrace > firstBrace) {
+    try {
+      return JSON.parse(trimmed.slice(firstBrace, lastBrace + 1));
+    } catch {}
+  }
+
+  throw new SummaryError('model_invalid_response');
+}
+
 export function parseModelObservations(raw: unknown, evidence: EvidenceItem[], modelIdentifier: string): SummarizeResult {
   let parsed = raw;
   if (typeof parsed === 'string') {
-    try {
-      parsed = JSON.parse(parsed);
-    } catch {
-      throw new SummaryError('model_invalid_response');
-    }
+    parsed = extractJsonFromText(parsed);
   }
 
   if (!parsed || typeof parsed !== 'object') {
