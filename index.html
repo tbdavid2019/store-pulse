@@ -740,25 +740,83 @@
       gap: 8px;
     }
 
+    /* Evidence Collapsible Details (Folding & Hover Preview) */
+    .evidence-details {
+      margin-top: 10px;
+    }
+
+    .evidence-summary {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 12px;
+      font-size: 0.92rem;
+      font-weight: 700;
+      color: var(--deep-blue);
+      background: var(--canvas);
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      user-select: none;
+      transition: all 0.18s ease;
+      list-style: none;
+    }
+
+    .evidence-summary::-webkit-details-marker {
+      display: none;
+    }
+
+    .evidence-summary:hover {
+      background: var(--primary-light);
+      border-color: var(--deep-blue);
+      color: var(--ink);
+    }
+
+    .evidence-toggle-arrow {
+      font-size: 0.8rem;
+      transition: transform 0.2s ease;
+      display: inline-block;
+      margin-left: 2px;
+    }
+
+    .evidence-details[open] .evidence-toggle-arrow {
+      transform: rotate(180deg);
+    }
+
     .evidence-list {
-      margin: 0.8rem 0 0.2rem 1.4rem;
-      padding: 0;
+      margin: 8px 0 4px;
+      padding: 8px 0 0 0;
+      border-top: 1px dashed var(--card-border-subtle);
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
     }
 
-    .evidence-list li {
-      font-size: 0.98rem;
-      line-height: 1.65;
+    .evidence-item {
+      font-size: 0.95rem;
+      line-height: 1.62;
       color: var(--text);
-      margin: 0.4rem 0;
+      padding: 6px 0;
+      border-bottom: 1px solid var(--card-border-subtle);
     }
 
-    .evidence-list a {
+    .evidence-item:last-child {
+      border-bottom: none;
+    }
+
+    .evidence-item a {
       color: var(--deep-blue);
       font-weight: 700;
       text-decoration: underline;
       font-family: var(--font-mono);
-      font-size: 0.92rem;
-      margin-left: 5px;
+      font-size: 0.9rem;
+      margin-left: 6px;
+      transition: color 0.15s ease;
+    }
+
+    .evidence-item a:hover {
+      color: var(--clay);
     }
 
     /* Custom InfoWindow */
@@ -1347,37 +1405,64 @@
           row.appendChild(actionDiv);
         }
 
-        const evidenceList = document.createElement('ul');
-        evidenceList.className = 'evidence-list';
-        (observation.evidence_ids || []).forEach(id => {
-          const evidence = (payload.evidence || []).find(item => item.evidence_id === id);
-          if (!evidence) return;
-          const item = document.createElement('li');
-          const excerpt = evidence.is_excerpt ? '（節錄）' : '';
-          const authorText = document.createElement('strong');
-          authorText.textContent = `${evidence.author || '匿名顧客'} `;
-          item.appendChild(authorText);
+        const matchedEvidences = (observation.evidence_ids || [])
+          .map(id => (payload.evidence || []).find(item => item.evidence_id === id))
+          .filter(Boolean);
 
-          const metaText = document.createElement('span');
-          metaText.className = 'jetbrains-mono';
-          metaText.style.fontSize = '0.94rem';
-          metaText.style.color = '#92400e';
-          metaText.textContent = `(⭐ ${evidence.rating ?? '—'}) `;
-          item.appendChild(metaText);
+        if (matchedEvidences.length > 0) {
+          const detailsEl = document.createElement('details');
+          detailsEl.className = 'evidence-details';
 
-          item.appendChild(document.createTextNode(`${excerpt}：${evidence.text} `));
-          const sourceUrl = safeHttpUrl(evidence.source_url);
-          if (sourceUrl !== '#') {
-            const source = document.createElement('a');
-            source.href = sourceUrl;
-            source.target = '_blank';
-            source.rel = 'noopener noreferrer';
-            source.textContent = evidence.source_url_kind === 'review' ? '↗ 查閱評論' : '↗ 查閱店家';
-            item.appendChild(source);
-          }
-          evidenceList.appendChild(item);
-        });
-        row.appendChild(evidenceList);
+          // Floating hover preview: show reviewer quotes directly in tooltip on hover
+          const hoverText = matchedEvidences
+            .map(e => `${e.author || '匿名顧客'} (${e.rating ? `⭐${e.rating}` : ''})：${e.text.length > 100 ? e.text.slice(0, 100) + '…' : e.text}`)
+            .join('\n\n');
+
+          const summaryEl = document.createElement('summary');
+          summaryEl.className = 'evidence-summary';
+          summaryEl.title = hoverText;
+          summaryEl.innerHTML = `
+            <span>💬 查閱佐證評論 (${matchedEvidences.length} 則)</span>
+            <span class="evidence-toggle-arrow">▾</span>
+          `;
+          detailsEl.appendChild(summaryEl);
+
+          const evidenceList = document.createElement('ul');
+          evidenceList.className = 'evidence-list';
+
+          matchedEvidences.forEach(evidence => {
+            const item = document.createElement('li');
+            item.className = 'evidence-item';
+            const excerpt = evidence.is_excerpt ? '（節錄）' : '';
+
+            const authorText = document.createElement('strong');
+            authorText.textContent = `${evidence.author || '匿名顧客'} `;
+            item.appendChild(authorText);
+
+            const metaText = document.createElement('span');
+            metaText.className = 'jetbrains-mono';
+            metaText.style.fontSize = '0.92rem';
+            metaText.style.color = '#92400e';
+            metaText.textContent = `(⭐ ${evidence.rating ?? '—'}) `;
+            item.appendChild(metaText);
+
+            item.appendChild(document.createTextNode(`${excerpt}：${evidence.text} `));
+
+            const sourceUrl = safeHttpUrl(evidence.source_url);
+            if (sourceUrl !== '#') {
+              const source = document.createElement('a');
+              source.href = sourceUrl;
+              source.target = '_blank';
+              source.rel = 'noopener noreferrer';
+              source.textContent = evidence.source_url_kind === 'review' ? '↗ 查閱評論' : '↗ 查閱店家';
+              item.appendChild(source);
+            }
+            evidenceList.appendChild(item);
+          });
+
+          detailsEl.appendChild(evidenceList);
+          row.appendChild(detailsEl);
+        }
         output.appendChild(row);
       });
 
