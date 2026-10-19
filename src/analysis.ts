@@ -167,7 +167,7 @@ export async function summarize(
       clearTimeout(timer);
     }
 
-    return parseModelObservations(rawData, evidence, modelName || (isGeminiNative ? 'gemini-2.0-flash' : 'custom_model'));
+    return parseModelObservations(rawData, evidence, modelName || (isGeminiNative ? 'gemini-3.8-flash' : 'custom_model'));
   }
 
   // 2. Cloudflare Workers AI configured

@@ -228,7 +228,7 @@ test('parseModelObservations - parses valid observations and filters invalid cat
       { category: 'price', finding: '無效證據ID', evidence_ids: ['ev_999'] },
     ],
   };
-  const result = parseModelObservations(raw, evidence, 'gemini-2.0-flash');
+  const result = parseModelObservations(raw, evidence, 'gemini-3.8-flash');
   assert.equal(result.summary.observations.length, 1);
   assert.equal(result.summary.observations[0].category, 'service');
   assert.equal(result.summary.observations[0].finding, '服務態度良好');
