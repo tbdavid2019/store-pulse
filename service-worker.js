@@ -1,8 +1,7 @@
-const CACHE_NAME = 'store-pulse-v2';
+const CACHE_NAME = 'store-pulse-v3';
 const urlsToCache = [
   '/',
   '/index.html',
-  '/style.css',
   '/manifest.json',
   '/icons/icon-192x192.png',
   '/icons/icon-512x512.png'
@@ -10,46 +9,18 @@ const urlsToCache = [
 
 // 安裝 Service Worker
 self.addEventListener('install', event => {
-  console.log('Service Worker 正在安裝...');
+  self.skipWaiting();
   event.waitUntil(
     caches.open(CACHE_NAME)
-      .then(cache => {
-        console.log('快取已開啟');
-        return cache.addAll(urlsToCache);
-      })
+      .then(cache => cache.addAll(urlsToCache))
       .catch(err => {
         console.error('快取安裝失敗:', err);
       })
   );
 });
 
-// 攔截網路請求
-self.addEventListener('fetch', event => {
-  // 只快取同源請求，避免快取 Google Maps API
-  const isSameOrigin = event.request.url.startsWith(self.location.origin);
-  const isApi = new URL(event.request.url).pathname.startsWith('/api/');
-  if (event.request.method === 'GET' && isSameOrigin && !isApi) {
-    event.respondWith(
-      caches.match(event.request)
-        .then(response => {
-          // 如果在快取中找到，則返回快取版本
-          if (response) {
-            return response;
-          }
-          // 否則從網路取得
-          return fetch(event.request);
-        })
-        .catch(err => {
-          console.error('Service Worker fetch 錯誤:', err);
-          return fetch(event.request);
-        })
-    );
-  }
-});
-
-// 清理舊快取
+// 清理舊快取並立即接管頁面
 self.addEventListener('activate', event => {
-  console.log('Service Worker 已激活');
   event.waitUntil(
     caches.keys().then(cacheNames => {
       return Promise.all(
@@ -60,6 +31,40 @@ self.addEventListener('activate', event => {
           }
         })
       );
-    })
+    }).then(() => self.clients.claim())
   );
+});
+
+// 攔截網路請求：HTML 導航採 Network-First，避免使用者卡在舊快取
+self.addEventListener('fetch', event => {
+  const isSameOrigin = event.request.url.startsWith(self.location.origin);
+  const isApi = new URL(event.request.url).pathname.startsWith('/api/');
+  
+  if (event.request.method === 'GET' && isSameOrigin && !isApi) {
+    const url = new URL(event.request.url);
+    const isNavigationOrHtml = event.request.mode === 'navigate' || url.pathname === '/' || url.pathname === '/index.html';
+
+    if (isNavigationOrHtml) {
+      // Network-First：優先從網路取得最新 HTML，若離線才使用快取
+      event.respondWith(
+        fetch(event.request)
+          .then(networkResponse => {
+            if (networkResponse && networkResponse.status === 200) {
+              const responseClone = networkResponse.clone();
+              caches.open(CACHE_NAME).then(cache => cache.put(event.request, responseClone));
+            }
+            return networkResponse;
+          })
+          .catch(() => caches.match(event.request))
+      );
+      return;
+    }
+
+    // 靜態資源：Cache-First with Network Fallback
+    event.respondWith(
+      caches.match(event.request).then(response => {
+        return response || fetch(event.request);
+      })
+    );
+  }
 });

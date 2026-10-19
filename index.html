@@ -2115,6 +2115,7 @@
             navigator.serviceWorker.register('service-worker.js')
                 .then(registration => {
                     console.log('Service Worker 註冊成功:', registration);
+                    registration.update();
                 })
                 .catch(error => {
                     console.log('Service Worker 註冊失敗:', error);
