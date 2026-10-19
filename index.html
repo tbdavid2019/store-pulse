@@ -3,12 +3,12 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="搜尋與比較連鎖店面的 Google Maps 評價，快速掌握各分店聲量">
-  <title>[店面脈搏]]多店面評價速查 Store Pulse - david888 </title>
+  <meta name="description" content="搜尋與比較連鎖店面的 Google Maps 評價，快速掌握各分店聲量與 AI 深度洞察">
+  <title>Store Pulse 店面脈搏 - 多店面評價速查與 AI 深度分析</title>
   
   <!-- PWA 支援 -->
   <link rel="manifest" href="manifest.json">
-  <meta name="theme-color" content="#FF5A00">
+  <meta name="theme-color" content="#0f766e">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Store Pulse">
@@ -22,22 +22,15 @@
   
   <!-- Open Graph / Facebook -->
   <meta property="og:type" content="website">
-  <meta property="og:url" content="https://tbdavid2019-store-pulse.hf.space">
+  <meta property="og:url" content="https://store-pulse.oobwei.workers.dev">
   <meta property="og:title" content="Store Pulse 店面脈搏">
-  <meta property="og:description" content="搜尋與比較連鎖店面的 Google Maps 評價，快速掌握各分店聲量">
+  <meta property="og:description" content="搜尋與比較連鎖店面的 Google Maps 評價，快速掌握各分店聲量與 AI 深度洞察">
   <meta property="og:image" content="icons/icon-512x512.png">
   
-  <!-- Twitter -->
-  <meta property="twitter:card" content="summary_large_image">
-  <meta property="twitter:url" content="https://tbdavid2019-store-pulse.hf.space">
-  <meta property="twitter:title" content="Store Pulse 店面脈搏">
-  <meta property="twitter:description" content="搜尋與比較連鎖店面的 Google Maps 評價，快速掌握各分店聲量">
-  <meta property="twitter:image" content="icons/icon-512x512.png">
-
   <!-- Fonts: JetBrains Mono & Noto Sans TC / Gen Jyuu Gothic -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,400..800;1,400..800&family=Noto+Sans+TC:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,400..700;1,400..700&family=Noto+Sans+TC:wght@400;500;600;700&display=swap" rel="stylesheet">
 
   <style>
     @font-face {
@@ -50,283 +43,666 @@
     }
 
     :root {
-      --font-sans: "Gen Jyuu Gothic", "源柔黑體", "Noto Sans TC", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      --font-mono: "JetBrains Mono", ui-monospace, monospace;
+      --font-sans: "Gen Jyuu Gothic", "源柔黑體", "Noto Sans TC", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      
+      --color-brand-primary: #0f766e;
+      --color-brand-hover: #115e59;
+      --color-brand-light: #f0fdfa;
+      --color-brand-border: #99f6e4;
+      
+      --color-slate-900: #0f172a;
+      --color-slate-800: #1e293b;
+      --color-slate-700: #334155;
+      --color-slate-600: #475569;
+      --color-slate-500: #64748b;
+      --color-slate-400: #94a3b8;
+      --color-slate-300: #cbd5e1;
+      --color-slate-200: #e2e8f0;
+      --color-slate-100: #f1f5f9;
+      --color-slate-50: #f8fafc;
+
+      --color-amber-700: #b45309;
+      --color-amber-600: #d97706;
+      --color-amber-100: #fef3c7;
+      --color-amber-50: #fffbeb;
+      --color-amber-border: #fde68a;
+
+      --color-rose-700: #be123c;
+      --color-rose-600: #e11d48;
+      --color-rose-100: #fee2e2;
+      --color-rose-50: #fff7f7;
+      --color-rose-border: #fecdd3;
+
+      --color-emerald-700: #047857;
+      --color-emerald-600: #059669;
+      --color-emerald-100: #d1fae5;
+      --color-emerald-50: #ecfdf5;
+      --color-emerald-border: #a7f3d0;
+
+      --radius-sm: 6px;
+      --radius-md: 10px;
+      --radius-lg: 14px;
+      --radius-xl: 18px;
+
+      --shadow-sm: 0 1px 2px 0 rgba(15, 23, 42, 0.05);
+      --shadow-md: 0 4px 6px -1px rgba(15, 23, 42, 0.06), 0 2px 4px -2px rgba(15, 23, 42, 0.04);
+      --shadow-lg: 0 10px 15px -3px rgba(15, 23, 42, 0.07), 0 4px 6px -4px rgba(15, 23, 42, 0.03);
     }
 
     .jetbrains-mono {
       font-family: var(--font-mono);
       font-optical-sizing: auto;
-      font-weight: 500;
       font-style: normal;
+      font-variant-numeric: tabular-nums;
     }
 
     * {
       box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    ::selection {
+      background: #ccfbf1;
+      color: #0f766e;
+    }
+
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: var(--color-slate-100);
+      border-radius: 3px;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: var(--color-slate-300);
+      border-radius: 3px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: var(--color-slate-400);
     }
 
     body {
       font-family: var(--font-sans);
-      font-size: 17px;
-      line-height: 1.68;
-      margin: 0;
-      background: #eef4f2;
-      color: #1f2937;
+      font-size: 16px;
+      line-height: 1.6;
+      background: #f1f5f9;
+      color: var(--color-slate-800);
       -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      padding-bottom: 3rem;
     }
 
-    header {
-      background: linear-gradient(135deg, #8f3938, #b54a43);
+    /* Hero Header */
+    header.hero-header {
+      background: linear-gradient(135deg, #091e22 0%, #0f3638 50%, #164e63 100%);
       color: white;
-      padding: 2.2rem;
+      padding: 2.2rem 2.4rem;
       margin: 2rem auto 0;
-      width: 90%;
-      max-width: 1040px;
-      border-radius: 20px;
-      text-align: center;
-      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.12);
+      width: 92%;
+      max-width: 1140px;
+      border-radius: var(--radius-xl);
+      box-shadow: 0 12px 30px rgba(9, 30, 34, 0.25);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      position: relative;
+      overflow: hidden;
     }
-    header h2 {
-      font-size: 2.25rem;
+
+    .hero-content {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 1.25rem;
+    }
+
+    .hero-brand {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .hero-icon {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 48px;
+      height: 48px;
+      background: rgba(255, 255, 255, 0.12);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 12px;
+      color: #5eead4;
+      flex-shrink: 0;
+    }
+
+    .hero-title-group h1 {
+      font-size: 1.85rem;
       font-weight: 700;
-      margin: 0 0 0.5rem 0;
-      letter-spacing: -0.01em;
-    }
-    header p {
-      font-size: 1.18rem;
-      margin: 0;
-      opacity: 0.95;
+      color: #ffffff;
+      letter-spacing: -0.02em;
+      line-height: 1.2;
     }
 
+    .hero-title-group p {
+      font-size: 0.98rem;
+      color: #cbd5e1;
+      margin-top: 4px;
+      font-weight: 400;
+    }
+
+    .hero-badges {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      background: rgba(15, 118, 110, 0.35);
+      border: 1px solid rgba(94, 234, 212, 0.3);
+      color: #5eead4;
+      border-radius: 20px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+    }
+
+    /* Main Container */
     .container {
-      background: white;
-      margin: 2rem auto;
-      padding: 2.2rem;
-      width: 90%;
-      max-width: 1040px;
-      border-radius: 16px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+      background: #ffffff;
+      margin: 1.5rem auto 0;
+      padding: 2rem 2.2rem;
+      width: 92%;
+      max-width: 1140px;
+      border-radius: var(--radius-xl);
+      box-shadow: 0 4px 20px rgba(15, 23, 42, 0.05);
+      border: 1px solid var(--color-slate-200);
     }
 
+    /* Controls Bar */
     #controls {
       display: flex;
       flex-wrap: wrap;
-      gap: 0.85rem;
+      gap: 0.75rem;
       margin-bottom: 1.25rem;
       align-items: center;
-      justify-content: space-between;
     }
 
-    input, select, button {
+    .search-input-wrapper {
+      flex: 1;
+      min-width: 240px;
+      position: relative;
+    }
+
+    .search-input-wrapper input {
+      width: 100%;
+      height: 48px;
+      padding: 0 16px 0 44px;
       font-family: var(--font-sans);
-      padding: 12px 18px;
-      font-size: 1.08rem;
-      border: 1.5px solid #d1d5db;
-      border-radius: 10px;
+      font-size: 1rem;
+      color: var(--color-slate-900);
+      background: #ffffff;
+      border: 1.5px solid var(--color-slate-300);
+      border-radius: var(--radius-md);
       outline: none;
       transition: all 0.2s ease;
     }
 
-    input:focus, select:focus {
-      border-color: #173b3f;
-      box-shadow: 0 0 0 3px rgba(23, 59, 63, 0.15);
+    .search-input-wrapper input:focus {
+      border-color: var(--color-brand-primary);
+      box-shadow: 0 0 0 3px rgba(15, 118, 110, 0.15);
     }
 
-    button {
-      background: #173b3f;
-      color: white;
+    .search-icon-hint {
+      position: absolute;
+      left: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--color-slate-400);
+      pointer-events: none;
+      display: flex;
+      align-items: center;
+    }
+
+    .btn-search {
+      height: 48px;
+      padding: 0 24px;
+      background: var(--color-brand-primary);
+      color: #ffffff;
+      font-family: var(--font-sans);
+      font-size: 1rem;
       font-weight: 600;
-      cursor: pointer;
       border: none;
-      transition: background 0.2s ease, transform 0.1s ease;
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: background-color 0.15s ease, transform 0.1s ease, box-shadow 0.15s ease;
+      box-shadow: 0 1px 3px rgba(15, 118, 110, 0.25);
+      white-space: nowrap;
     }
 
-    button:hover {
-      background: #10292c;
+    .btn-search:hover {
+      background: var(--color-brand-hover);
+      box-shadow: 0 4px 8px rgba(15, 118, 110, 0.3);
     }
-    button:active {
+    .btn-search:active {
       transform: scale(0.98);
     }
 
-    #map {
-      height: 420px;
-      margin-top: 1rem;
-      border-radius: 14px;
-      border: 1px solid #e5e7eb;
+    .btn-config {
+      height: 48px;
+      padding: 0 16px;
+      background: var(--color-slate-100);
+      color: var(--color-slate-700);
+      font-family: var(--font-sans);
+      font-size: 0.92rem;
+      font-weight: 600;
+      border: 1.5px solid var(--color-slate-300);
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.15s ease;
+      white-space: nowrap;
     }
 
+    .btn-config:hover {
+      background: var(--color-slate-200);
+      border-color: var(--color-slate-400);
+      color: var(--color-slate-900);
+    }
+
+    /* Map */
+    #map {
+      height: 400px;
+      margin-top: 1rem;
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--color-slate-200);
+      box-shadow: var(--shadow-sm);
+    }
+
+    /* Results Header */
     #results {
       margin-top: 2.2rem;
     }
 
-    #results h3 {
-      font-size: 1.55rem;
-      font-weight: 700;
-      color: #173b3f;
-      margin: 0 0 1.2rem 0;
+    .results-heading-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1.2rem;
+      border-bottom: 2px solid var(--color-slate-100);
+      padding-bottom: 0.8rem;
     }
 
+    .results-heading-row h2 {
+      font-size: 1.35rem;
+      font-weight: 700;
+      color: var(--color-slate-900);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .results-count-label {
+      font-family: var(--font-mono);
+      font-size: 0.88rem;
+      color: var(--color-slate-500);
+      font-weight: 500;
+    }
+
+    /* Card Grid */
     .card-container {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      gap: 1.6rem;
+      gap: 1.4rem;
       margin-top: 1rem;
     }
 
-    @media (max-width: 900px) {
+    @media (max-width: 1024px) {
       .card-container { grid-template-columns: repeat(2, 1fr); }
     }
-    @media (max-width: 600px) {
+    @media (max-width: 680px) {
       .card-container { grid-template-columns: 1fr; }
     }
 
+    /* Store Card */
     .card {
-      background: #fff;
-      border-radius: 14px;
-      padding: 1.4rem;
-      box-shadow: 0 4px 14px rgba(0,0,0,0.06);
-      border: 1px solid #f1f5f9;
-      transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+      background: #ffffff;
+      border-radius: var(--radius-lg);
+      padding: 1.35rem;
+      box-shadow: var(--shadow-sm);
+      border: 1px solid var(--color-slate-200);
+      transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
       cursor: pointer;
       display: flex;
       flex-direction: column;
+      justify-content: space-between;
+      min-width: 0;
     }
 
     .card:hover, .card.active {
-      transform: translateY(-4px);
-      box-shadow: 0 12px 24px rgba(0,0,0,0.12);
-      border-color: #cbd5e1;
+      transform: translateY(-3px);
+      box-shadow: var(--shadow-lg);
+      border-color: var(--color-slate-400);
     }
 
-    .card h4 {
-      font-size: 1.35rem;
+    .card-header {
+      margin-bottom: 0.9rem;
+    }
+
+    .card-title {
+      font-size: 1.15rem;
       font-weight: 700;
-      color: #0f172a;
-      margin: 0 0 0.65rem 0;
+      color: var(--color-slate-900);
+      margin-bottom: 0.5rem;
       line-height: 1.35;
+      letter-spacing: -0.01em;
+      word-break: break-word;
     }
 
-    .card p {
-      font-size: 1.05rem;
-      line-height: 1.6;
-      color: #374151;
-      margin: 0.3rem 0;
+    .card-meta-row {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 0.5rem;
     }
 
-    .card .stat-badge {
+    .rating-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
       font-family: var(--font-mono);
       font-weight: 600;
-      color: #d97706;
+      font-size: 0.88rem;
+      color: var(--color-amber-700);
+      background: var(--color-amber-100);
+      border: 1px solid var(--color-amber-border);
+      border-radius: 6px;
+      padding: 2px 8px;
     }
 
-    .reviews-container {
-      margin-top: 1.1rem;
-      border-top: 1.5px solid #f1f5f9;
-      padding-top: 1.1rem;
+    .reviews-total-text {
+      font-family: var(--font-mono);
+      font-size: 0.82rem;
+      color: var(--color-slate-500);
+      font-weight: 500;
+    }
+
+    .distance-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      color: var(--color-brand-primary);
+      background: var(--color-brand-light);
+      border: 1px solid var(--color-brand-border);
+      border-radius: 6px;
+      padding: 2px 8px;
+      font-weight: 600;
+    }
+
+    .card-address {
+      display: flex;
+      align-items: flex-start;
+      gap: 6px;
+      font-size: 0.86rem;
+      color: var(--color-slate-600);
+      line-height: 1.45;
+      margin-top: 4px;
+    }
+
+    .card-address svg {
+      flex-shrink: 0;
+      margin-top: 2px;
+      color: var(--color-slate-400);
+    }
+
+    .card-address a {
+      color: var(--color-slate-700);
+      text-decoration: none;
+      word-break: break-all;
+      transition: color 0.15s ease;
+    }
+    .card-address a:hover {
+      color: var(--color-brand-primary);
+      text-decoration: underline;
+    }
+
+    /* Reviews Section */
+    .reviews-section {
+      margin-top: 1rem;
+      border-top: 1px solid var(--color-slate-100);
+      padding-top: 0.9rem;
       flex: 1;
     }
 
-    .reviews-container h5 {
-      margin: 0 0 0.65rem 0;
-      font-size: 1.15rem;
-      font-weight: 700;
-      color: #1e293b;
+    .reviews-header-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 0.65rem;
     }
 
-    .reviews-container ul {
+    .reviews-header-title {
+      font-size: 0.88rem;
+      font-weight: 700;
+      color: var(--color-slate-700);
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+    }
+
+    .reviews-header-count {
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      color: var(--color-slate-400);
+    }
+
+    .reviews-list {
       list-style: none;
       padding: 0;
       margin: 0;
+      max-height: 330px;
+      overflow-y: auto;
+      padding-right: 4px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
     }
 
-    .reviews-container li {
-      margin-bottom: 0.95rem;
-      font-size: 1.05rem;
-      line-height: 1.68;
-      padding: 0.75rem 0.95rem;
-      border-radius: 10px;
-      background: #f8fafc;
-      border: 1px solid #e2e8f0;
-      color: #334155;
+    .review-item {
+      font-size: 0.88rem;
+      line-height: 1.58;
+      padding: 10px 12px;
+      border-radius: var(--radius-sm);
+      background: var(--color-slate-50);
+      border: 1px solid var(--color-slate-200);
+      color: var(--color-slate-700);
+      transition: background 0.15s ease, border-color 0.15s ease;
     }
 
-    .reviews-container li:last-child {
-      margin-bottom: 0;
+    .review-item.is-low {
+      background: #fff7f7;
+      border: 1px solid var(--color-rose-border);
     }
 
-    .reviews-container li strong {
-      font-size: 1.08rem;
-      color: #0f172a;
+    .review-author-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      margin-bottom: 4px;
     }
 
-    .reviews-container li .rating-tag {
-      font-family: var(--font-mono);
-      font-size: 0.95rem;
+    .review-author {
+      font-size: 0.88rem;
       font-weight: 600;
-      color: #d97706;
-      margin-left: 4px;
+      color: var(--color-slate-900);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
 
-    .low-rating-review {
-      background-color: #fff1f2 !important;
-      border: 1.5px solid #fecdd3 !important;
-      color: #9f1239 !important;
-    }
-    .low-rating-review strong {
-      color: #881337 !important;
+    .review-meta-group {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-shrink: 0;
     }
 
+    .review-time {
+      font-family: var(--font-mono);
+      font-size: 0.76rem;
+      color: var(--color-slate-400);
+    }
+
+    .rating-pill {
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      font-weight: 600;
+      padding: 1px 6px;
+      border-radius: 4px;
+      line-height: 1.3;
+      white-space: nowrap;
+    }
+
+    .rating-pill-high {
+      color: var(--color-amber-700);
+      background: var(--color-amber-100);
+      border: 1px solid var(--color-amber-border);
+    }
+
+    .rating-pill-low {
+      color: var(--color-rose-700);
+      background: var(--color-rose-100);
+      border: 1px solid var(--color-rose-border);
+    }
+
+    .review-body {
+      font-size: 0.86rem;
+      line-height: 1.55;
+      color: var(--color-slate-700);
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    /* Analysis Panel & Controls (Fix for truncated text!) */
     .analysis-panel {
-      margin-top: 1.25rem;
-      padding-top: 1.1rem;
-      border-top: 2px solid #e2e8f0;
+      margin-top: 1rem;
+      padding-top: 1rem;
+      border-top: 1px solid var(--color-slate-200);
     }
 
     .analysis-controls {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      background: var(--color-slate-50);
+      border: 1px solid var(--color-slate-200);
+      border-radius: var(--radius-md);
+      padding: 10px;
+    }
+
+    .analysis-field-row {
       display: grid;
-      grid-template-columns: 1fr 1fr auto;
-      gap: 0.6rem;
-      align-items: center;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
     }
 
-    .analysis-controls select, .analysis-controls button {
-      min-height: 44px;
+    .analysis-field {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+      min-width: 0;
+    }
+
+    .analysis-field-label {
+      font-size: 0.74rem;
+      font-weight: 600;
+      color: var(--color-slate-500);
+      letter-spacing: 0.02em;
+    }
+
+    .analysis-field select {
       width: 100%;
-      font-size: 1rem;
+      height: 38px;
+      font-size: 0.85rem;
       font-family: var(--font-sans);
-      padding: 8px 12px;
-      border-radius: 8px;
+      padding: 4px 8px;
+      border: 1px solid #cbd5e1;
+      border-radius: var(--radius-sm);
+      background-color: #ffffff;
+      color: var(--color-slate-800);
+      cursor: pointer;
+      outline: none;
+      transition: border-color 0.15s ease, box-shadow 0.15s ease;
     }
 
-    .analysis-controls button {
-      background: #173b3f;
-      font-weight: 700;
-      white-space: nowrap;
-      padding: 0 16px;
+    .analysis-field select:focus {
+      border-color: var(--color-brand-primary);
+      box-shadow: 0 0 0 2px rgba(15, 118, 110, 0.15);
     }
 
-    .analysis-controls button:disabled {
-      opacity: .6;
+    .analysis-button {
+      width: 100%;
+      height: 38px;
+      background: var(--color-brand-primary);
+      color: #ffffff;
+      font-family: var(--font-sans);
+      font-size: 0.9rem;
+      font-weight: 600;
+      border: none;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: background-color 0.15s ease, transform 0.1s ease, box-shadow 0.15s ease;
+      box-shadow: 0 1px 2px rgba(15, 118, 110, 0.2);
+    }
+
+    .analysis-button:hover {
+      background: var(--color-brand-hover);
+      box-shadow: 0 3px 6px rgba(15, 118, 110, 0.25);
+    }
+    .analysis-button:active {
+      transform: scale(0.99);
+    }
+    .analysis-button:disabled {
+      opacity: 0.65;
       cursor: wait;
+      transform: none;
     }
 
+    /* Analysis Output */
     .analysis-output {
-      margin-top: 0.95rem;
-      padding: 1.25rem;
-      background: #f8fafc;
-      border: 1.5px solid #e2e8f0;
-      border-radius: 12px;
-      color: #1e293b;
-      font-size: 1.05rem;
-      line-height: 1.68;
+      margin-top: 0.85rem;
+      padding: 1rem;
+      background: var(--color-slate-50);
+      border: 1px solid var(--color-slate-200);
+      border-radius: var(--radius-md);
+      color: var(--color-slate-800);
+      font-size: 0.88rem;
+      line-height: 1.6;
     }
 
     .analysis-output[hidden] { display: none; }
 
     .analysis-title {
-      font-size: 1.25rem;
+      font-size: 0.98rem;
       font-weight: 700;
-      color: #0f172a;
+      color: var(--color-slate-900);
       margin-bottom: 0.45rem;
       display: flex;
       align-items: center;
@@ -334,94 +710,122 @@
     }
 
     .analysis-meta {
-      color: #64748b;
+      color: var(--color-slate-600);
       font-family: var(--font-mono);
-      font-size: 0.92rem;
-      line-height: 1.55;
-      margin: 0.65rem 0;
+      font-size: 0.78rem;
+      line-height: 1.5;
+      margin: 0.5rem 0;
       padding: 6px 10px;
-      background: #f1f5f9;
-      border-radius: 6px;
+      background: var(--color-slate-100);
+      border: 1px solid var(--color-slate-200);
+      border-radius: var(--radius-sm);
+      word-break: break-all;
     }
 
     .analysis-observation {
-      margin: 0.95rem 0;
-      padding: 0.75rem 0.95rem;
-      background: white;
-      border-radius: 8px;
-      border: 1px solid #e2e8f0;
-      line-height: 1.65;
+      margin: 0.75rem 0;
+      padding: 0.85rem;
+      background: #ffffff;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--color-slate-200);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .observation-header {
+      display: flex;
+      align-items: flex-start;
+      gap: 6px;
+      margin-bottom: 6px;
     }
 
     .category-badge {
       font-family: var(--font-sans);
       font-weight: 700;
-      font-size: 0.92rem;
-      padding: 3px 9px;
-      border-radius: 6px;
+      font-size: 0.78rem;
+      padding: 2px 7px;
+      border-radius: 4px;
       background: #e0f2fe;
       color: #0369a1;
       display: inline-block;
-      margin-right: 6px;
+      flex-shrink: 0;
       border: 1px solid #bae6fd;
     }
 
+    .observation-finding {
+      font-size: 0.88rem;
+      font-weight: 600;
+      color: var(--color-slate-900);
+      line-height: 1.5;
+    }
+
+    .suggested-action-box {
+      margin-top: 8px;
+      font-size: 0.84rem;
+      color: var(--color-emerald-700);
+      background: var(--color-emerald-50);
+      border: 1px solid var(--color-emerald-border);
+      border-radius: var(--radius-sm);
+      padding: 6px 9px;
+      font-weight: 500;
+      line-height: 1.5;
+      display: flex;
+      align-items: flex-start;
+      gap: 6px;
+    }
+
     .evidence-list {
-      margin: 0.6rem 0 0.2rem 1.2rem;
+      margin: 0.6rem 0 0.2rem 1.1rem;
       padding: 0;
     }
 
     .evidence-list li {
-      font-size: 0.98rem;
-      line-height: 1.6;
-      color: #334155;
-      margin: 0.4rem 0;
+      font-size: 0.84rem;
+      line-height: 1.55;
+      color: var(--color-slate-600);
+      margin: 0.35rem 0;
     }
 
     .evidence-list a {
-      color: #2563eb;
+      color: var(--color-brand-primary);
       text-decoration: underline;
       font-family: var(--font-mono);
-      font-size: 0.92rem;
+      font-size: 0.8rem;
       margin-left: 4px;
     }
 
-    @media (max-width: 560px) {
-      .analysis-controls { grid-template-columns: 1fr; }
-    }
-
+    /* Custom InfoWindow */
     .custom-infowindow {
-      background: url('https://raw.githubusercontent.com/elvis860812/image-assets/main/custom-speech-bubble.png') no-repeat center center;
-      background-size: contain;
-      width: 240px;
-      height: 140px;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      padding: 1.5rem;
-      font-size: 15px;
-      font-weight: bold;
-      position: relative;
-      text-align: center;
+      padding: 10px 12px;
       font-family: var(--font-sans);
+      color: var(--color-slate-900);
+      text-align: left;
+      line-height: 1.5;
+      font-size: 0.88rem;
+      min-width: 180px;
     }
-    .custom-infowindow .close-btn {
-      position: absolute;
-      top: 6px;
-      right: 10px;
-      cursor: pointer;
-      font-weight: bold;
-      font-size: 18px;
+    .custom-infowindow strong {
+      font-size: 0.98rem;
+      font-weight: 700;
+      display: block;
+      margin-bottom: 4px;
+    }
+    .custom-infowindow a {
+      color: var(--color-brand-primary);
+      font-weight: 600;
+      text-decoration: underline;
+      display: inline-block;
+      margin-top: 5px;
     }
 
-    /* Loader styles */
+    /* Loader Overlay */
     .loader-overlay {
       position: fixed;
       top: 0;
       left: 0;
       width: 100%;
       height: 100%;
-      background: rgba(255, 255, 255, 0.85);
+      background: rgba(15, 23, 42, 0.4);
+      backdrop-filter: blur(4px);
       display: flex;
       justify-content: center;
       align-items: center;
@@ -429,22 +833,22 @@
     }
     .loader-content {
       text-align: center;
-      padding: 2.2rem 2.8rem;
-      background: #fff;
-      border-radius: 18px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.12);
-      font-size: 1.15rem;
+      padding: 2rem 2.5rem;
+      background: #ffffff;
+      border-radius: var(--radius-lg);
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2);
+      font-size: 1.05rem;
       font-weight: 600;
-      color: #173b3f;
+      color: var(--color-slate-900);
     }
     .spinner {
-      border: 6px solid #f3f3f3;
-      border-top: 6px solid #b54a43;
+      border: 4px solid var(--color-slate-200);
+      border-top: 4px solid var(--color-brand-primary);
       border-radius: 50%;
-      width: 56px;
-      height: 56px;
-      animation: spin 0.9s linear infinite;
-      margin: 0 auto 1.1rem;
+      width: 44px;
+      height: 44px;
+      animation: spin 0.8s linear infinite;
+      margin: 0 auto 1rem;
     }
     @keyframes spin {
       0% { transform: rotate(0deg); }
@@ -453,37 +857,80 @@
   </style>
 </head>
 <body>
-  <header>
-    <h2>🍽️ 多店面管理評價速查</h2>
-    <p>輸入店名，即時掌握各分店評價</p>
+  <header class="hero-header">
+    <div class="hero-content">
+      <div class="hero-brand">
+        <span class="hero-icon" aria-hidden="true">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+            <polyline points="9 22 9 12 15 12 15 22"/>
+          </svg>
+        </span>
+        <div class="hero-title-group">
+          <h1>Store Pulse 店面脈搏</h1>
+          <p>Google Maps 多分店即時評價速查與 AI 深度洞察</p>
+        </div>
+      </div>
+      <div class="hero-badges">
+        <span class="hero-badge jetbrains-mono">Workers AI · LLaMA 3.3</span>
+      </div>
+    </div>
   </header>
 
   <div id="loader" class="loader-overlay" style="display: none;">
     <div class="loader-content">
       <div class="spinner"></div>
-      <p>正在搜尋，請稍候...</p>
+      <p>正在搜尋分店評價，請稍候...</p>
     </div>
   </div>
 
   <div class="container">
     <div id="controls">
-      <input id="searchQuery" type="text" placeholder="請輸入店家名稱（例：麥當勞）" style="flex:1;">
-      <button onclick="searchStores()">搜尋</button>
-      <button id="keyConfigBtn" type="button" onclick="promptCustomKey()" style="background:#475569;font-size:0.85rem;padding:0 12px;white-space:nowrap;" title="自訂或更換 Google Maps API Key">🔑 金鑰</button>
+      <div class="search-input-wrapper">
+        <span class="search-icon-hint" aria-hidden="true">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="11" cy="11" r="8"></circle>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+          </svg>
+        </span>
+        <input id="searchQuery" type="text" placeholder="輸入品牌或店名（例：麥當勞、藏壽司、星巴克）" aria-label="搜尋店家名稱">
+      </div>
+      <button class="btn-search" onclick="searchStores()" type="button">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <circle cx="11" cy="11" r="8"></circle>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+        </svg>
+        <span>搜尋分店</span>
+      </button>
+      <button id="keyConfigBtn" class="btn-config" type="button" onclick="promptCustomKey()" title="自訂或更換 Google Maps API Key">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"></path>
+        </svg>
+        <span>金鑰設定</span>
+      </button>
     </div>
 
     <div id="mapNotice" style="display: none;"></div>
     <div id="map"></div>
     <div id="results">
-      <h3>推薦店家</h3>
+      <div class="results-heading-row">
+        <h2>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--color-brand-primary);">
+            <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
+            <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
+          </svg>
+          分店評價列表
+        </h2>
+        <span class="results-count-label" id="resultsCount">請輸入店家名稱開始搜尋</span>
+      </div>
       <div class="card-container" id="restaurantCards">
-        <p>請輸入地址開始搜尋附近餐廳</p>
+        <p style="color: var(--color-slate-500); grid-column: 1 / -1; text-align: center; padding: 2.5rem 0;">請在上方搜尋列輸入品牌名稱開始比對各分店評價。</p>
       </div>
     </div>
   </div>
 
   <script>
-    let map, geocoder, placesService; // 將 placesService 宣告在更廣的作用域
+    let map, geocoder, placesService;
     const markers = [];
     const markerMap = new Map();
     let activeInfoWindow = null;
@@ -522,12 +969,13 @@
       const defaultLoc = { lat: 25.0330, lng: 121.5654 }; // 預設台北市中心
       map = new google.maps.Map(document.getElementById("map"), {
         zoom: 12,
-        center: defaultLoc
+        center: defaultLoc,
+        mapTypeControl: false,
+        streetViewControl: false
       });
       geocoder = new google.maps.Geocoder();
       placesService = new google.maps.places.PlacesService(map);
 
-      // 當用戶點擊地圖其他地方時，關閉 InfoWindow
       map.addListener('click', () => {
         if (activeInfoWindow) {
           activeInfoWindow.close();
@@ -536,7 +984,6 @@
         document.querySelectorAll('.card').forEach(c => c.classList.remove('active'));
       });
 
-      // 頁面載入時請求 GPS 位置
       if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(position => {
           userLocation = {
@@ -547,7 +994,7 @@
           map.setZoom(15);
           new google.maps.Marker({ map, position: userLocation, icon: 'https://maps.google.com/mapfiles/ms/icons/blue-dot.png', title: '您的位置' });
         }, () => {
-          console.log("使用者拒絕提供位置資訊。");
+          console.log("使用者未授權提供 GPS 位置。");
         }, {
           enableHighAccuracy: true,
           timeout: 10000,
@@ -555,10 +1002,9 @@
         });
       }
 
-      // 讓使用者可以在輸入框中按下 Enter 鍵來觸發搜尋
       document.getElementById('searchQuery').addEventListener('keyup', function(event) {
         if (event.key === 'Enter') {
-          event.preventDefault(); // 防止可能的表單提交行為
+          event.preventDefault();
           searchStores();
         }
       });
@@ -571,18 +1017,18 @@
       const currentOrigin = window.location.origin;
       const customKey = localStorage.getItem('CUSTOM_GMAPS_KEY');
       banner.innerHTML = `
-        <div style="background:#fef2f2;border:1.5px solid #ef4444;border-radius:10px;padding:14px 16px;color:#991b1b;font-size:14px;line-height:1.6;margin-bottom:12px;box-shadow:0 4px 12px rgba(239,68,68,0.08);">
+        <div style="background:#fff7f7;border:1px solid #fecdd3;border-radius:10px;padding:14px 16px;color:#9f1239;font-size:14px;line-height:1.6;margin-bottom:12px;">
           <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
-            <strong style="font-size:15px;color:#b91c1c;">⚠️ Google Maps 地圖載入失敗（HTTP 參照位址限制）</strong>
-            <button onclick="document.getElementById('mapNotice').style.display='none'" style="background:transparent;border:none;color:#991b1b;cursor:pointer;font-size:16px;">✕</button>
+            <strong style="font-size:15px;color:#be123c;">⚠️ Google Maps 地圖載入失敗（HTTP 參照位址限制）</strong>
+            <button onclick="document.getElementById('mapNotice').style.display='none'" style="background:transparent;border:none;color:#9f1239;cursor:pointer;font-size:16px;">✕</button>
           </div>
           <p style="margin:4px 0;">${customMsg || '目前 Google Maps API Key 啟用了網域白名單限制，目前的網址尚未列入授權清單。'}</p>
-          <div style="background:#fff;border:1px dashed #f87171;padding:8px 12px;border-radius:6px;margin:8px 0;font-family:monospace;font-size:13px;word-break:break-all;color:#1e293b;">
+          <div style="background:#fff;border:1px dashed #fca5a5;padding:8px 12px;border-radius:6px;margin:8px 0;font-family:var(--font-mono);font-size:13px;word-break:break-all;color:#0f172a;">
             請至 Google Cloud Console 憑證設定將此網址加入白名單：<br>
-            <strong style="color:#dc2626;">${currentOrigin}/*</strong>
+            <strong style="color:#b91c1c;">${currentOrigin}/*</strong>
           </div>
           <div style="display:flex;gap:10px;margin-top:10px;align-items:center;flex-wrap:wrap;">
-            <button onclick="promptCustomKey()" style="background:#dc2626;color:white;border:none;padding:6px 14px;border-radius:6px;cursor:pointer;font-weight:600;font-size:13px;">更換自訂 Google Maps Key</button>
+            <button onclick="promptCustomKey()" style="background:#be123c;color:white;border:none;padding:6px 14px;border-radius:6px;cursor:pointer;font-weight:600;font-size:13px;">更換自訂 Google Maps Key</button>
             ${customKey ? `<button onclick="resetCustomKey()" style="background:#64748b;color:white;border:none;padding:6px 12px;border-radius:6px;cursor:pointer;font-size:13px;">重設為預設 Key</button>` : ''}
           </div>
         </div>
@@ -618,7 +1064,7 @@
       if (!query) return alert("請輸入店家名稱");
 
       if (!placesService) {
-        showGmapsErrorNotice("無法搜尋：Google Maps 服務尚未就緒。請確認 Google Cloud Console 憑證已授權目前網址，或點選上方「🔑 金鑰」按鈕自訂可用 Key。");
+        showGmapsErrorNotice("無法搜尋：Google Maps 服務尚未就緒。請確認 Google Cloud Console 憑證已授權目前網址，或點選上方「金鑰設定」按鈕自訂可用 Key。");
         return;
       }
 
@@ -630,7 +1076,6 @@
       const loader = document.getElementById('loader');
       loader.style.display = 'flex';
 
-      // 清除之前的結果
       const container = document.getElementById("restaurantCards");
       container.innerHTML = "";
       markers.forEach(m => m.setMap(null));
@@ -642,7 +1087,6 @@
         activeInfoWindow = null;
       }
 
-      // 使用 Google Places Text Search
       const request = {
         query: query,
         location: userLocation || new google.maps.LatLng(25.0330, 121.5654),
@@ -664,8 +1108,9 @@
             processedResults.sort((a, b) => (a.distanceFromUser || Infinity) - (b.distanceFromUser || Infinity));
           }
 
-          // 限制最多 10 個結果
           const limitedResults = processedResults.slice(0, 10);
+          const countEl = document.getElementById("resultsCount");
+          if (countEl) countEl.textContent = `找到 ${limitedResults.length} 間相關分店`;
 
           if (userLocation) {
             map.setCenter(userLocation);
@@ -675,7 +1120,6 @@
             map.setZoom(13);
           }
 
-          // 為每個結果獲取詳細信息（包含評論）
           limitedResults.forEach(place => {
             const detailsRequest = {
               placeId: place.place_id,
@@ -694,8 +1138,9 @@
             });
           });
         } else {
-          container.innerHTML = "<p>找不到符合條件的店家。請嘗試其他關鍵字。</p>";
-          console.log('Places service status:', status);
+          container.innerHTML = `<p style="color: var(--color-slate-500); grid-column: 1 / -1; text-align: center; padding: 2rem 0;">找不到符合條件的店家，請嘗試其他關鍵字。</p>`;
+          const countEl = document.getElementById("resultsCount");
+          if (countEl) countEl.textContent = `0 間結果`;
         }
       });
     }
@@ -707,33 +1152,55 @@
 
         let reviewsHtml = '';
         if (place.reviews && place.reviews.length > 0) {
-            reviewsHtml = '<div class="reviews-container">';
-            reviewsHtml += '<h5>評論摘錄：</h5>';
-            reviewsHtml += '<ul>';
+            reviewsHtml = `
+              <div class="reviews-section">
+                <div class="reviews-header-bar">
+                  <span class="reviews-header-title">評論摘錄</span>
+                  <span class="reviews-header-count jetbrains-mono">共 ${place.reviews.length} 則</span>
+                </div>
+                <ul class="reviews-list">
+            `;
             place.reviews.forEach(review => {
-                const ratingClass = review.rating <= 3 ? 'class="low-rating-review"' : '';
+                const ratingNum = typeof review.rating === 'number' ? review.rating : null;
+                const isLow = ratingNum !== null && ratingNum <= 3;
+                const itemClass = isLow ? 'review-item is-low' : 'review-item';
+                const ratingPillClass = isLow ? 'rating-pill rating-pill-low' : 'rating-pill rating-pill-high';
+                const ratingLabel = ratingNum !== null ? `⭐ ${ratingNum}` : '⭐ —';
+                const timeLabel = escapeHtml(review.relative_time_description || '');
+
                 reviewsHtml += `
-                    <li ${ratingClass}>
-                        <p>
-                          <strong>${escapeHtml(review.author_name || '匿名使用者')}</strong>
-                          <span class="rating-tag">(⭐ ${review.rating ?? '—'})</span>
-                        </p>
-                        <p style="white-space: pre-wrap; margin-top: 4px;">${escapeHtml(review.text || '')}</p>
+                    <li class="${itemClass}">
+                        <div class="review-author-row">
+                          <span class="review-author">${escapeHtml(review.author_name || '匿名顧客')}</span>
+                          <div class="review-meta-group">
+                            ${timeLabel ? `<span class="review-time">${timeLabel}</span>` : ''}
+                            <span class="${ratingPillClass} jetbrains-mono">${ratingLabel}</span>
+                          </div>
+                        </div>
+                        <div class="review-body">${escapeHtml(review.text || '')}</div>
                     </li>
                 `;
             });
             reviewsHtml += '</ul></div>';
         }
 
-        const distanceText = typeof place.distanceFromUser === 'number'
-            ? `<p>📏 距離：約 <span class="jetbrains-mono">${(place.distanceFromUser / 1000).toFixed(1)}</span> 公里</p>`
+        const distanceBadge = typeof place.distanceFromUser === 'number'
+            ? `<span class="distance-badge jetbrains-mono">📏 ${(place.distanceFromUser / 1000).toFixed(1)} km</span>`
             : '';
 
         card.innerHTML = `
-            <h4>${escapeHtml(place.name || '未命名分店')}</h4>
-            <p>⭐ <span class="stat-badge">${place.rating || '無評分'}</span> <span class="jetbrains-mono">(${place.user_ratings_total || 0} 則評論)</span></p>
-            <p>📍 <a href="${safeHttpUrl(place.url)}" target="_blank" rel="noopener">${escapeHtml(place.vicinity || '地址未提供')}</a></p>
-            ${distanceText}
+            <div class="card-header">
+              <h3 class="card-title">${escapeHtml(place.name || '未命名分店')}</h3>
+              <div class="card-meta-row">
+                <span class="rating-badge jetbrains-mono">⭐ ${place.rating || '—'}</span>
+                <span class="reviews-total-text jetbrains-mono">(${place.user_ratings_total || 0} 則評論)</span>
+                ${distanceBadge}
+              </div>
+              <div class="card-address">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                <a href="${safeHttpUrl(place.url)}" target="_blank" rel="noopener noreferrer">${escapeHtml(place.vicinity || '地址未提供')} ↗</a>
+              </div>
+            </div>
             ${reviewsHtml}
         `;
 
@@ -742,18 +1209,29 @@
         analysisPanel.setAttribute('aria-label', '分店深度分析');
         analysisPanel.innerHTML = `
           <div class="analysis-controls">
-            <select aria-label="評論分析方式" class="analysis-mode">
-              <option value="recent">近期評論</option>
-              <option value="low_rating">低分評論（3 星以下）</option>
-            </select>
-            <select aria-label="評論分析期間" class="analysis-window">
-              <option value="3650" selected>全部評論（不限時間）</option>
-              <option value="90">近 90 天</option>
-              <option value="30">近 30 天</option>
-              <option value="180">近 180 天</option>
-              <option value="365">近 1 年</option>
-            </select>
-            <button type="button" class="analysis-button">深度分析</button>
+            <div class="analysis-field-row">
+              <div class="analysis-field">
+                <label class="analysis-field-label">分析模式</label>
+                <select aria-label="評論分析方式" class="analysis-mode">
+                  <option value="recent">近期評論</option>
+                  <option value="low_rating">低分評論（3 星以下）</option>
+                </select>
+              </div>
+              <div class="analysis-field">
+                <label class="analysis-field-label">分析期間</label>
+                <select aria-label="評論分析期間" class="analysis-window">
+                  <option value="3650" selected>全部評論（不限時間）</option>
+                  <option value="90">近 90 天</option>
+                  <option value="30">近 30 天</option>
+                  <option value="180">近 180 天</option>
+                  <option value="365">近 1 年</option>
+                </select>
+              </div>
+            </div>
+            <button type="button" class="analysis-button">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+              <span>門市 AI 深度分析</span>
+            </button>
           </div>
           <div class="analysis-output" hidden></div>
         `;
@@ -802,7 +1280,13 @@
       analysisControllers.add(controller);
       button.disabled = true;
       output.hidden = false;
-      output.textContent = '正在整理評論證據…';
+      output.innerHTML = `
+        <div style="display:flex;align-items:center;gap:8px;color:var(--color-slate-600);font-size:0.88rem;">
+          <span class="spinner" style="width:18px;height:18px;border-width:2.5px;margin:0;"></span>
+          <span>正在擷取評論並由 Workers AI 進行分析…</span>
+        </div>
+      `;
+
       fetch(`${ANALYSIS_API_BASE}/api/review-analysis`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -850,7 +1334,7 @@
       output.replaceChildren();
       const title = document.createElement('div');
       title.className = 'analysis-title';
-      title.textContent = payload.status === 'success' ? '📊 門市營運分析摘要' : (payload.status === 'insufficient_evidence' ? '⚠️ 目前設定區間無符合評論' : '📋 證據已取得，摘要暫不可用');
+      title.textContent = payload.status === 'success' ? '📊 門市營運分析報告' : (payload.status === 'insufficient_evidence' ? '⚠️ 目前設定區間無符合評論' : '📋 證據已取得，摘要暫不可用');
       output.appendChild(title);
 
       const sampling = payload.sampling || {};
@@ -859,7 +1343,7 @@
       const excluded = sampling.excluded || {};
       const excludedCount = Object.values(excluded).reduce((sum, value) => sum + Number(value || 0), 0);
       const windowLabel = Number(sampling.window_days) >= 3650 ? '全部評論（不限時間）' : `近 ${sampling.window_days || '—'} 天`;
-      meta.textContent = `樣本：使用 ${sampling.used || 0} / 符合 ${sampling.eligible || 0} / 擷取 ${sampling.fetched || 0} 則 | 排除 ${excludedCount} 則 | ${sampling.mode === 'low_rating' ? '低分評論' : '近期評論'} | ${windowLabel}${sampling.truncated ? ' | 已達擷取上限' : ''}${payload.cache?.hit ? ' | 快取命中' : ''}`;
+      meta.textContent = `樣本：使用 ${sampling.used || 0} / 符合 ${sampling.eligible || 0} / 擷取 ${sampling.fetched || 0} 則 | 排除 ${excludedCount} 則 | ${sampling.mode === 'low_rating' ? '低分評論' : '近期評論'} | ${windowLabel}${sampling.truncated ? ' | 上限' : ''}${payload.cache?.hit ? ' | 快取' : ''}`;
       output.appendChild(meta);
 
       const categoryNames = {
@@ -875,20 +1359,27 @@
         const row = document.createElement('div');
         row.className = 'analysis-observation';
 
+        const headerDiv = document.createElement('div');
+        headerDiv.className = 'observation-header';
+
         const badge = document.createElement('span');
         badge.className = 'category-badge';
         badge.textContent = categoryNames[observation.category] || observation.category;
-        row.appendChild(badge);
+        headerDiv.appendChild(badge);
 
         const findingSpan = document.createElement('span');
-        findingSpan.style.fontWeight = '500';
+        findingSpan.className = 'observation-finding';
         findingSpan.textContent = observation.finding;
-        row.appendChild(findingSpan);
+        headerDiv.appendChild(findingSpan);
+        row.appendChild(headerDiv);
 
         if (observation.suggested_action) {
           const actionDiv = document.createElement('div');
-          actionDiv.style.cssText = 'margin-top:6px;font-size:0.98rem;color:#047857;font-weight:600;display:flex;align-items:center;gap:4px;';
-          actionDiv.textContent = `💡 改善建議：${observation.suggested_action}`;
+          actionDiv.className = 'suggested-action-box';
+          actionDiv.innerHTML = `
+            <span style="flex-shrink:0;">💡</span>
+            <span><strong>改善建議：</strong>${escapeHtml(observation.suggested_action)}</span>
+          `;
           row.appendChild(actionDiv);
         }
 
@@ -900,12 +1391,12 @@
           const item = document.createElement('li');
           const excerpt = evidence.is_excerpt ? '（節錄）' : '';
           const authorText = document.createElement('strong');
-          authorText.textContent = `${evidence.author || '匿名'} `;
+          authorText.textContent = `${evidence.author || '匿名顧客'} `;
           item.appendChild(authorText);
 
           const metaText = document.createElement('span');
           metaText.className = 'jetbrains-mono';
-          metaText.style.fontSize = '0.9rem';
+          metaText.style.fontSize = '0.8rem';
           metaText.style.color = '#d97706';
           metaText.textContent = `(⭐ ${evidence.rating ?? '—'}) `;
           item.appendChild(metaText);
@@ -929,7 +1420,7 @@
       (payload.signals || []).forEach(signal => {
         const note = document.createElement('div');
         note.className = 'analysis-meta';
-        note.style.borderLeft = '3px solid #f59e0b';
+        note.style.borderLeft = '1px solid #f59e0b';
         note.textContent = `⚠️ 樣本訊號：評論中出現行銷誘因關鍵字（${signal.evidence_ids?.length || 0} 則），可能影響評分中立性。`;
         output.appendChild(note);
       });
@@ -939,9 +1430,9 @@
         note.style.marginTop = '0.65rem';
         if (payload.status === 'insufficient_evidence') {
           note.innerHTML = `
-            <p style="margin:0 0 6px 0;color:#991b1b;font-weight:600;font-size:1.02rem;">⚠️ 設定時間內符合條件之評論數為 0。</p>
-            <p style="margin:0 0 10px 0;font-size:0.98rem;color:#4b5563;line-height:1.6;">Google Places API 每次預設僅提供 5 則精選評論。若評論發表時間較久，請直接切換為「全部評論」。</p>
-            <button type="button" class="switch-all-btn" style="background:#173b3f;color:white;padding:8px 16px;font-size:0.95rem;border-radius:8px;border:none;cursor:pointer;font-weight:600;">切換為「全部評論」並立即分析</button>
+            <p style="margin:0 0 6px 0;color:var(--color-rose-700);font-weight:600;font-size:0.92rem;">⚠️ 設定時間內符合條件之評論數為 0。</p>
+            <p style="margin:0 0 10px 0;font-size:0.86rem;color:var(--color-slate-600);line-height:1.5;">Google Places API 每次預設僅提供 5 則精選評論。若評論發表時間較久，請直接切換為「全部評論」。</p>
+            <button type="button" class="switch-all-btn" style="background:var(--color-brand-primary);color:white;padding:6px 14px;font-size:0.86rem;border-radius:6px;border:none;cursor:pointer;font-weight:600;">切換為「全部評論」並立即分析</button>
           `;
           const switchBtn = note.querySelector('.switch-all-btn');
           if (switchBtn) {
@@ -955,8 +1446,8 @@
           }
         } else {
           note.innerHTML = `
-            <p style="margin:0 0 4px 0;font-weight:600;color:#334155;">${payload.status === 'timeout' ? '⏱️ 分析請求逾時，請稍後重試。' : (payload.usage?.summary_error ? `⚠️ 分析暫不可用（${payload.usage.summary_error}）` : '📋 已保留評論證據，模型摘要目前不可用。')}</p>
-            <p style="margin:0;font-size:0.95rem;color:#64748b;">原有評論資料仍可完整查閱。</p>
+            <p style="margin:0 0 4px 0;font-weight:600;color:var(--color-slate-800);">${payload.status === 'timeout' ? '⏱️ 分析請求逾時，請稍後重試。' : (payload.usage?.summary_error ? `⚠️ 分析暫不可用（${payload.usage.summary_error}）` : '📋 已保留評論證據，模型摘要目前不可用。')}</p>
+            <p style="margin:0;font-size:0.85rem;color:var(--color-slate-500);">原有評論資料仍可完整查閱。</p>
           `;
         }
         output.appendChild(note);
@@ -976,7 +1467,7 @@
 
         const infoWindowContent = `
             <div class="custom-infowindow">
-                <strong>${escapeHtml(place.name || '未命名分店')}</strong><br>
+                <strong>${escapeHtml(place.name || '未命名分店')}</strong>
                 ⭐ ${escapeHtml(place.rating || 'N/A')} | 評論: ${escapeHtml(place.user_ratings_total || 0)}<br>
                 <a href="${safeHttpUrl(place.url)}" target="_blank" rel="noopener">在 Google 地圖上查看</a>${distanceInfo}
             </div>
@@ -1024,12 +1515,13 @@
         position: fixed;
         bottom: 20px;
         right: 20px;
-        background: #173b3f;
+        background: #0f766e;
         color: white;
         border: none;
-        padding: 12px 20px;
+        padding: 10px 18px;
         border-radius: 25px;
         font-size: 14px;
+        font-weight: 600;
         cursor: pointer;
         box-shadow: 0 4px 15px rgba(0,0,0,0.2);
         display: none;
