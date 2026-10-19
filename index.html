@@ -569,67 +569,94 @@
       word-break: break-word;
     }
 
-    /* Analysis Panel & Controls (Flattened - no nested box) */
-    .analysis-panel {
-      margin-top: 1.2rem;
-      padding-top: 1.1rem;
-      border-top: 1.5px solid var(--card-border-subtle);
-    }
-
-    .analysis-controls {
+    /* Card Reviews Preview */
+    .card-reviews-preview {
+      margin-top: 14px;
+      padding-top: 12px;
+      border-top: 1px solid var(--card-border-subtle);
+      flex: 1;
       display: flex;
       flex-direction: column;
-      gap: 10px;
+      gap: 8px;
     }
 
-    .analysis-field-row {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
-    }
-
-    .analysis-field {
+    .reviews-preview-header {
       display: flex;
-      flex-direction: column;
-      gap: 4px;
-      min-width: 0;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 2px;
     }
 
-    .analysis-field-label {
-      font-size: 0.9rem;
+    .preview-title {
+      font-size: 0.96rem;
       font-weight: 700;
+      color: var(--deep-blue);
+    }
+
+    .preview-count {
+      font-size: 0.85rem;
       color: var(--text-muted);
-      letter-spacing: 0.02em;
-    }
-
-    .analysis-field select {
-      width: 100%;
-      height: 44px;
-      font-size: 1rem;
       font-weight: 600;
-      font-family: var(--font-sans);
-      padding: 6px 10px;
-      border: 1.5px solid var(--input-border);
-      border-radius: var(--radius-sm);
-      background-color: var(--input-bg);
+    }
+
+    .preview-snippets {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .snippet-item {
+      font-size: 0.95rem;
+      line-height: 1.55;
+      color: var(--text);
+      padding: 6px 0;
+      border-bottom: 1px solid var(--card-border-subtle);
+    }
+
+    .snippet-item:last-child {
+      border-bottom: none;
+    }
+
+    .snippet-item.is-low {
+      border-left: 3px solid var(--clay);
+      padding-left: 8px;
+      background: rgba(169, 71, 29, 0.04);
+      border-radius: 0 4px 4px 0;
+    }
+
+    .snippet-author-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 6px;
+      margin-bottom: 2px;
+    }
+
+    .snippet-author {
+      font-size: 0.95rem;
+      font-weight: 700;
       color: var(--ink);
-      cursor: pointer;
-      outline: none;
-      transition: border-color 0.15s ease, box-shadow 0.15s ease;
     }
 
-    .analysis-field select:focus {
-      border-color: var(--deep-blue);
-      box-shadow: 0 0 0 3px rgba(23, 50, 77, 0.16);
+    .snippet-text {
+      font-size: 0.92rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
     }
 
-    .analysis-button {
+    /* Store Card Open Drawer Button */
+    .btn-open-analysis {
+      margin-top: 16px;
       width: 100%;
       height: 48px;
       background: var(--deep-blue);
       color: var(--warm-cream);
       font-family: var(--font-sans);
-      font-size: 1.08rem;
+      font-size: 1.05rem;
       font-weight: 700;
       border: 2px solid var(--deep-blue);
       border-radius: var(--radius-sm);
@@ -642,97 +669,287 @@
       box-shadow: 0 3px 8px rgba(23, 50, 77, 0.2);
     }
 
-    .analysis-button:hover {
+    .btn-open-analysis:hover {
       background: var(--primary);
       border-color: var(--deep-blue);
       color: var(--ink);
-      box-shadow: 0 4px 12px rgba(255, 176, 16, 0.4);
-    }
-    .analysis-button:active {
-      transform: scale(0.99);
-    }
-    .analysis-button:disabled {
-      opacity: 0.65;
-      cursor: wait;
-      transform: none;
+      box-shadow: 0 4px 14px rgba(255, 176, 16, 0.4);
+      transform: translateY(-1px);
     }
 
-    /* Analysis Output */
-    .analysis-output {
-      margin-top: 1.2rem;
-      padding-top: 1.1rem;
-      border-top: 2px dashed var(--card-border);
-      color: var(--ink);
-      font-size: 1.02rem;
-      line-height: 1.68;
+    .btn-open-analysis .btn-arrow {
+      font-size: 1.15rem;
+      transition: transform 0.18s ease;
     }
 
-    .analysis-output[hidden] { display: none; }
+    .btn-open-analysis:hover .btn-arrow {
+      transform: translateX(4px);
+    }
 
-    .analysis-title {
-      font-size: 1.2rem;
-      font-weight: 800;
-      color: var(--deep-blue);
-      margin-bottom: 0.6rem;
+    /* Slide-Over Analysis Drawer ("頁中頁" 側滑抽屜) */
+    .drawer-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(23, 50, 77, 0.48);
+      backdrop-filter: blur(5px);
+      -webkit-backdrop-filter: blur(5px);
+      z-index: 1040;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s ease;
+    }
+
+    .drawer-backdrop.is-open {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .analysis-drawer {
+      position: fixed;
+      top: 0;
+      right: 0;
+      width: min(720px, 94vw);
+      height: 100vh;
+      background: var(--card-bg);
+      border-left: 2px solid var(--card-border);
+      box-shadow: -8px 0 36px rgba(23, 50, 77, 0.25);
+      z-index: 1050;
+      display: flex;
+      flex-direction: column;
+      transform: translateX(100%);
+      transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .analysis-drawer.is-open {
+      transform: translateX(0);
+    }
+
+    .drawer-header {
+      padding: 20px 26px;
+      background: var(--canvas);
+      border-bottom: 2px solid var(--card-border);
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 16px;
+      flex-shrink: 0;
+    }
+
+    .drawer-header-left {
+      min-width: 0;
+    }
+
+    .drawer-badge-row {
       display: flex;
       align-items: center;
       gap: 8px;
+      margin-bottom: 8px;
+      flex-wrap: wrap;
     }
 
-    .analysis-meta {
+    .drawer-title {
+      font-size: 1.65rem;
+      font-weight: 800;
+      color: var(--deep-blue);
+      line-height: 1.25;
+      letter-spacing: -0.015em;
+      word-break: break-word;
+    }
+
+    .drawer-address {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.98rem;
+      color: var(--text-muted);
+      margin-top: 6px;
+    }
+
+    .drawer-address svg {
+      flex-shrink: 0;
+      color: var(--clay);
+    }
+
+    .drawer-address a {
+      color: var(--deep-blue);
+      font-weight: 700;
+      text-decoration: underline;
+      transition: color 0.15s ease;
+    }
+    .drawer-address a:hover {
+      color: var(--clay);
+    }
+
+    .drawer-close-btn {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: var(--card-bg);
+      border: 1.5px solid var(--card-border);
+      color: var(--deep-blue);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      transition: all 0.18s ease;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+    }
+
+    .drawer-close-btn:hover {
+      background: var(--primary);
+      border-color: var(--deep-blue);
+      color: var(--ink);
+      transform: scale(1.06);
+    }
+
+    .drawer-body {
+      flex: 1;
+      overflow-y: auto;
+      padding: 24px 28px 48px;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    .drawer-controls-bar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: flex-end;
+      gap: 14px;
+      padding-bottom: 18px;
+      border-bottom: 2px solid var(--card-border-subtle);
+    }
+
+    .drawer-controls-group {
+      display: flex;
+      flex: 1;
+      gap: 12px;
+      min-width: 280px;
+    }
+
+    .drawer-field {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .drawer-field-label {
+      font-size: 0.92rem;
+      font-weight: 700;
+      color: var(--text-muted);
+    }
+
+    .drawer-select {
+      height: 46px;
+      padding: 0 12px;
+      font-size: 1rem;
+      font-weight: 600;
+      font-family: var(--font-sans);
+      border: 1.5px solid var(--input-border);
+      border-radius: var(--radius-sm);
+      background: var(--input-bg);
+      color: var(--ink);
+      cursor: pointer;
+      outline: none;
+    }
+
+    .drawer-select:focus {
+      border-color: var(--deep-blue);
+      box-shadow: 0 0 0 3px rgba(23, 50, 77, 0.16);
+    }
+
+    .drawer-action-btn {
+      height: 46px;
+      padding: 0 24px;
+      background: var(--deep-blue);
+      color: var(--warm-cream);
+      font-family: var(--font-sans);
+      font-size: 1.05rem;
+      font-weight: 700;
+      border: 2px solid var(--deep-blue);
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.18s ease;
+      white-space: nowrap;
+      box-shadow: 0 3px 10px rgba(23, 50, 77, 0.2);
+    }
+
+    .drawer-action-btn:hover {
+      background: var(--primary);
+      border-color: var(--deep-blue);
+      color: var(--ink);
+      box-shadow: 0 4px 14px rgba(255, 176, 16, 0.4);
+    }
+
+    .drawer-action-btn:disabled {
+      opacity: 0.65;
+      cursor: wait;
+    }
+
+    .drawer-output {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .drawer-output-title {
+      font-size: 1.35rem;
+      font-weight: 800;
+      color: var(--deep-blue);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      letter-spacing: -0.01em;
+    }
+
+    .drawer-meta-bar {
       color: var(--text-muted);
       font-family: var(--font-mono);
-      font-size: 0.9rem;
-      line-height: 1.55;
-      margin: 0.6rem 0;
-      padding: 8px 12px;
-      background: rgba(255, 240, 204, 0.5);
-      border-left: 3px solid var(--primary);
+      font-size: 0.92rem;
+      line-height: 1.6;
+      padding: 10px 14px;
+      background: rgba(255, 240, 204, 0.55);
+      border-left: 3.5px solid var(--primary);
       border-radius: 4px;
       word-break: break-all;
     }
 
-    .analysis-observation {
-      margin: 0.9rem 0;
-      padding: 0.9rem 0;
+    .drawer-observation-card {
+      padding: 16px 0;
       border-bottom: 1.5px solid var(--card-border-subtle);
     }
 
-    .observation-header {
+    .drawer-observation-card:last-child {
+      border-bottom: none;
+    }
+
+    .drawer-observation-header {
       display: flex;
       align-items: flex-start;
-      gap: 8px;
-      margin-bottom: 6px;
+      gap: 10px;
+      margin-bottom: 8px;
     }
 
-    .category-badge {
-      font-family: var(--font-sans);
-      font-weight: 800;
-      font-size: 0.92rem;
-      padding: 3px 9px;
-      border-radius: 5px;
-      background: #eef5fb;
-      color: var(--deep-blue);
-      display: inline-block;
-      flex-shrink: 0;
-      border: 1px solid #bdd7ee;
-    }
-
-    .observation-finding {
-      font-size: 1.08rem;
+    .drawer-observation-finding {
+      font-size: 1.12rem;
       font-weight: 700;
       color: var(--ink);
-      line-height: 1.55;
+      line-height: 1.6;
     }
 
     .suggested-action-box {
-      margin-top: 9px;
+      margin-top: 10px;
       font-size: 1rem;
       color: #1e5c36;
       background: #edf7ef;
       border: 1.5px solid #b7e4c2;
       border-radius: var(--radius-sm);
-      padding: 9px 13px;
+      padding: 10px 14px;
       font-weight: 600;
       line-height: 1.55;
       display: flex;
@@ -740,7 +957,7 @@
       gap: 8px;
     }
 
-    /* Evidence Collapsible Details (Folding & Hover Preview) */
+    /* Evidence Collapsible Details */
     .evidence-details {
       margin-top: 10px;
     }
@@ -749,8 +966,8 @@
       display: inline-flex;
       align-items: center;
       gap: 6px;
-      padding: 5px 12px;
-      font-size: 0.92rem;
+      padding: 6px 14px;
+      font-size: 0.94rem;
       font-weight: 700;
       color: var(--deep-blue);
       background: var(--canvas);
@@ -784,20 +1001,20 @@
     }
 
     .evidence-list {
-      margin: 8px 0 4px;
-      padding: 8px 0 0 0;
+      margin: 10px 0 4px;
+      padding: 10px 0 0 0;
       border-top: 1px dashed var(--card-border-subtle);
       list-style: none;
       display: flex;
       flex-direction: column;
-      gap: 8px;
+      gap: 10px;
     }
 
     .evidence-item {
-      font-size: 0.95rem;
-      line-height: 1.62;
+      font-size: 0.98rem;
+      line-height: 1.65;
       color: var(--text);
-      padding: 6px 0;
+      padding: 8px 0;
       border-bottom: 1px solid var(--card-border-subtle);
     }
 
@@ -810,13 +1027,46 @@
       font-weight: 700;
       text-decoration: underline;
       font-family: var(--font-mono);
-      font-size: 0.9rem;
+      font-size: 0.92rem;
       margin-left: 6px;
       transition: color 0.15s ease;
     }
 
     .evidence-item a:hover {
       color: var(--clay);
+    }
+
+    .drawer-reviews-section {
+      margin-top: 18px;
+      border-top: 2px solid var(--card-border);
+      padding-top: 18px;
+    }
+
+    .drawer-section-heading {
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: var(--deep-blue);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 14px;
+    }
+
+    .drawer-review-item {
+      padding: 14px 0;
+      border-bottom: 1px solid var(--card-border-subtle);
+    }
+
+    .drawer-review-item:last-child {
+      border-bottom: none;
+    }
+
+    .drawer-review-item.is-low {
+      border-left: 3.5px solid var(--clay);
+      padding-left: 12px;
+      margin: 6px 0;
+      background: rgba(169, 71, 29, 0.04);
+      border-radius: 0 6px 6px 0;
     }
 
     /* Custom InfoWindow */
@@ -948,6 +1198,74 @@
       </div>
     </section>
   </main>
+
+  <!-- Slide-Over Analysis Drawer ("頁中頁" 側滑抽屜) -->
+  <div id="drawerBackdrop" class="drawer-backdrop" onclick="closeAnalysisDrawer()" hidden></div>
+  <aside id="analysisDrawer" class="analysis-drawer" role="dialog" aria-modal="true" aria-labelledby="drawerTitle" hidden>
+    <div class="drawer-header">
+      <div class="drawer-header-left">
+        <div class="drawer-badge-row">
+          <span id="drawerRating" class="rating-badge jetbrains-mono">⭐ —</span>
+          <span id="drawerReviewsCount" class="reviews-total-text jetbrains-mono">(0 則評論)</span>
+          <span id="drawerDistance" class="distance-badge jetbrains-mono" style="display:none;">📏 — km</span>
+        </div>
+        <h2 id="drawerTitle" class="drawer-title">分店名稱</h2>
+        <div class="drawer-address">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          <a id="drawerMapsLink" href="#" target="_blank" rel="noopener noreferrer">在 Google 地圖上查看 ↗</a>
+        </div>
+      </div>
+      <button type="button" class="drawer-close-btn" onclick="closeAnalysisDrawer()" aria-label="關閉分析面板">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+    </div>
+
+    <div class="drawer-body">
+      <!-- Controls Bar in Drawer -->
+      <div class="drawer-controls-bar">
+        <div class="drawer-controls-group">
+          <div class="drawer-field">
+            <label class="drawer-field-label">分析模式</label>
+            <select id="drawerAnalysisMode" class="drawer-select">
+              <option value="recent">近期評論</option>
+              <option value="low_rating">低分評論（3 星以下）</option>
+            </select>
+          </div>
+          <div class="drawer-field">
+            <label class="drawer-field-label">分析期間</label>
+            <select id="drawerAnalysisWindow" class="drawer-select">
+              <option value="3650" selected>全部評論（不限時間）</option>
+              <option value="90">近 90 天</option>
+              <option value="30">近 30 天</option>
+              <option value="180">近 180 天</option>
+              <option value="365">近 1 年</option>
+            </select>
+          </div>
+        </div>
+        <button type="button" id="drawerAnalyzeBtn" class="drawer-action-btn" onclick="triggerDrawerAnalysis()">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+          </svg>
+          <span>即時深度診斷</span>
+        </button>
+      </div>
+
+      <!-- Analysis Output in Drawer -->
+      <div id="drawerOutput" class="drawer-output"></div>
+
+      <!-- Full Reviews Section in Drawer -->
+      <div class="drawer-reviews-section">
+        <div class="drawer-section-heading">
+          <span>Google Maps 顧客評論摘錄</span>
+          <span id="drawerReviewsTabCount" class="jetbrains-mono" style="font-size:0.95rem;color:var(--text-muted);font-weight:600;">共 0 則</span>
+        </div>
+        <div id="drawerReviewsList"></div>
+      </div>
+    </div>
+  </aside>
 
   <script>
     let map, geocoder, placesService;
@@ -1167,43 +1485,58 @@
       });
     }
 
+    let currentDrawerPlace = null;
+    let drawerAbortController = null;
+    const ANALYSIS_API_BASE = window.STORE_PULSE_API_BASE || '';
+
+    function escapeHtml(value) {
+      return String(value ?? '').replace(/[&<>'"]/g, character => ({
+        '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;'
+      }[character]));
+    }
+
+    function safeHttpUrl(value) {
+      try {
+        const url = new URL(value || '', window.location.href);
+        return /^https?:$/.test(url.protocol) ? url.href : '#';
+      } catch (_) { return '#'; }
+    }
+
     function createCard(place) {
         const container = document.getElementById("restaurantCards");
         const card = document.createElement("div");
         card.className = "store-card";
+        card.dataset.placeId = place.place_id;
 
-        let reviewsHtml = '';
+        let reviewsSnippetHtml = '';
         if (place.reviews && place.reviews.length > 0) {
-            reviewsHtml = `
-              <div class="reviews-section">
-                <div class="reviews-header-bar">
-                  <span class="reviews-header-title">評論摘錄</span>
-                  <span class="reviews-header-count jetbrains-mono">共 ${place.reviews.length} 則</span>
+            const snippetReviews = place.reviews.slice(0, 2);
+            reviewsSnippetHtml = `
+              <div class="card-reviews-preview">
+                <div class="reviews-preview-header">
+                  <span class="preview-title">最新顧客回饋</span>
+                  <span class="preview-count jetbrains-mono">精選 ${snippetReviews.length}/${place.reviews.length} 則</span>
                 </div>
-                <ul class="reviews-list">
+                <div class="preview-snippets">
             `;
-            place.reviews.forEach(review => {
+            snippetReviews.forEach(review => {
                 const ratingNum = typeof review.rating === 'number' ? review.rating : null;
                 const isLow = ratingNum !== null && ratingNum <= 3;
-                const itemClass = isLow ? 'review-item is-low' : 'review-item';
                 const ratingPillClass = isLow ? 'rating-pill rating-pill-low' : 'rating-pill rating-pill-high';
                 const ratingLabel = ratingNum !== null ? `⭐ ${ratingNum}` : '⭐ —';
-                const timeLabel = escapeHtml(review.relative_time_description || '');
+                const previewText = review.text ? (review.text.length > 60 ? review.text.slice(0, 60) + '…' : review.text) : '（無文字評論）';
 
-                reviewsHtml += `
-                    <li class="${itemClass}">
-                        <div class="review-author-row">
-                          <span class="review-author">${escapeHtml(review.author_name || '匿名顧客')}</span>
-                          <div class="review-meta-group">
-                            ${timeLabel ? `<span class="review-time">${timeLabel}</span>` : ''}
-                            <span class="${ratingPillClass} jetbrains-mono">${ratingLabel}</span>
-                          </div>
+                reviewsSnippetHtml += `
+                    <div class="snippet-item ${isLow ? 'is-low' : ''}">
+                        <div class="snippet-author-row">
+                          <span class="snippet-author">${escapeHtml(review.author_name || '匿名顧客')}</span>
+                          <span class="${ratingPillClass} jetbrains-mono">${ratingLabel}</span>
                         </div>
-                        <div class="review-body">${escapeHtml(review.text || '')}</div>
-                    </li>
+                        <div class="snippet-text">${escapeHtml(previewText)}</div>
+                    </div>
                 `;
             });
-            reviewsHtml += '</ul></div>';
+            reviewsSnippetHtml += `</div></div>`;
         }
 
         const distanceBadge = typeof place.distanceFromUser === 'number'
@@ -1223,45 +1556,20 @@
                 <a href="${safeHttpUrl(place.url)}" target="_blank" rel="noopener noreferrer">${escapeHtml(place.vicinity || '地址未提供')} ↗</a>
               </div>
             </div>
-            ${reviewsHtml}
+            ${reviewsSnippetHtml}
+            <button type="button" class="btn-open-analysis">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+                <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+              </svg>
+              <span>查看門市營運深度診斷</span>
+              <span class="btn-arrow">➔</span>
+            </button>
         `;
 
-        const analysisPanel = document.createElement('section');
-        analysisPanel.className = 'analysis-panel';
-        analysisPanel.setAttribute('aria-label', '分店深度分析');
-        analysisPanel.innerHTML = `
-          <div class="analysis-controls">
-            <div class="analysis-field-row">
-              <div class="analysis-field">
-                <label class="analysis-field-label">分析模式</label>
-                <select aria-label="評論分析方式" class="analysis-mode">
-                  <option value="recent">近期評論</option>
-                  <option value="low_rating">低分評論（3 星以下）</option>
-                </select>
-              </div>
-              <div class="analysis-field">
-                <label class="analysis-field-label">分析期間</label>
-                <select aria-label="評論分析期間" class="analysis-window">
-                  <option value="3650" selected>全部評論（不限時間）</option>
-                  <option value="90">近 90 天</option>
-                  <option value="30">近 30 天</option>
-                  <option value="180">近 180 天</option>
-                  <option value="365">近 1 年</option>
-                </select>
-              </div>
-            </div>
-            <button type="button" class="analysis-button">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
-              <span>門市深度營運分析</span>
-            </button>
-          </div>
-          <div class="analysis-output" hidden></div>
-        `;
-        card.appendChild(analysisPanel);
-        const analysisButton = analysisPanel.querySelector('.analysis-button');
-        analysisButton.addEventListener('click', event => {
-          event.stopPropagation();
-          requestBranchAnalysis(place, analysisPanel);
+        const openBtn = card.querySelector('.btn-open-analysis');
+        openBtn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          openAnalysisDrawer(place);
         });
 
         card.onclick = () => {
@@ -1275,37 +1583,124 @@
         container.appendChild(card);
     }
 
-    let analysisGeneration = 0;
-    const ANALYSIS_API_BASE = window.STORE_PULSE_API_BASE || '';
-    const analysisControllers = new Set();
+    function openAnalysisDrawer(place) {
+      currentDrawerPlace = place;
 
-    function escapeHtml(value) {
-      return String(value ?? '').replace(/[&<>'"]/g, character => ({
-        '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;'
-      }[character]));
+      // Populate Drawer Header
+      document.getElementById('drawerTitle').textContent = place.name || '未命名分店';
+      document.getElementById('drawerRating').textContent = `⭐ ${place.rating || '—'}`;
+      document.getElementById('drawerReviewsCount').textContent = `(${place.user_ratings_total || 0} 則評論)`;
+      
+      const distEl = document.getElementById('drawerDistance');
+      if (typeof place.distanceFromUser === 'number') {
+        distEl.style.display = 'inline-flex';
+        distEl.textContent = `📏 ${(place.distanceFromUser / 1000).toFixed(1)} km`;
+      } else {
+        distEl.style.display = 'none';
+      }
+
+      const mapsLink = document.getElementById('drawerMapsLink');
+      mapsLink.href = safeHttpUrl(place.url);
+      mapsLink.textContent = `${place.vicinity || '地址未提供'} ↗`;
+
+      // Populate Original Reviews List in Drawer
+      const reviewsList = document.getElementById('drawerReviewsList');
+      reviewsList.replaceChildren();
+      const reviews = place.reviews || [];
+      document.getElementById('drawerReviewsTabCount').textContent = `共 ${reviews.length} 則`;
+
+      if (reviews.length > 0) {
+        reviews.forEach(review => {
+          const item = document.createElement('div');
+          const ratingNum = typeof review.rating === 'number' ? review.rating : null;
+          const isLow = ratingNum !== null && ratingNum <= 3;
+          item.className = isLow ? 'drawer-review-item is-low' : 'drawer-review-item';
+
+          const ratingPillClass = isLow ? 'rating-pill rating-pill-low' : 'rating-pill rating-pill-high';
+          const ratingLabel = ratingNum !== null ? `⭐ ${ratingNum}` : '⭐ —';
+          const timeLabel = escapeHtml(review.relative_time_description || '');
+
+          item.innerHTML = `
+            <div class="review-author-row">
+              <span class="review-author">${escapeHtml(review.author_name || '匿名顧客')}</span>
+              <div class="review-meta-group">
+                ${timeLabel ? `<span class="review-time">${timeLabel}</span>` : ''}
+                <span class="${ratingPillClass} jetbrains-mono">${ratingLabel}</span>
+              </div>
+            </div>
+            <div class="review-body">${escapeHtml(review.text || '')}</div>
+          `;
+          reviewsList.appendChild(item);
+        });
+      } else {
+        reviewsList.innerHTML = `<p style="color:var(--text-muted);font-size:0.95rem;">此店家暫無詳細評論文字紀錄。</p>`;
+      }
+
+      // Open Drawer with Transition
+      const backdrop = document.getElementById('drawerBackdrop');
+      const drawer = document.getElementById('analysisDrawer');
+      backdrop.hidden = false;
+      drawer.hidden = false;
+      requestAnimationFrame(() => {
+        backdrop.classList.add('is-open');
+        drawer.classList.add('is-open');
+      });
+      document.body.style.overflow = 'hidden';
+
+      // Highlight Card and Marker
+      const marker = markerMap.get(place.place_id);
+      if (marker) {
+        google.maps.event.trigger(marker, 'click');
+      }
+      document.querySelectorAll('.store-card').forEach(c => c.classList.remove('active'));
+      const activeCard = document.querySelector(`.store-card[data-place-id="${place.place_id}"]`);
+      if (activeCard) activeCard.classList.add('active');
+
+      // Auto trigger analysis
+      triggerDrawerAnalysis();
     }
 
-    function safeHttpUrl(value) {
-      try {
-        const url = new URL(value || '', window.location.href);
-        return /^https?:$/.test(url.protocol) ? url.href : '#';
-      } catch (_) { return '#'; }
+    function closeAnalysisDrawer() {
+      const backdrop = document.getElementById('drawerBackdrop');
+      const drawer = document.getElementById('analysisDrawer');
+      if (drawerAbortController) {
+        drawerAbortController.abort();
+        drawerAbortController = null;
+      }
+      backdrop.classList.remove('is-open');
+      drawer.classList.remove('is-open');
+      document.body.style.overflow = '';
+      setTimeout(() => {
+        backdrop.hidden = true;
+        drawer.hidden = true;
+      }, 280);
     }
 
-    function requestBranchAnalysis(place, panel) {
-      const button = panel.querySelector('.analysis-button');
-      const output = panel.querySelector('.analysis-output');
-      const mode = panel.querySelector('.analysis-mode').value;
-      const windowDays = Number(panel.querySelector('.analysis-window').value);
-      const generation = analysisGeneration;
-      const controller = new AbortController();
-      analysisControllers.add(controller);
-      button.disabled = true;
-      output.hidden = false;
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        closeAnalysisDrawer();
+      }
+    });
+
+    function triggerDrawerAnalysis() {
+      if (!currentDrawerPlace) return;
+      const mode = document.getElementById('drawerAnalysisMode').value;
+      const windowDays = Number(document.getElementById('drawerAnalysisWindow').value);
+      requestDrawerAnalysis(currentDrawerPlace, mode, windowDays);
+    }
+
+    function requestDrawerAnalysis(place, mode, windowDays) {
+      const btn = document.getElementById('drawerAnalyzeBtn');
+      const output = document.getElementById('drawerOutput');
+      if (drawerAbortController) {
+        drawerAbortController.abort();
+      }
+      drawerAbortController = new AbortController();
+      btn.disabled = true;
       output.innerHTML = `
-        <div style="display:flex;align-items:center;gap:10px;color:var(--deep-blue);font-size:1.05rem;font-weight:600;">
-          <span class="spinner" style="width:20px;height:20px;border-width:3px;margin:0;"></span>
-          <span>正在擷取評論並整理營運分析摘要…</span>
+        <div style="display:flex;align-items:center;gap:12px;color:var(--deep-blue);font-size:1.1rem;font-weight:700;padding:24px 0;">
+          <span class="spinner" style="width:24px;height:24px;border-width:3px;margin:0;"></span>
+          <span>正在進行門市營運深度診斷摘要…</span>
         </div>
       `;
 
@@ -1332,36 +1727,43 @@
             language: review.language
           }))
         }),
-        signal: controller.signal
+        signal: drawerAbortController.signal
       }).then(async response => {
         const payload = await response.json().catch(() => ({}));
         if (!response.ok) throw new Error(payload.message || payload.status || '分析服務暫時無法使用');
         return payload;
       }).then(payload => {
-        if (generation !== analysisGeneration || !panel.isConnected) return;
-        renderAnalysis(payload, panel);
+        renderDrawerAnalysis(payload);
       }).catch(error => {
-        if (generation !== analysisGeneration || !panel.isConnected) return;
-        output.textContent = !navigator.onLine || error instanceof TypeError
-          ? '目前離線，連線恢復後可重新分析。'
-          : `分析未完成：${error.message}。原有評論仍可查看。`;
+        if (error.name === 'AbortError') return;
+        output.innerHTML = `
+          <div style="padding:16px 20px;background:var(--clay-light);border:1.5px solid var(--clay-border);border-radius:var(--radius-sm);color:var(--clay);font-size:1rem;line-height:1.65;">
+            <strong>⚠️ 分析未完成：</strong>${escapeHtml(error.message)}。下方原有 Google Maps 評論仍可正常查閱。
+          </div>
+        `;
       }).finally(() => {
-        analysisControllers.delete(controller);
-        if (generation === analysisGeneration && panel.isConnected) button.disabled = false;
+        btn.disabled = false;
+        drawerAbortController = null;
       });
     }
 
-    function renderAnalysis(payload, panel) {
-      const output = panel.querySelector('.analysis-output');
+    function renderDrawerAnalysis(payload) {
+      const output = document.getElementById('drawerOutput');
       output.replaceChildren();
+
       const title = document.createElement('div');
-      title.className = 'analysis-title';
-      title.textContent = payload.status === 'success' ? '📊 門市營運分析報告' : (payload.status === 'insufficient_evidence' ? '⚠️ 目前設定區間無符合評論' : '📋 證據已取得，摘要暫不可用');
+      title.className = 'drawer-output-title';
+      title.innerHTML = `
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" style="color:var(--deep-blue);">
+          <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
+        </svg>
+        <span>${payload.status === 'success' ? '門市營運深度分析報告' : (payload.status === 'insufficient_evidence' ? '目前設定區間無符合評論' : '評論已取得，摘要暫不可用')}</span>
+      `;
       output.appendChild(title);
 
       const sampling = payload.sampling || {};
       const meta = document.createElement('div');
-      meta.className = 'analysis-meta';
+      meta.className = 'drawer-meta-bar';
       const excluded = sampling.excluded || {};
       const excludedCount = Object.values(excluded).reduce((sum, value) => sum + Number(value || 0), 0);
       const windowLabel = Number(sampling.window_days) >= 3650 ? '全部評論（不限時間）' : `近 ${sampling.window_days || '—'} 天`;
@@ -1379,10 +1781,10 @@
       const observations = payload.summary && Array.isArray(payload.summary.observations) ? payload.summary.observations : [];
       observations.forEach(observation => {
         const row = document.createElement('div');
-        row.className = 'analysis-observation';
+        row.className = 'drawer-observation-card';
 
         const headerDiv = document.createElement('div');
-        headerDiv.className = 'observation-header';
+        headerDiv.className = 'drawer-observation-header';
 
         const badge = document.createElement('span');
         badge.className = 'category-badge';
@@ -1390,7 +1792,7 @@
         headerDiv.appendChild(badge);
 
         const findingSpan = document.createElement('span');
-        findingSpan.className = 'observation-finding';
+        findingSpan.className = 'drawer-observation-finding';
         findingSpan.textContent = observation.finding;
         headerDiv.appendChild(findingSpan);
         row.appendChild(headerDiv);
@@ -1413,7 +1815,6 @@
           const detailsEl = document.createElement('details');
           detailsEl.className = 'evidence-details';
 
-          // Floating hover preview: show reviewer quotes directly in tooltip on hover
           const hoverText = matchedEvidences
             .map(e => `${e.author || '匿名顧客'} (${e.rating ? `⭐${e.rating}` : ''})：${e.text.length > 100 ? e.text.slice(0, 100) + '…' : e.text}`)
             .join('\n\n');
@@ -1468,8 +1869,8 @@
 
       (payload.signals || []).forEach(signal => {
         const note = document.createElement('div');
-        note.className = 'analysis-meta';
-        note.style.borderLeft = '3px solid var(--primary)';
+        note.className = 'drawer-meta-bar';
+        note.style.borderLeft = '3.5px solid var(--primary)';
         note.textContent = `⚠️ 樣本訊號：評論中出現行銷誘因關鍵字（${signal.evidence_ids?.length || 0} 則），可能影響評分中立性。`;
         output.appendChild(note);
       });
@@ -1487,16 +1888,15 @@
           if (switchBtn) {
             switchBtn.addEventListener('click', (e) => {
               e.stopPropagation();
-              const winSel = panel.querySelector('.analysis-window');
+              const winSel = document.getElementById('drawerAnalysisWindow');
               if (winSel) winSel.value = '3650';
-              const btn = panel.querySelector('.analysis-button');
-              if (btn) btn.click();
+              triggerDrawerAnalysis();
             });
           }
         } else {
           note.innerHTML = `
             <p style="margin:0 0 4px 0;font-weight:700;color:var(--ink);">${payload.status === 'timeout' ? '⏱️ 分析請求逾時，請稍後重試。' : (payload.usage?.summary_error ? `⚠️ 分析暫不可用（${payload.usage.summary_error}）` : '📋 已保留評論證據，模型摘要目前不可用。')}</p>
-            <p style="margin:0;font-size:0.98rem;color:var(--text-muted);">原有評論資料仍可完整查閱。</p>
+            <p style="margin:0;font-size:0.98rem;color:var(--text-muted);">下方原有評論資料仍可完整查閱。</p>
           `;
         }
         output.appendChild(note);
