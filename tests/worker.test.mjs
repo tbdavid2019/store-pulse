@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import worker from '../src/index.ts';
+import { parseModelObservations } from '../src/analysis.ts';
 import {
   parseGooglePlacesPayload,
   normalizeEvidence,
@@ -216,4 +217,19 @@ test('Worker Fetch Handler - /api/review-analysis execution and caching', async 
   assert.equal(res2.status, 200);
   const data2 = await res2.json();
   assert.equal(data2.cache.hit, true);
+});
+
+test('parseModelObservations - parses valid observations and filters invalid categories or unknown evidence', () => {
+  const evidence = [{ evidence_id: 'ev_123', text: '服務很好' }];
+  const raw = {
+    observations: [
+      { category: 'service', finding: '服務態度良好', evidence_ids: ['ev_123'], suggested_action: '保持' },
+      { category: 'unknown_cat', finding: '無效分類', evidence_ids: ['ev_123'] },
+      { category: 'price', finding: '無效證據ID', evidence_ids: ['ev_999'] },
+    ],
+  };
+  const result = parseModelObservations(raw, evidence, 'gemini-2.0-flash');
+  assert.equal(result.summary.observations.length, 1);
+  assert.equal(result.summary.observations[0].category, 'service');
+  assert.equal(result.summary.observations[0].finding, '服務態度良好');
 });
