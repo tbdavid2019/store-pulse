@@ -237,13 +237,19 @@ test('parseModelObservations - parses valid observations and filters invalid cat
 test('summarize - handles native env.AI binding', async () => {
   const mockAI = {
     async run(model, payload) {
-      assert.equal(model, '@cf/meta/llama-3.3-70b-instruct-fp8-fast');
+      assert.equal(model, '@cf/openai/gpt-oss-20b');
       return {
-        response: JSON.stringify({
-          observations: [
-            { category: 'service', finding: '店員親切熱情', evidence_ids: ['ev_1'] },
-          ],
-        }),
+        choices: [
+          {
+            message: {
+              content: JSON.stringify({
+                observations: [
+                  { category: 'service', finding: '店員親切熱情', evidence_ids: ['ev_1'] },
+                ],
+              }),
+            },
+          },
+        ],
       };
     },
   };
@@ -253,7 +259,7 @@ test('summarize - handles native env.AI binding', async () => {
   assert.ok(res.summary);
   assert.equal(res.summary.observations.length, 1);
   assert.equal(res.summary.observations[0].category, 'service');
-  assert.equal(res.usage.model, '@cf/meta/llama-3.3-70b-instruct-fp8-fast');
+  assert.equal(res.usage.model, '@cf/openai/gpt-oss-20b');
 });
 
 test('summarize - handles direct Cloudflare REST API fallback when env.AI is unavailable', async () => {

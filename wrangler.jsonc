@@ -20,10 +20,6 @@
     "STORE_PULSE_API_ORIGINS": "",
     "CLOUDFLARE_ACCOUNT_ID": "379570860738dd1757ba7f67ef2bdffe"
   },
-  // Note: Workers AI native edge binding on account 379570860738dd1757ba7f67ef2bdffe currently encounters
-  // Cloudflare internal error 10021 during version generation. The Worker automatically falls back to
-  // calling the active Cloudflare Workers AI REST API on DAVID江江江 when CLOUDFLARE_API_TOKEN is set.
-  // "ai": { "binding": "AI" },
   "observability": {
     "enabled": true
   }

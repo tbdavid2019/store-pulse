@@ -177,12 +177,14 @@ export async function summarize(
       await options.beforeRequest();
     }
 
-    // Modern candidate models on Cloudflare Workers AI (Meta Llama 4 Scout, Llama 3.3, Qwen 2.5)
+    // Primary stable model: OpenAI GPT-OSS-20B (@cf/openai/gpt-oss-20b)
     const candidateModels = modelName
       ? [modelName]
-      : env.AI
-      ? ['@cf/meta/llama-3.3-70b-instruct-fp8-fast', '@cf/meta/llama-4-scout-17b-16e-instruct']
-      : ['@cf/meta/llama-4-scout-17b-16e-instruct', '@cf/meta/llama-3.3-70b-instruct-fp8-fast', '@cf/qwen/qwen2.5-72b-instruct'];
+      : [
+          '@cf/openai/gpt-oss-20b',
+          '@cf/meta/llama-3.3-70b-instruct-fp8-fast',
+          '@cf/meta/llama-4-scout-17b-16e-instruct',
+        ];
 
     let lastError: any = null;
 
@@ -228,9 +230,7 @@ export async function summarize(
                     content: `請分析以下評論並依照指定 schema 回傳 JSON：\n${JSON.stringify(prompt)}`,
                   },
                 ],
-                response_format: { type: 'json_object' },
                 max_tokens: 2048,
-                temperature: 0.1,
               }),
               signal: controller.signal,
             });
@@ -240,14 +240,24 @@ export async function summarize(
               throw new SummaryError(`cf_ai_http_${res.status}_${errBody.slice(0, 80)}`);
             }
             const resJson = (await res.json()) as any;
-            raw = resJson.result?.response ?? resJson.result ?? resJson;
+            raw =
+              resJson.result?.response ??
+              resJson.result?.choices?.[0]?.message?.content ??
+              resJson.choices?.[0]?.message?.content ??
+              resJson.result ??
+              resJson;
           } finally {
             clearTimeout(timer);
           }
         }
 
-        if (raw && typeof raw === 'object' && 'response' in (raw as Record<string, any>)) {
-          raw = (raw as Record<string, any>).response;
+        if (raw && typeof raw === 'object') {
+          const rawObj = raw as Record<string, any>;
+          if (rawObj.choices?.[0]?.message?.content) {
+            raw = rawObj.choices[0].message.content;
+          } else if ('response' in rawObj) {
+            raw = rawObj.response;
+          }
         }
 
         return parseModelObservations(raw, evidence, aiModel);
@@ -342,6 +352,13 @@ export function parseModelObservations(raw: unknown, evidence: EvidenceItem[], m
 
   if (!parsed) {
     throw new SummaryError('model_invalid_response');
+  }
+
+  if (typeof parsed === 'object' && parsed !== null) {
+    const root = parsed as Record<string, any>;
+    if (root.choices?.[0]?.message?.content) {
+      return parseModelObservations(root.choices[0].message.content, evidence, modelIdentifier);
+    }
   }
 
   // Support direct array or nested observations in any standard LLM format
