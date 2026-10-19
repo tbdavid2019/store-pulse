@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import worker from '../src/index.ts';
-import { parseModelObservations } from '../src/analysis.ts';
+import { parseModelObservations, summarize } from '../src/analysis.ts';
 import {
   parseGooglePlacesPayload,
   normalizeEvidence,
@@ -232,4 +232,57 @@ test('parseModelObservations - parses valid observations and filters invalid cat
   assert.equal(result.summary.observations.length, 1);
   assert.equal(result.summary.observations[0].category, 'service');
   assert.equal(result.summary.observations[0].finding, '服務態度良好');
+});
+
+test('summarize - handles native env.AI binding', async () => {
+  const mockAI = {
+    async run(model, payload) {
+      assert.equal(model, '@cf/meta/llama-3.3-70b-instruct-fp8-fast');
+      return {
+        response: JSON.stringify({
+          observations: [
+            { category: 'service', finding: '店員親切熱情', evidence_ids: ['ev_1'] },
+          ],
+        }),
+      };
+    },
+  };
+
+  const evidence = [{ evidence_id: 'ev_1', text: '服務很好', author: 'Test' }];
+  const res = await summarize(evidence, { AI: mockAI });
+  assert.ok(res.summary);
+  assert.equal(res.summary.observations.length, 1);
+  assert.equal(res.summary.observations[0].category, 'service');
+  assert.equal(res.usage.model, '@cf/meta/llama-3.3-70b-instruct-fp8-fast');
+});
+
+test('summarize - handles direct Cloudflare REST API fallback when env.AI is unavailable', async () => {
+  const originalFetch = globalThis.fetch;
+  try {
+    globalThis.fetch = async (url, init) => {
+      assert.ok(url.includes('/accounts/379570860738dd1757ba7f67ef2bdffe/ai/run/'));
+      assert.equal(init.headers['Authorization'], 'Bearer cf_test_token');
+      return new Response(JSON.stringify({
+        result: {
+          response: JSON.stringify({
+            observations: [
+              { category: 'product_quality', finding: '咖啡品質極佳', evidence_ids: ['ev_2'] },
+            ],
+          }),
+        },
+      }), { status: 200, headers: { 'Content-Type': 'application/json' } });
+    };
+
+    const evidence = [{ evidence_id: 'ev_2', text: '咖啡濃郁香醇', author: 'Tester' }];
+    const res = await summarize(evidence, {
+      CLOUDFLARE_ACCOUNT_ID: '379570860738dd1757ba7f67ef2bdffe',
+      CLOUDFLARE_API_TOKEN: 'cf_test_token',
+    });
+
+    assert.ok(res.summary);
+    assert.equal(res.summary.observations.length, 1);
+    assert.equal(res.summary.observations[0].category, 'product_quality');
+  } finally {
+    globalThis.fetch = originalFetch;
+  }
 });

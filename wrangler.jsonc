@@ -1,7 +1,7 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "store-pulse",
-  "account_id": "aa3bf2b79b8bbdbf05b4e289bd7c4d91",
+  "account_id": "379570860738dd1757ba7f67ef2bdffe",
   "workers_dev": true,
   "main": "src/index.ts",
   "compatibility_date": "2026-03-01",
@@ -17,11 +17,13 @@
     "STORE_PULSE_EMPTY_CACHE_TTL_SECONDS": "600",
     "STORE_PULSE_CLIENT_RATE_LIMIT": "5",
     "STORE_PULSE_DAILY_MODEL_BUDGET": "100",
-    "STORE_PULSE_API_ORIGINS": ""
+    "STORE_PULSE_API_ORIGINS": "",
+    "CLOUDFLARE_ACCOUNT_ID": "379570860738dd1757ba7f67ef2bdffe"
   },
-  "ai": {
-    "binding": "AI"
-  },
+  // Note: Workers AI native edge binding on account 379570860738dd1757ba7f67ef2bdffe currently encounters
+  // Cloudflare internal error 10021 during version generation. The Worker automatically falls back to
+  // calling the active Cloudflare Workers AI REST API on DAVID江江江 when CLOUDFLARE_API_TOKEN is set.
+  // "ai": { "binding": "AI" },
   "observability": {
     "enabled": true
   }

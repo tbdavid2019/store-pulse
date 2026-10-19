@@ -12,6 +12,8 @@ export interface Env {
   MODEL_API_URL?: string;
   MODEL_API_KEY?: string;
   MODEL_NAME?: string;
+  CLOUDFLARE_ACCOUNT_ID?: string;
+  CLOUDFLARE_API_TOKEN?: string;
 }
 
 export type AnalysisMode = 'recent' | 'low_rating';
