@@ -29,8 +29,10 @@
   
   <!-- Fonts: JetBrains Mono & Noto Sans TC / Gen Jyuu Gothic & Outfit -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;600;700;800&family=Outfit:wght@600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- Icons: Lucide -->
+  <script src="https://unpkg.com/lucide@latest"></script>
 
   <style>
     @font-face {
@@ -390,7 +392,7 @@
     .rating-badge {
       display: inline-flex;
       align-items: center;
-      gap: 5px;
+      gap: 6px;
       font-family: var(--font-mono);
       font-weight: 700;
       font-size: 1.05rem;
@@ -399,6 +401,11 @@
       border: 1.5px solid var(--primary);
       border-radius: var(--radius-sm);
       padding: 3px 10px;
+    }
+
+    .rating-badge svg {
+      color: #d97706;
+      flex-shrink: 0;
     }
 
     .reviews-total-text {
@@ -411,15 +418,20 @@
     .distance-badge {
       display: inline-flex;
       align-items: center;
-      gap: 4px;
+      gap: 5px;
       font-family: var(--font-mono);
       font-size: 0.95rem;
       color: var(--deep-blue);
-      background: #eef5fb;
-      border: 1.5px solid #bdd7ee;
+      background: rgba(23, 50, 77, 0.08);
+      border: 1.5px solid rgba(23, 50, 77, 0.22);
       border-radius: var(--radius-sm);
       padding: 3px 10px;
       font-weight: 700;
+    }
+
+    .distance-badge svg {
+      color: var(--deep-blue);
+      flex-shrink: 0;
     }
 
     .store-address {
@@ -547,6 +559,9 @@
       border-radius: 6px;
       line-height: 1.35;
       white-space: nowrap;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
     }
 
     .rating-pill-high {
@@ -555,10 +570,20 @@
       border: 1px solid var(--primary);
     }
 
+    .rating-pill-high svg {
+      color: #d97706;
+      flex-shrink: 0;
+    }
+
     .rating-pill-low {
       color: var(--clay);
       background: #fde8e1;
       border: 1px solid var(--clay-border);
+    }
+
+    .rating-pill-low svg {
+      color: var(--clay);
+      flex-shrink: 0;
     }
 
     .review-body {
@@ -618,10 +643,10 @@
     }
 
     .snippet-item.is-low {
-      border-left: 3px solid var(--clay);
-      padding-left: 8px;
-      background: rgba(169, 71, 29, 0.04);
-      border-radius: 0 4px 4px 0;
+      border: 1px solid var(--clay-border);
+      padding: 8px 10px;
+      background: var(--clay-light);
+      border-radius: var(--radius-sm);
     }
 
     .snippet-author-row {
@@ -913,10 +938,31 @@
       font-size: 0.92rem;
       line-height: 1.6;
       padding: 10px 14px;
-      background: rgba(255, 240, 204, 0.55);
-      border-left: 3.5px solid var(--primary);
-      border-radius: 4px;
+      background: rgba(255, 240, 204, 0.65);
+      border: 1px solid var(--card-border-subtle);
+      border-radius: var(--radius-sm);
       word-break: break-all;
+    }
+
+    .drawer-signal-bar {
+      color: var(--clay);
+      font-family: var(--font-sans);
+      font-size: 0.96rem;
+      font-weight: 600;
+      line-height: 1.6;
+      padding: 10px 14px;
+      background: var(--clay-light);
+      border: 1px solid var(--clay-border);
+      border-radius: var(--radius-sm);
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+    }
+
+    .drawer-signal-bar svg {
+      color: var(--clay);
+      flex-shrink: 0;
+      margin-top: 2px;
     }
 
     .drawer-observation-card {
@@ -931,8 +977,30 @@
     .drawer-observation-header {
       display: flex;
       align-items: flex-start;
-      gap: 10px;
+      gap: 12px;
       margin-bottom: 8px;
+    }
+
+    .category-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px;
+      background: var(--deep-blue);
+      color: var(--warm-cream);
+      font-family: var(--font-sans);
+      font-size: 0.88rem;
+      font-weight: 700;
+      border-radius: var(--radius-sm);
+      letter-spacing: 0.02em;
+      white-space: nowrap;
+      flex-shrink: 0;
+      box-shadow: 0 1px 3px rgba(23, 50, 77, 0.15);
+    }
+
+    .category-badge svg {
+      color: var(--saffron);
+      flex-shrink: 0;
     }
 
     .drawer-observation-finding {
@@ -943,18 +1011,31 @@
     }
 
     .suggested-action-box {
-      margin-top: 10px;
+      margin-top: 12px;
       font-size: 1rem;
-      color: #1e5c36;
-      background: #edf7ef;
-      border: 1.5px solid #b7e4c2;
+      color: var(--ink);
+      background: #fbf5e2;
+      border: 1.5px solid var(--card-border);
       border-radius: var(--radius-sm);
-      padding: 10px 14px;
+      padding: 12px 16px;
       font-weight: 600;
-      line-height: 1.55;
+      line-height: 1.6;
       display: flex;
       align-items: flex-start;
-      gap: 8px;
+      gap: 10px;
+      box-shadow: 0 1px 4px rgba(150, 98, 0, 0.06);
+    }
+
+    .suggested-action-box .action-icon {
+      color: var(--deep-blue);
+      flex-shrink: 0;
+      margin-top: 3px;
+      display: inline-flex;
+    }
+
+    .suggested-action-box strong {
+      color: var(--deep-blue);
+      font-weight: 700;
     }
 
     /* Evidence Collapsible Details */
@@ -965,13 +1046,13 @@
     .evidence-summary {
       display: inline-flex;
       align-items: center;
-      gap: 6px;
-      padding: 6px 14px;
+      gap: 8px;
+      padding: 7px 14px;
       font-size: 0.94rem;
       font-weight: 700;
       color: var(--deep-blue);
-      background: var(--canvas);
-      border: 1px solid var(--card-border);
+      background: var(--card-bg);
+      border: 1.5px solid var(--card-border);
       border-radius: var(--radius-sm);
       cursor: pointer;
       user-select: none;
@@ -989,11 +1070,18 @@
       color: var(--ink);
     }
 
+    .evidence-summary svg {
+      color: var(--deep-blue);
+      flex-shrink: 0;
+    }
+
     .evidence-toggle-arrow {
       font-size: 0.8rem;
       transition: transform 0.2s ease;
-      display: inline-block;
+      display: inline-flex;
+      align-items: center;
       margin-left: 2px;
+      color: var(--text-muted);
     }
 
     .evidence-details[open] .evidence-toggle-arrow {
@@ -1022,18 +1110,25 @@
       border-bottom: none;
     }
 
-    .evidence-item a {
+    .evidence-source-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
       color: var(--deep-blue);
       font-weight: 700;
       text-decoration: underline;
       font-family: var(--font-mono);
-      font-size: 0.92rem;
-      margin-left: 6px;
+      font-size: 0.9rem;
+      margin-left: 8px;
       transition: color 0.15s ease;
     }
 
-    .evidence-item a:hover {
+    .evidence-source-link:hover {
       color: var(--clay);
+    }
+
+    .evidence-source-link svg {
+      flex-shrink: 0;
     }
 
     .drawer-reviews-section {
@@ -1062,11 +1157,11 @@
     }
 
     .drawer-review-item.is-low {
-      border-left: 3.5px solid var(--clay);
-      padding-left: 12px;
-      margin: 6px 0;
-      background: rgba(169, 71, 29, 0.04);
-      border-radius: 0 6px 6px 0;
+      border: 1px solid var(--clay-border);
+      padding: 12px 14px;
+      margin: 8px 0;
+      background: var(--clay-light);
+      border-radius: var(--radius-sm);
     }
 
     /* Custom InfoWindow */
@@ -1205,14 +1300,14 @@
     <div class="drawer-header">
       <div class="drawer-header-left">
         <div class="drawer-badge-row">
-          <span id="drawerRating" class="rating-badge jetbrains-mono">⭐ —</span>
-          <span id="drawerReviewsCount" class="reviews-total-text jetbrains-mono">(0 則評論)</span>
-          <span id="drawerDistance" class="distance-badge jetbrains-mono" style="display:none;">📏 — km</span>
+          <span id="drawerRating" class="rating-badge jetbrains-mono"></span>
+          <span id="drawerReviewsCount" class="reviews-total-text jetbrains-mono"></span>
+          <span id="drawerDistance" class="distance-badge jetbrains-mono" style="display:none;"></span>
         </div>
         <h2 id="drawerTitle" class="drawer-title">分店名稱</h2>
         <div class="drawer-address">
-          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
-          <a id="drawerMapsLink" href="#" target="_blank" rel="noopener noreferrer">在 Google 地圖上查看 ↗</a>
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          <a id="drawerMapsLink" href="#" target="_blank" rel="noopener noreferrer">在 Google 地圖上查看</a>
         </div>
       </div>
       <button type="button" class="drawer-close-btn" onclick="closeAnalysisDrawer()" aria-label="關閉分析面板">
@@ -1268,6 +1363,33 @@
   </aside>
 
   <script>
+    const LUCIDE_ICONS = {
+      'users': '<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>',
+      'clock': '<circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>',
+      'utensils': '<path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2M7 2v20m14-7V2a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2zm0 0v7"/>',
+      'sparkles': '<path d="m12 3-1.9 5.8a2 2 0 0 1-1.3 1.3L3 12l5.8 1.9a2 2 0 0 1 1.3 1.3L12 21l1.9-5.8a2 2 0 0 1 1.3-1.3L21 12l-5.8-1.9a2 2 0 0 1-1.3-1.3L12 3z"/><path d="M5 3v4M3 5h4M19 17v4M17 19h4"/>',
+      'coins': '<circle cx="8" cy="8" r="6"/><path d="M18.09 10.37A6 6 0 1 1 10.34 18"/><path d="m7 6 5 5"/>',
+      'lightbulb': '<path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5"/><path d="M9 18h6"/><path d="M10 22h4"/>',
+      'quote': '<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/><path d="M8 12a2 2 0 0 0 2-2V8H8"/><path d="M14 12a2 2 0 0 0 2-2V8h-2"/>',
+      'star': '<polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>',
+      'star-fill': '<polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" fill="currentColor"/>',
+      'navigation': '<polygon points="3 11 22 2 13 21 11 13 3 11"/>',
+      'map-pin': '<path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0z"/><circle cx="12" cy="10" r="3"/>',
+      'activity': '<path d="M22 12h-4l-3 9L9 3l-3 9H2"/>',
+      'alert-triangle': '<path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>',
+      'x': '<line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>',
+      'chevron-down': '<polyline points="6 9 12 15 18 9"/>',
+      'external-link': '<path d="M15 3h6v6"/><path d="M10 14 21 3"/><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>',
+      'arrow-right': '<line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/>',
+      'smartphone': '<rect width="14" height="20" x="5" y="2" rx="2" ry="2"/><line x1="12" x2="12.01" y1="18" y2="18"/>',
+      'info': '<circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/>'
+    };
+
+    function lucideSvg(name, size = 18, extraClass = '', strokeWidth = 2.2) {
+      const content = LUCIDE_ICONS[name] || LUCIDE_ICONS['info'];
+      return `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="${strokeWidth}" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon ${extraClass}" aria-hidden="true">${content}</svg>`;
+    }
+
     let map, geocoder, placesService;
     const markers = [];
     const markerMap = new Map();
@@ -1359,8 +1481,13 @@
       banner.innerHTML = `
         <div style="background:var(--clay-light);border:1.5px solid var(--clay-border);border-radius:12px;padding:16px 18px;color:var(--clay);font-size:15px;line-height:1.65;margin-bottom:18px;">
           <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
-            <strong style="font-size:16px;color:var(--clay);font-weight:800;">⚠️ Google Maps 地圖載入失敗（HTTP 參照位址限制）</strong>
-            <button onclick="document.getElementById('mapNotice').style.display='none'" style="background:transparent;border:none;color:var(--clay);cursor:pointer;font-size:18px;font-weight:700;">✕</button>
+            <strong style="font-size:16px;color:var(--clay);font-weight:800;display:inline-flex;align-items:center;gap:8px;">
+              ${lucideSvg('alert-triangle', 20)}
+              <span>Google Maps 地圖載入失敗（HTTP 參照位址限制）</span>
+            </strong>
+            <button onclick="document.getElementById('mapNotice').style.display='none'" style="background:transparent;border:none;color:var(--clay);cursor:pointer;display:inline-flex;align-items:center;" aria-label="關閉通知">
+              ${lucideSvg('x', 20)}
+            </button>
           </div>
           <p style="margin:6px 0;">${customMsg || '目前 Google Maps API Key 啟用了網域白名單限制，目前的網址尚未列入授權清單。'}</p>
           <div style="background:#fff;border:1px dashed var(--clay);padding:10px 14px;border-radius:8px;margin:10px 0;font-family:var(--font-mono);font-size:14px;word-break:break-all;color:var(--ink);">
@@ -1523,7 +1650,7 @@
                 const ratingNum = typeof review.rating === 'number' ? review.rating : null;
                 const isLow = ratingNum !== null && ratingNum <= 3;
                 const ratingPillClass = isLow ? 'rating-pill rating-pill-low' : 'rating-pill rating-pill-high';
-                const ratingLabel = ratingNum !== null ? `⭐ ${ratingNum}` : '⭐ —';
+                const ratingLabel = ratingNum !== null ? `${lucideSvg('star-fill', 12)} <span>${ratingNum}</span>` : `${lucideSvg('star', 12)} <span>—</span>`;
                 const previewText = review.text ? (review.text.length > 60 ? review.text.slice(0, 60) + '…' : review.text) : '（無文字評論）';
 
                 reviewsSnippetHtml += `
@@ -1540,29 +1667,31 @@
         }
 
         const distanceBadge = typeof place.distanceFromUser === 'number'
-            ? `<span class="distance-badge jetbrains-mono">📏 ${(place.distanceFromUser / 1000).toFixed(1)} km</span>`
+            ? `<span class="distance-badge jetbrains-mono">${lucideSvg('navigation', 13)} <span>${(place.distanceFromUser / 1000).toFixed(1)} km</span></span>`
             : '';
+
+        const ratingBadge = place.rating
+            ? `<span class="rating-badge jetbrains-mono">${lucideSvg('star-fill', 14)} <span>${place.rating}</span></span>`
+            : `<span class="rating-badge jetbrains-mono">${lucideSvg('star', 14)} <span>—</span></span>`;
 
         card.innerHTML = `
             <div class="store-header">
               <h3 class="store-title">${escapeHtml(place.name || '未命名分店')}</h3>
               <div class="store-meta-row">
-                <span class="rating-badge jetbrains-mono">⭐ ${place.rating || '—'}</span>
+                ${ratingBadge}
                 <span class="reviews-total-text jetbrains-mono">(${place.user_ratings_total || 0} 則評論)</span>
                 ${distanceBadge}
               </div>
               <div class="store-address">
-                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
-                <a href="${safeHttpUrl(place.url)}" target="_blank" rel="noopener noreferrer">${escapeHtml(place.vicinity || '地址未提供')} ↗</a>
+                ${lucideSvg('map-pin', 16)}
+                <a href="${safeHttpUrl(place.url)}" target="_blank" rel="noopener noreferrer">${escapeHtml(place.vicinity || '地址未提供')}</a>
               </div>
             </div>
             ${reviewsSnippetHtml}
             <button type="button" class="btn-open-analysis">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
-                <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
-              </svg>
+              ${lucideSvg('activity', 18)}
               <span>查看門市營運深度診斷</span>
-              <span class="btn-arrow">➔</span>
+              ${lucideSvg('arrow-right', 16, 'btn-arrow')}
             </button>
         `;
 
@@ -1588,13 +1717,18 @@
 
       // Populate Drawer Header
       document.getElementById('drawerTitle').textContent = place.name || '未命名分店';
-      document.getElementById('drawerRating').textContent = `⭐ ${place.rating || '—'}`;
+      const drawerRatingEl = document.getElementById('drawerRating');
+      if (place.rating) {
+        drawerRatingEl.innerHTML = `${lucideSvg('star-fill', 15)} <span>${place.rating}</span>`;
+      } else {
+        drawerRatingEl.innerHTML = `${lucideSvg('star', 15)} <span>—</span>`;
+      }
       document.getElementById('drawerReviewsCount').textContent = `(${place.user_ratings_total || 0} 則評論)`;
       
       const distEl = document.getElementById('drawerDistance');
       if (typeof place.distanceFromUser === 'number') {
         distEl.style.display = 'inline-flex';
-        distEl.textContent = `📏 ${(place.distanceFromUser / 1000).toFixed(1)} km`;
+        distEl.innerHTML = `${lucideSvg('navigation', 14)} <span>${(place.distanceFromUser / 1000).toFixed(1)} km</span>`;
       } else {
         distEl.style.display = 'none';
       }
@@ -1617,7 +1751,7 @@
           item.className = isLow ? 'drawer-review-item is-low' : 'drawer-review-item';
 
           const ratingPillClass = isLow ? 'rating-pill rating-pill-low' : 'rating-pill rating-pill-high';
-          const ratingLabel = ratingNum !== null ? `⭐ ${ratingNum}` : '⭐ —';
+          const ratingLabel = ratingNum !== null ? `${lucideSvg('star-fill', 12)} <span>${ratingNum}</span>` : `${lucideSvg('star', 12)} <span>—</span>`;
           const timeLabel = escapeHtml(review.relative_time_description || '');
 
           item.innerHTML = `
@@ -1737,8 +1871,9 @@
       }).catch(error => {
         if (error.name === 'AbortError') return;
         output.innerHTML = `
-          <div style="padding:16px 20px;background:var(--clay-light);border:1.5px solid var(--clay-border);border-radius:var(--radius-sm);color:var(--clay);font-size:1rem;line-height:1.65;">
-            <strong>⚠️ 分析未完成：</strong>${escapeHtml(error.message)}。下方原有 Google Maps 評論仍可正常查閱。
+          <div style="padding:16px 20px;background:var(--clay-light);border:1px solid var(--clay-border);border-radius:var(--radius-sm);color:var(--clay);font-size:1rem;line-height:1.65;display:flex;align-items:flex-start;gap:10px;">
+            <span style="flex-shrink:0;margin-top:2px;">${lucideSvg('alert-triangle', 20)}</span>
+            <span><strong>分析未完成：</strong>${escapeHtml(error.message)}。下方原有 Google Maps 評論仍可正常查閱。</span>
           </div>
         `;
       }).finally(() => {
@@ -1754,9 +1889,7 @@
       const title = document.createElement('div');
       title.className = 'drawer-output-title';
       title.innerHTML = `
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" style="color:var(--deep-blue);">
-          <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
-        </svg>
+        ${lucideSvg('activity', 22, 'drawer-title-icon')}
         <span>${payload.status === 'success' ? '門市營運深度分析報告' : (payload.status === 'insufficient_evidence' ? '目前設定區間無符合評論' : '評論已取得，摘要暫不可用')}</span>
       `;
       output.appendChild(title);
@@ -1770,12 +1903,12 @@
       meta.textContent = `樣本：使用 ${sampling.used || 0} / 符合 ${sampling.eligible || 0} / 擷取 ${sampling.fetched || 0} 則 | 排除 ${excludedCount} 則 | ${sampling.mode === 'low_rating' ? '低分評論' : '近期評論'} | ${windowLabel}${sampling.truncated ? ' | 上限' : ''}${payload.cache?.hit ? ' | 快取' : ''}`;
       output.appendChild(meta);
 
-      const categoryNames = {
-        service: '💁 服務態度',
-        wait_time: '⏱️ 出餐速度',
-        product_quality: '🍔 餐點品質',
-        environment: '🌿 環境整潔',
-        price: '💰 性價比'
+      const categoryMeta = {
+        service: { icon: 'users', label: '服務態度' },
+        wait_time: { icon: 'clock', label: '出餐速度' },
+        product_quality: { icon: 'utensils', label: '餐點品質' },
+        environment: { icon: 'sparkles', label: '環境整潔' },
+        price: { icon: 'coins', label: '性價比' }
       };
 
       const observations = payload.summary && Array.isArray(payload.summary.observations) ? payload.summary.observations : [];
@@ -1788,7 +1921,8 @@
 
         const badge = document.createElement('span');
         badge.className = 'category-badge';
-        badge.textContent = categoryNames[observation.category] || observation.category;
+        const metaInfo = categoryMeta[observation.category] || { icon: 'info', label: observation.category };
+        badge.innerHTML = `${lucideSvg(metaInfo.icon, 15)} <span>${escapeHtml(metaInfo.label)}</span>`;
         headerDiv.appendChild(badge);
 
         const findingSpan = document.createElement('span');
@@ -1801,7 +1935,7 @@
           const actionDiv = document.createElement('div');
           actionDiv.className = 'suggested-action-box';
           actionDiv.innerHTML = `
-            <span style="flex-shrink:0;">💡</span>
+            <span class="action-icon">${lucideSvg('lightbulb', 18)}</span>
             <span><strong>改善建議：</strong>${escapeHtml(observation.suggested_action)}</span>
           `;
           row.appendChild(actionDiv);
@@ -1816,15 +1950,20 @@
           detailsEl.className = 'evidence-details';
 
           const hoverText = matchedEvidences
-            .map(e => `${e.author || '匿名顧客'} (${e.rating ? `⭐${e.rating}` : ''})：${e.text.length > 100 ? e.text.slice(0, 100) + '…' : e.text}`)
+            .map(e => `${e.author || '匿名顧客'} (${e.rating ? `評分 ${e.rating}` : ''})：${e.text.length > 100 ? e.text.slice(0, 100) + '…' : e.text}`)
             .join('\n\n');
 
           const summaryEl = document.createElement('summary');
           summaryEl.className = 'evidence-summary';
           summaryEl.title = hoverText;
           summaryEl.innerHTML = `
-            <span>💬 查閱佐證評論 (${matchedEvidences.length} 則)</span>
-            <span class="evidence-toggle-arrow">▾</span>
+            <span style="display:inline-flex;align-items:center;gap:7px;">
+              ${lucideSvg('quote', 15)}
+              <span>查閱佐證評論 (${matchedEvidences.length} 則)</span>
+            </span>
+            <span class="evidence-toggle-arrow">
+              ${lucideSvg('chevron-down', 15)}
+            </span>
           `;
           detailsEl.appendChild(summaryEl);
 
@@ -1840,12 +1979,12 @@
             authorText.textContent = `${evidence.author || '匿名顧客'} `;
             item.appendChild(authorText);
 
-            const metaText = document.createElement('span');
-            metaText.className = 'jetbrains-mono';
-            metaText.style.fontSize = '0.92rem';
-            metaText.style.color = '#92400e';
-            metaText.textContent = `(⭐ ${evidence.rating ?? '—'}) `;
-            item.appendChild(metaText);
+            const ratingPill = document.createElement('span');
+            ratingPill.className = 'rating-pill rating-pill-high jetbrains-mono';
+            ratingPill.style.fontSize = '0.86rem';
+            ratingPill.style.margin = '0 6px';
+            ratingPill.innerHTML = `${lucideSvg('star-fill', 11)} <span>${evidence.rating ?? '—'}</span>`;
+            item.appendChild(ratingPill);
 
             item.appendChild(document.createTextNode(`${excerpt}：${evidence.text} `));
 
@@ -1855,7 +1994,8 @@
               source.href = sourceUrl;
               source.target = '_blank';
               source.rel = 'noopener noreferrer';
-              source.textContent = evidence.source_url_kind === 'review' ? '↗ 查閱評論' : '↗ 查閱店家';
+              source.className = 'evidence-source-link';
+              source.innerHTML = `${lucideSvg('external-link', 13)} <span>${evidence.source_url_kind === 'review' ? '查閱評論' : '查閱店家'}</span>`;
               item.appendChild(source);
             }
             evidenceList.appendChild(item);
@@ -1869,9 +2009,11 @@
 
       (payload.signals || []).forEach(signal => {
         const note = document.createElement('div');
-        note.className = 'drawer-meta-bar';
-        note.style.borderLeft = '3.5px solid var(--primary)';
-        note.textContent = `⚠️ 樣本訊號：評論中出現行銷誘因關鍵字（${signal.evidence_ids?.length || 0} 則），可能影響評分中立性。`;
+        note.className = 'drawer-signal-bar';
+        note.innerHTML = `
+          ${lucideSvg('alert-triangle', 18)}
+          <span>樣本訊號：評論中出現行銷誘因關鍵字（${signal.evidence_ids?.length || 0} 則），可能影響評分中立性。</span>
+        `;
         output.appendChild(note);
       });
 
@@ -1880,9 +2022,14 @@
         note.style.marginTop = '0.8rem';
         if (payload.status === 'insufficient_evidence') {
           note.innerHTML = `
-            <p style="margin:0 0 6px 0;color:var(--clay);font-weight:700;font-size:1.08rem;">⚠️ 設定時間內符合條件之評論數為 0。</p>
-            <p style="margin:0 0 10px 0;font-size:1rem;color:var(--text-muted);line-height:1.6;">Google Places API 每次預設僅提供 5 則精選評論。若評論發表時間較久，請直接切換為「全部評論」。</p>
-            <button type="button" class="switch-all-btn" style="background:var(--deep-blue);color:var(--warm-cream);padding:8px 18px;font-size:1rem;border-radius:8px;border:none;cursor:pointer;font-weight:700;">切換為「全部評論」並立即分析</button>
+            <div style="background:var(--clay-light);border:1px solid var(--clay-border);border-radius:var(--radius-sm);padding:16px 18px;margin-bottom:14px;">
+              <p style="margin:0 0 6px 0;color:var(--clay);font-weight:700;font-size:1.08rem;display:flex;align-items:center;gap:8px;">
+                ${lucideSvg('alert-triangle', 20)}
+                <span>設定時間內符合條件之評論數為 0</span>
+              </p>
+              <p style="margin:0 0 12px 0;font-size:1rem;color:var(--text-muted);line-height:1.6;">Google Places API 每次預設僅提供 5 則精選評論。若評論發表時間較久，請直接切換為「全部評論」。</p>
+              <button type="button" class="switch-all-btn" style="background:var(--deep-blue);color:var(--warm-cream);padding:8px 18px;font-size:1rem;border-radius:var(--radius-sm);border:none;cursor:pointer;font-weight:700;">切換為「全部評論」並立即分析</button>
+            </div>
           `;
           const switchBtn = note.querySelector('.switch-all-btn');
           if (switchBtn) {
@@ -1894,9 +2041,18 @@
             });
           }
         } else {
+          const isTimeout = payload.status === 'timeout';
+          const errMsg = payload.usage?.summary_error;
+          const statusIcon = isTimeout ? 'clock' : (errMsg ? 'alert-triangle' : 'info');
+          const statusText = isTimeout ? '分析請求逾時，請稍後重試。' : (errMsg ? `分析暫不可用（${errMsg}）` : '已保留評論證據，模型摘要目前不可用。');
           note.innerHTML = `
-            <p style="margin:0 0 4px 0;font-weight:700;color:var(--ink);">${payload.status === 'timeout' ? '⏱️ 分析請求逾時，請稍後重試。' : (payload.usage?.summary_error ? `⚠️ 分析暫不可用（${payload.usage.summary_error}）` : '📋 已保留評論證據，模型摘要目前不可用。')}</p>
-            <p style="margin:0;font-size:0.98rem;color:var(--text-muted);">下方原有評論資料仍可完整查閱。</p>
+            <div style="background:var(--card-bg);border:1px solid var(--card-border);border-radius:var(--radius-sm);padding:16px 18px;">
+              <p style="margin:0 0 4px 0;font-weight:700;color:var(--ink);display:flex;align-items:center;gap:8px;">
+                ${lucideSvg(statusIcon, 18)}
+                <span>${statusText}</span>
+              </p>
+              <p style="margin:0;font-size:0.98rem;color:var(--text-muted);">下方原有評論資料仍可完整查閱。</p>
+            </div>
           `;
         }
         output.appendChild(note);
@@ -1917,7 +2073,7 @@
         const infoWindowContent = `
             <div class="custom-infowindow">
                 <strong>${escapeHtml(place.name || '未命名分店')}</strong>
-                ⭐ ${escapeHtml(place.rating || 'N/A')} | 評論: ${escapeHtml(place.user_ratings_total || 0)}<br>
+                評分: ${escapeHtml(place.rating || 'N/A')} | 評論: ${escapeHtml(place.user_ratings_total || 0)}<br>
                 <a href="${safeHttpUrl(place.url)}" target="_blank" rel="noopener">在 Google 地圖上查看</a>${distanceInfo}
             </div>
         `;
@@ -1959,7 +2115,7 @@
     // 添加安裝提示
     let deferredPrompt;
     const installButton = document.createElement('button');
-    installButton.textContent = '📱 安裝 App';
+    installButton.innerHTML = `${lucideSvg('smartphone', 16)} <span>安裝 App</span>`;
     installButton.style.cssText = `
         position: fixed;
         bottom: 20px;
@@ -1967,13 +2123,15 @@
         background: var(--deep-blue);
         color: var(--warm-cream);
         border: 2px solid var(--saffron);
-        padding: 12px 22px;
+        padding: 10px 20px;
         border-radius: 25px;
         font-size: 15px;
         font-weight: 700;
         cursor: pointer;
         box-shadow: 0 6px 18px rgba(23, 50, 77, 0.35);
         display: none;
+        align-items: center;
+        gap: 8px;
         z-index: 1000;
         font-family: inherit;
     `;
@@ -1981,7 +2139,7 @@
     window.addEventListener('beforeinstallprompt', (e) => {
         e.preventDefault();
         deferredPrompt = e;
-        installButton.style.display = 'block';
+        installButton.style.display = 'inline-flex';
         document.body.appendChild(installButton);
     });
 
