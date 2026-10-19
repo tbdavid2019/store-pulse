@@ -3,12 +3,12 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="搜尋與比較連鎖店面的 Google Maps 評價，快速掌握各分店顧客回饋與營運洞察">
+  <meta name="description" content="搜尋與比較連鎖店面的 Google Maps 評價，快速掌握各分店顧客回饋與營運深度洞察">
   <title>Store Pulse 店面脈搏 - 多店面評價速查與營運深度分析</title>
   
   <!-- PWA 支援 -->
   <link rel="manifest" href="manifest.json">
-  <meta name="theme-color" content="#0f766e">
+  <meta name="theme-color" content="#17324d">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Store Pulse">
@@ -24,13 +24,13 @@
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://store-pulse.oobwei.workers.dev">
   <meta property="og:title" content="Store Pulse 店面脈搏">
-  <meta property="og:description" content="搜尋與比較連鎖店面的 Google Maps 評價，快速掌握各分店顧客回饋與營運洞察">
+  <meta property="og:description" content="搜尋與比較連鎖店面的 Google Maps 評價，快速掌握各分店顧客回饋與營運深度洞察">
   <meta property="og:image" content="icons/icon-512x512.png">
   
-  <!-- Fonts: JetBrains Mono & Noto Sans TC / Gen Jyuu Gothic -->
+  <!-- Fonts: JetBrains Mono & Noto Sans TC / Gen Jyuu Gothic & Outfit -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,400..700;1,400..700&family=Noto+Sans+TC:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;600;700;800&family=Outfit:wght@600;700;800&display=swap" rel="stylesheet">
 
   <style>
     @font-face {
@@ -43,51 +43,39 @@
     }
 
     :root {
+      /* 2md.aiurl.tw Editorial Palette */
+      --saffron: #ffb010;
+      --saffron-hover: #f2a600;
+      --saffron-light: #fff0cc;
+      --deep-blue: #17324d;
+      --deep-blue-hover: #0f2337;
+      --clay: #a9471d;
+      --clay-light: #fef0eb;
+      --clay-border: #f8c2b0;
+      --warm-cream: #fff9e8;
+      --ink: #2b251a;
+      --canvas: #fff0cc;
+      
+      --primary: var(--saffron);
+      --primary-hover: var(--saffron-hover);
+      --primary-light: var(--saffron-light);
+      --link: var(--deep-blue);
+      --bg: var(--canvas);
+      --card-bg: var(--warm-cream);
+      --card-border: #ddc58b;
+      --card-border-subtle: #ebd9af;
+      --text: var(--ink);
+      --text-muted: #655a43;
+      --input-bg: #fffefa;
+      --input-border: #6b5b38;
+      
+      --radius-sm: 8px;
+      --radius: 16px;
+      --radius-lg: 20px;
+      
       --font-sans: "Gen Jyuu Gothic", "源柔黑體", "Noto Sans TC", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
       --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-      
-      --color-brand-primary: #0f766e;
-      --color-brand-hover: #115e59;
-      --color-brand-light: #f0fdfa;
-      --color-brand-border: #99f6e4;
-      
-      --color-slate-900: #0f172a;
-      --color-slate-800: #1e293b;
-      --color-slate-700: #334155;
-      --color-slate-600: #475569;
-      --color-slate-500: #64748b;
-      --color-slate-400: #94a3b8;
-      --color-slate-300: #cbd5e1;
-      --color-slate-200: #e2e8f0;
-      --color-slate-100: #f1f5f9;
-      --color-slate-50: #f8fafc;
-
-      --color-amber-700: #b45309;
-      --color-amber-600: #d97706;
-      --color-amber-100: #fef3c7;
-      --color-amber-50: #fffbeb;
-      --color-amber-border: #fde68a;
-
-      --color-rose-700: #be123c;
-      --color-rose-600: #e11d48;
-      --color-rose-100: #fee2e2;
-      --color-rose-50: #fff7f7;
-      --color-rose-border: #fecdd3;
-
-      --color-emerald-700: #047857;
-      --color-emerald-600: #059669;
-      --color-emerald-100: #d1fae5;
-      --color-emerald-50: #ecfdf5;
-      --color-emerald-border: #a7f3d0;
-
-      --radius-sm: 6px;
-      --radius-md: 10px;
-      --radius-lg: 14px;
-      --radius-xl: 18px;
-
-      --shadow-sm: 0 1px 2px 0 rgba(15, 23, 42, 0.05);
-      --shadow-md: 0 4px 6px -1px rgba(15, 23, 42, 0.06), 0 2px 4px -2px rgba(15, 23, 42, 0.04);
-      --shadow-lg: 0 10px 15px -3px rgba(15, 23, 42, 0.07), 0 4px 6px -4px rgba(15, 23, 42, 0.03);
+      --font-display: "Outfit", var(--font-sans);
     }
 
     .jetbrains-mono {
@@ -104,284 +92,266 @@
     }
 
     ::selection {
-      background: #ccfbf1;
-      color: #0f766e;
+      background: var(--saffron);
+      color: var(--deep-blue);
     }
 
     ::-webkit-scrollbar {
-      width: 6px;
-      height: 6px;
+      width: 8px;
+      height: 8px;
     }
     ::-webkit-scrollbar-track {
-      background: var(--color-slate-100);
-      border-radius: 3px;
+      background: var(--canvas);
     }
     ::-webkit-scrollbar-thumb {
-      background: var(--color-slate-300);
-      border-radius: 3px;
+      background: var(--card-border);
+      border-radius: 4px;
     }
     ::-webkit-scrollbar-thumb:hover {
-      background: var(--color-slate-400);
+      background: var(--text-muted);
     }
 
     body {
       font-family: var(--font-sans);
-      font-size: 16px;
-      line-height: 1.6;
-      background: #f1f5f9;
-      color: var(--color-slate-800);
+      font-size: 18px;
+      line-height: 1.7;
+      background: var(--bg);
+      color: var(--text);
       -webkit-font-smoothing: antialiased;
       -moz-osx-font-smoothing: grayscale;
-      padding-bottom: 3rem;
+      padding-bottom: 5rem;
     }
 
-    /* Hero Header */
+    /* Header: 2md.aiurl.tw brand presentation */
     header.hero-header {
-      background: linear-gradient(135deg, #091e22 0%, #0f3638 50%, #164e63 100%);
-      color: white;
-      padding: 2.2rem 2.4rem;
-      margin: 2rem auto 0;
-      width: 92%;
-      max-width: 1140px;
-      border-radius: var(--radius-xl);
-      box-shadow: 0 12px 30px rgba(9, 30, 34, 0.25);
-      border: 1px solid rgba(255, 255, 255, 0.08);
       position: relative;
-      overflow: hidden;
+      isolation: isolate;
+      background: var(--primary);
+      border-bottom: 2px solid var(--text);
+      padding: 24px 0 26px;
+      box-shadow: 0 4px 16px rgba(150, 98, 0, 0.15);
     }
 
-    .hero-content {
+    .header-inner {
+      width: min(1160px, calc(100% - 32px));
+      margin: 0 auto;
       display: flex;
       align-items: center;
       justify-content: space-between;
       flex-wrap: wrap;
-      gap: 1.25rem;
+      gap: 16px;
     }
 
-    .hero-brand {
+    .brand-row {
       display: flex;
       align-items: center;
-      gap: 1rem;
+      gap: 16px;
     }
 
-    .hero-icon {
-      display: inline-flex;
+    .brand-logo {
+      font-family: var(--font-display);
+      font-weight: 800;
+      display: flex;
+      flex-direction: column;
       align-items: center;
       justify-content: center;
-      width: 48px;
-      height: 48px;
-      background: rgba(255, 255, 255, 0.12);
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      border-radius: 12px;
-      color: #5eead4;
+      gap: 1px;
+      min-width: 86px;
+      min-height: 66px;
+      padding: 6px 12px;
+      border-radius: 10px;
+      background: var(--primary);
+      border: 2.5px solid var(--deep-blue);
+      color: var(--ink);
+      letter-spacing: -0.025em;
+      line-height: 1;
+      box-shadow: 0 3px 8px rgba(0, 0, 0, 0.12);
       flex-shrink: 0;
     }
 
-    .hero-title-group h1 {
-      font-size: 1.85rem;
-      font-weight: 700;
-      color: #ffffff;
+    .logo-main {
+      font-size: 1.8rem;
+      font-weight: 800;
+    }
+
+    .logo-sub {
+      font-size: 0.74rem;
+      font-weight: 800;
+      letter-spacing: 0.05em;
+    }
+
+    .brand-text h1 {
+      font-size: 2.2rem;
+      font-weight: 800;
+      color: var(--deep-blue);
       letter-spacing: -0.02em;
-      line-height: 1.2;
+      line-height: 1.22;
     }
 
-    .hero-title-group p {
-      font-size: 0.98rem;
-      color: #cbd5e1;
+    .brand-text p {
+      font-size: 1.05rem;
+      color: var(--ink);
       margin-top: 4px;
-      font-weight: 400;
-    }
-
-    .hero-badges {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .hero-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      padding: 6px 12px;
-      background: rgba(15, 118, 110, 0.35);
-      border: 1px solid rgba(94, 234, 212, 0.3);
-      color: #5eead4;
-      border-radius: 20px;
-      font-size: 0.82rem;
       font-weight: 600;
-      letter-spacing: 0.02em;
+      letter-spacing: 0.01em;
     }
 
-    /* Main Container */
-    .container {
-      background: #ffffff;
-      margin: 1.5rem auto 0;
-      padding: 2rem 2.2rem;
-      width: 92%;
-      max-width: 1140px;
-      border-radius: var(--radius-xl);
-      box-shadow: 0 4px 20px rgba(15, 23, 42, 0.05);
-      border: 1px solid var(--color-slate-200);
+    /* Main Layout (Flattened - no outer card wrapper) */
+    main.main-layout {
+      width: min(1160px, calc(100% - 32px));
+      margin: 28px auto 0;
+      padding: 0;
     }
 
-    /* Controls Bar */
-    #controls {
+    /* Search Bar Panel */
+    .search-panel {
+      margin-bottom: 22px;
+    }
+
+    .search-form {
       display: flex;
       flex-wrap: wrap;
-      gap: 0.75rem;
-      margin-bottom: 1.25rem;
+      gap: 12px;
       align-items: center;
     }
 
     .search-input-wrapper {
       flex: 1;
-      min-width: 240px;
+      min-width: 280px;
       position: relative;
     }
 
     .search-input-wrapper input {
       width: 100%;
-      height: 48px;
-      padding: 0 16px 0 44px;
+      height: 54px;
+      padding: 0 20px 0 54px;
       font-family: var(--font-sans);
-      font-size: 1rem;
-      color: var(--color-slate-900);
-      background: #ffffff;
-      border: 1.5px solid var(--color-slate-300);
-      border-radius: var(--radius-md);
+      font-size: 1.15rem;
+      font-weight: 500;
+      color: var(--text);
+      background: var(--input-bg);
+      border: 2px solid var(--input-border);
+      border-radius: var(--radius-sm);
       outline: none;
-      transition: all 0.2s ease;
+      transition: border-color 0.18s ease, box-shadow 0.18s ease;
+      box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.05);
     }
 
     .search-input-wrapper input:focus {
-      border-color: var(--color-brand-primary);
-      box-shadow: 0 0 0 3px rgba(15, 118, 110, 0.15);
+      border-color: var(--deep-blue);
+      box-shadow: 0 0 0 3.5px rgba(23, 50, 77, 0.18);
+    }
+
+    .search-input-wrapper input::placeholder {
+      color: var(--text-muted);
+      opacity: 0.95;
     }
 
     .search-icon-hint {
       position: absolute;
-      left: 14px;
+      left: 18px;
       top: 50%;
       transform: translateY(-50%);
-      color: var(--color-slate-400);
+      color: var(--text-muted);
       pointer-events: none;
       display: flex;
       align-items: center;
     }
 
     .btn-search {
-      height: 48px;
-      padding: 0 24px;
-      background: var(--color-brand-primary);
-      color: #ffffff;
+      height: 54px;
+      padding: 0 32px;
+      background: var(--deep-blue);
+      color: var(--warm-cream);
       font-family: var(--font-sans);
-      font-size: 1rem;
-      font-weight: 600;
-      border: none;
-      border-radius: var(--radius-md);
+      font-size: 1.15rem;
+      font-weight: 700;
+      border: 2px solid var(--deep-blue);
+      border-radius: var(--radius-sm);
       cursor: pointer;
       display: inline-flex;
       align-items: center;
-      gap: 8px;
-      transition: background-color 0.15s ease, transform 0.1s ease, box-shadow 0.15s ease;
-      box-shadow: 0 1px 3px rgba(15, 118, 110, 0.25);
+      gap: 10px;
+      transition: all 0.18s ease;
+      box-shadow: 0 4px 12px rgba(23, 50, 77, 0.25);
       white-space: nowrap;
     }
 
     .btn-search:hover {
-      background: var(--color-brand-hover);
-      box-shadow: 0 4px 8px rgba(15, 118, 110, 0.3);
+      background: var(--primary);
+      border-color: var(--deep-blue);
+      color: var(--ink);
+      box-shadow: 0 6px 16px rgba(255, 176, 16, 0.4);
+      transform: translateY(-1px);
     }
+
     .btn-search:active {
       transform: scale(0.98);
     }
 
-    .btn-config {
-      height: 48px;
-      padding: 0 16px;
-      background: var(--color-slate-100);
-      color: var(--color-slate-700);
-      font-family: var(--font-sans);
-      font-size: 0.92rem;
-      font-weight: 600;
-      border: 1.5px solid var(--color-slate-300);
-      border-radius: var(--radius-md);
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      transition: all 0.15s ease;
-      white-space: nowrap;
-    }
-
-    .btn-config:hover {
-      background: var(--color-slate-200);
-      border-color: var(--color-slate-400);
-      color: var(--color-slate-900);
-    }
-
-    /* Map */
+    /* Google Map */
     #map {
-      height: 400px;
-      margin-top: 1rem;
-      border-radius: var(--radius-lg);
-      border: 1px solid var(--color-slate-200);
-      box-shadow: var(--shadow-sm);
+      height: 420px;
+      border-radius: var(--radius);
+      border: 2px solid var(--card-border);
+      box-shadow: 0 4px 16px rgba(79, 58, 14, 0.08);
+      margin-bottom: 30px;
+      background: var(--card-bg);
     }
 
     /* Results Header */
     #results {
-      margin-top: 2.2rem;
+      margin-top: 10px;
     }
 
     .results-heading-row {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      margin-bottom: 1.2rem;
-      border-bottom: 2px solid var(--color-slate-100);
-      padding-bottom: 0.8rem;
+      margin-bottom: 1.4rem;
+      border-bottom: 2px solid var(--card-border);
+      padding-bottom: 0.9rem;
     }
 
     .results-heading-row h2 {
-      font-size: 1.35rem;
-      font-weight: 700;
-      color: var(--color-slate-900);
+      font-size: 1.65rem;
+      font-weight: 800;
+      color: var(--deep-blue);
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 10px;
+      letter-spacing: -0.01em;
     }
 
     .results-count-label {
       font-family: var(--font-mono);
-      font-size: 0.88rem;
-      color: var(--color-slate-500);
-      font-weight: 500;
+      font-size: 1.02rem;
+      color: var(--text-muted);
+      font-weight: 600;
     }
 
-    /* Card Grid */
-    .card-container {
+    /* Store Grid & Cards */
+    .store-grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      gap: 1.4rem;
-      margin-top: 1rem;
+      gap: 22px;
+      margin-top: 1.2rem;
     }
 
-    @media (max-width: 1024px) {
-      .card-container { grid-template-columns: repeat(2, 1fr); }
+    @media (max-width: 1060px) {
+      .store-grid { grid-template-columns: repeat(2, 1fr); }
     }
-    @media (max-width: 680px) {
-      .card-container { grid-template-columns: 1fr; }
+    @media (max-width: 720px) {
+      .store-grid { grid-template-columns: 1fr; }
     }
 
-    /* Store Card */
-    .card {
-      background: #ffffff;
-      border-radius: var(--radius-lg);
-      padding: 1.35rem;
-      box-shadow: var(--shadow-sm);
-      border: 1px solid var(--color-slate-200);
-      transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+    .store-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius);
+      padding: 22px;
+      box-shadow: 0 6px 20px rgba(79, 58, 14, 0.08);
+      transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
       cursor: pointer;
       display: flex;
       flex-direction: column;
@@ -389,53 +359,53 @@
       min-width: 0;
     }
 
-    .card:hover, .card.active {
+    .store-card:hover, .store-card.active {
       transform: translateY(-3px);
-      box-shadow: var(--shadow-lg);
-      border-color: var(--color-slate-400);
+      box-shadow: 0 12px 28px rgba(23, 50, 77, 0.16);
+      border-color: var(--deep-blue);
     }
 
-    .card-header {
-      margin-bottom: 0.9rem;
+    .store-header {
+      margin-bottom: 1rem;
     }
 
-    .card-title {
-      font-size: 1.15rem;
-      font-weight: 700;
-      color: var(--color-slate-900);
-      margin-bottom: 0.5rem;
+    .store-title {
+      font-size: 1.4rem;
+      font-weight: 800;
+      color: var(--deep-blue);
+      margin-bottom: 0.6rem;
       line-height: 1.35;
-      letter-spacing: -0.01em;
+      letter-spacing: -0.015em;
       word-break: break-word;
     }
 
-    .card-meta-row {
+    .store-meta-row {
       display: flex;
       align-items: center;
       flex-wrap: wrap;
       gap: 8px;
-      margin-bottom: 0.5rem;
+      margin-bottom: 0.6rem;
     }
 
     .rating-badge {
       display: inline-flex;
       align-items: center;
-      gap: 4px;
+      gap: 5px;
       font-family: var(--font-mono);
-      font-weight: 600;
-      font-size: 0.88rem;
-      color: var(--color-amber-700);
-      background: var(--color-amber-100);
-      border: 1px solid var(--color-amber-border);
-      border-radius: 6px;
-      padding: 2px 8px;
+      font-weight: 700;
+      font-size: 1.05rem;
+      color: #92400e;
+      background: var(--primary-light);
+      border: 1.5px solid var(--primary);
+      border-radius: var(--radius-sm);
+      padding: 3px 10px;
     }
 
     .reviews-total-text {
       font-family: var(--font-mono);
-      font-size: 0.82rem;
-      color: var(--color-slate-500);
-      font-weight: 500;
+      font-size: 0.98rem;
+      color: var(--text-muted);
+      font-weight: 600;
     }
 
     .distance-badge {
@@ -443,47 +413,47 @@
       align-items: center;
       gap: 4px;
       font-family: var(--font-mono);
-      font-size: 0.8rem;
-      color: var(--color-brand-primary);
-      background: var(--color-brand-light);
-      border: 1px solid var(--color-brand-border);
-      border-radius: 6px;
-      padding: 2px 8px;
-      font-weight: 600;
+      font-size: 0.95rem;
+      color: var(--deep-blue);
+      background: #eef5fb;
+      border: 1.5px solid #bdd7ee;
+      border-radius: var(--radius-sm);
+      padding: 3px 10px;
+      font-weight: 700;
     }
 
-    .card-address {
+    .store-address {
       display: flex;
       align-items: flex-start;
-      gap: 6px;
-      font-size: 0.86rem;
-      color: var(--color-slate-600);
-      line-height: 1.45;
-      margin-top: 4px;
+      gap: 7px;
+      font-size: 1rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+      margin-top: 6px;
     }
 
-    .card-address svg {
+    .store-address svg {
       flex-shrink: 0;
-      margin-top: 2px;
-      color: var(--color-slate-400);
+      margin-top: 3px;
+      color: var(--clay);
     }
 
-    .card-address a {
-      color: var(--color-slate-700);
-      text-decoration: none;
+    .store-address a {
+      color: var(--deep-blue);
+      font-weight: 700;
+      text-decoration: underline;
       word-break: break-all;
       transition: color 0.15s ease;
     }
-    .card-address a:hover {
-      color: var(--color-brand-primary);
-      text-decoration: underline;
+    .store-address a:hover {
+      color: var(--clay);
     }
 
-    /* Reviews Section */
+    /* Reviews Section (Flattened - no nested card borders) */
     .reviews-section {
-      margin-top: 1rem;
-      border-top: 1px solid var(--color-slate-100);
-      padding-top: 0.9rem;
+      margin-top: 1.1rem;
+      border-top: 1.5px solid var(--card-border-subtle);
+      padding-top: 1rem;
       flex: 1;
     }
 
@@ -491,49 +461,52 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      margin-bottom: 0.65rem;
+      margin-bottom: 0.8rem;
     }
 
     .reviews-header-title {
-      font-size: 0.88rem;
-      font-weight: 700;
-      color: var(--color-slate-700);
-      text-transform: uppercase;
-      letter-spacing: 0.03em;
+      font-size: 1.1rem;
+      font-weight: 800;
+      color: var(--deep-blue);
+      letter-spacing: 0.02em;
     }
 
     .reviews-header-count {
       font-family: var(--font-mono);
-      font-size: 0.78rem;
-      color: var(--color-slate-400);
+      font-size: 0.92rem;
+      color: var(--text-muted);
+      font-weight: 600;
     }
 
     .reviews-list {
       list-style: none;
       padding: 0;
       margin: 0;
-      max-height: 330px;
+      max-height: 380px;
       overflow-y: auto;
-      padding-right: 4px;
+      padding-right: 5px;
       display: flex;
       flex-direction: column;
-      gap: 8px;
     }
 
     .review-item {
-      font-size: 0.88rem;
-      line-height: 1.58;
-      padding: 10px 12px;
-      border-radius: var(--radius-sm);
-      background: var(--color-slate-50);
-      border: 1px solid var(--color-slate-200);
-      color: var(--color-slate-700);
-      transition: background 0.15s ease, border-color 0.15s ease;
+      font-size: 1.05rem;
+      line-height: 1.7;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--card-border-subtle);
+      color: var(--text);
+    }
+
+    .review-item:last-child {
+      border-bottom: none;
     }
 
     .review-item.is-low {
-      background: #fff7f7;
-      border: 1px solid var(--color-rose-border);
+      border-left: 3.5px solid var(--clay);
+      padding-left: 12px;
+      margin: 4px 0;
+      background: rgba(169, 71, 29, 0.05);
+      border-radius: 0 6px 6px 0;
     }
 
     .review-author-row {
@@ -545,9 +518,9 @@
     }
 
     .review-author {
-      font-size: 0.88rem;
-      font-weight: 600;
-      color: var(--color-slate-900);
+      font-size: 1.08rem;
+      font-weight: 700;
+      color: var(--ink);
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
@@ -562,119 +535,118 @@
 
     .review-time {
       font-family: var(--font-mono);
-      font-size: 0.76rem;
-      color: var(--color-slate-400);
+      font-size: 0.88rem;
+      color: var(--text-muted);
     }
 
     .rating-pill {
       font-family: var(--font-mono);
-      font-size: 0.8rem;
-      font-weight: 600;
-      padding: 1px 6px;
-      border-radius: 4px;
-      line-height: 1.3;
+      font-size: 0.92rem;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 6px;
+      line-height: 1.35;
       white-space: nowrap;
     }
 
     .rating-pill-high {
-      color: var(--color-amber-700);
-      background: var(--color-amber-100);
-      border: 1px solid var(--color-amber-border);
+      color: #92400e;
+      background: var(--primary-light);
+      border: 1px solid var(--primary);
     }
 
     .rating-pill-low {
-      color: var(--color-rose-700);
-      background: var(--color-rose-100);
-      border: 1px solid var(--color-rose-border);
+      color: var(--clay);
+      background: #fde8e1;
+      border: 1px solid var(--clay-border);
     }
 
     .review-body {
-      font-size: 0.86rem;
-      line-height: 1.55;
-      color: var(--color-slate-700);
+      font-size: 1.02rem;
+      line-height: 1.68;
+      color: var(--text);
       white-space: pre-wrap;
       word-break: break-word;
     }
 
-    /* Analysis Panel & Controls (Fix for truncated text!) */
+    /* Analysis Panel & Controls (Flattened - no nested box) */
     .analysis-panel {
-      margin-top: 1rem;
-      padding-top: 1rem;
-      border-top: 1px solid var(--color-slate-200);
+      margin-top: 1.2rem;
+      padding-top: 1.1rem;
+      border-top: 1.5px solid var(--card-border-subtle);
     }
 
     .analysis-controls {
       display: flex;
       flex-direction: column;
-      gap: 8px;
-      background: var(--color-slate-50);
-      border: 1px solid var(--color-slate-200);
-      border-radius: var(--radius-md);
-      padding: 10px;
+      gap: 10px;
     }
 
     .analysis-field-row {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 8px;
+      gap: 10px;
     }
 
     .analysis-field {
       display: flex;
       flex-direction: column;
-      gap: 3px;
+      gap: 4px;
       min-width: 0;
     }
 
     .analysis-field-label {
-      font-size: 0.74rem;
-      font-weight: 600;
-      color: var(--color-slate-500);
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: var(--text-muted);
       letter-spacing: 0.02em;
     }
 
     .analysis-field select {
       width: 100%;
-      height: 38px;
-      font-size: 0.85rem;
+      height: 44px;
+      font-size: 1rem;
+      font-weight: 600;
       font-family: var(--font-sans);
-      padding: 4px 8px;
-      border: 1px solid #cbd5e1;
+      padding: 6px 10px;
+      border: 1.5px solid var(--input-border);
       border-radius: var(--radius-sm);
-      background-color: #ffffff;
-      color: var(--color-slate-800);
+      background-color: var(--input-bg);
+      color: var(--ink);
       cursor: pointer;
       outline: none;
       transition: border-color 0.15s ease, box-shadow 0.15s ease;
     }
 
     .analysis-field select:focus {
-      border-color: var(--color-brand-primary);
-      box-shadow: 0 0 0 2px rgba(15, 118, 110, 0.15);
+      border-color: var(--deep-blue);
+      box-shadow: 0 0 0 3px rgba(23, 50, 77, 0.16);
     }
 
     .analysis-button {
       width: 100%;
-      height: 38px;
-      background: var(--color-brand-primary);
-      color: #ffffff;
+      height: 48px;
+      background: var(--deep-blue);
+      color: var(--warm-cream);
       font-family: var(--font-sans);
-      font-size: 0.9rem;
-      font-weight: 600;
-      border: none;
+      font-size: 1.08rem;
+      font-weight: 700;
+      border: 2px solid var(--deep-blue);
       border-radius: var(--radius-sm);
       cursor: pointer;
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      gap: 6px;
-      transition: background-color 0.15s ease, transform 0.1s ease, box-shadow 0.15s ease;
-      box-shadow: 0 1px 2px rgba(15, 118, 110, 0.2);
+      gap: 8px;
+      transition: all 0.18s ease;
+      box-shadow: 0 3px 8px rgba(23, 50, 77, 0.2);
     }
 
     .analysis-button:hover {
-      background: var(--color-brand-hover);
-      box-shadow: 0 3px 6px rgba(15, 118, 110, 0.25);
+      background: var(--primary);
+      border-color: var(--deep-blue);
+      color: var(--ink);
+      box-shadow: 0 4px 12px rgba(255, 176, 16, 0.4);
     }
     .analysis-button:active {
       transform: scale(0.99);
@@ -687,134 +659,131 @@
 
     /* Analysis Output */
     .analysis-output {
-      margin-top: 0.85rem;
-      padding: 1rem;
-      background: var(--color-slate-50);
-      border: 1px solid var(--color-slate-200);
-      border-radius: var(--radius-md);
-      color: var(--color-slate-800);
-      font-size: 0.88rem;
-      line-height: 1.6;
+      margin-top: 1.2rem;
+      padding-top: 1.1rem;
+      border-top: 2px dashed var(--card-border);
+      color: var(--ink);
+      font-size: 1.02rem;
+      line-height: 1.68;
     }
 
     .analysis-output[hidden] { display: none; }
 
     .analysis-title {
-      font-size: 0.98rem;
-      font-weight: 700;
-      color: var(--color-slate-900);
-      margin-bottom: 0.45rem;
+      font-size: 1.2rem;
+      font-weight: 800;
+      color: var(--deep-blue);
+      margin-bottom: 0.6rem;
       display: flex;
       align-items: center;
-      gap: 6px;
+      gap: 8px;
     }
 
     .analysis-meta {
-      color: var(--color-slate-600);
+      color: var(--text-muted);
       font-family: var(--font-mono);
-      font-size: 0.78rem;
-      line-height: 1.5;
-      margin: 0.5rem 0;
-      padding: 6px 10px;
-      background: var(--color-slate-100);
-      border: 1px solid var(--color-slate-200);
-      border-radius: var(--radius-sm);
+      font-size: 0.9rem;
+      line-height: 1.55;
+      margin: 0.6rem 0;
+      padding: 8px 12px;
+      background: rgba(255, 240, 204, 0.5);
+      border-left: 3px solid var(--primary);
+      border-radius: 4px;
       word-break: break-all;
     }
 
     .analysis-observation {
-      margin: 0.75rem 0;
-      padding: 0.85rem;
-      background: #ffffff;
-      border-radius: var(--radius-sm);
-      border: 1px solid var(--color-slate-200);
-      box-shadow: var(--shadow-sm);
+      margin: 0.9rem 0;
+      padding: 0.9rem 0;
+      border-bottom: 1.5px solid var(--card-border-subtle);
     }
 
     .observation-header {
       display: flex;
       align-items: flex-start;
-      gap: 6px;
+      gap: 8px;
       margin-bottom: 6px;
     }
 
     .category-badge {
       font-family: var(--font-sans);
-      font-weight: 700;
-      font-size: 0.78rem;
-      padding: 2px 7px;
-      border-radius: 4px;
-      background: #e0f2fe;
-      color: #0369a1;
+      font-weight: 800;
+      font-size: 0.92rem;
+      padding: 3px 9px;
+      border-radius: 5px;
+      background: #eef5fb;
+      color: var(--deep-blue);
       display: inline-block;
       flex-shrink: 0;
-      border: 1px solid #bae6fd;
+      border: 1px solid #bdd7ee;
     }
 
     .observation-finding {
-      font-size: 0.88rem;
-      font-weight: 600;
-      color: var(--color-slate-900);
-      line-height: 1.5;
+      font-size: 1.08rem;
+      font-weight: 700;
+      color: var(--ink);
+      line-height: 1.55;
     }
 
     .suggested-action-box {
-      margin-top: 8px;
-      font-size: 0.84rem;
-      color: var(--color-emerald-700);
-      background: var(--color-emerald-50);
-      border: 1px solid var(--color-emerald-border);
+      margin-top: 9px;
+      font-size: 1rem;
+      color: #1e5c36;
+      background: #edf7ef;
+      border: 1.5px solid #b7e4c2;
       border-radius: var(--radius-sm);
-      padding: 6px 9px;
-      font-weight: 500;
-      line-height: 1.5;
+      padding: 9px 13px;
+      font-weight: 600;
+      line-height: 1.55;
       display: flex;
       align-items: flex-start;
-      gap: 6px;
+      gap: 8px;
     }
 
     .evidence-list {
-      margin: 0.6rem 0 0.2rem 1.1rem;
+      margin: 0.8rem 0 0.2rem 1.4rem;
       padding: 0;
     }
 
     .evidence-list li {
-      font-size: 0.84rem;
-      line-height: 1.55;
-      color: var(--color-slate-600);
-      margin: 0.35rem 0;
+      font-size: 0.98rem;
+      line-height: 1.65;
+      color: var(--text);
+      margin: 0.4rem 0;
     }
 
     .evidence-list a {
-      color: var(--color-brand-primary);
+      color: var(--deep-blue);
+      font-weight: 700;
       text-decoration: underline;
       font-family: var(--font-mono);
-      font-size: 0.8rem;
-      margin-left: 4px;
+      font-size: 0.92rem;
+      margin-left: 5px;
     }
 
     /* Custom InfoWindow */
     .custom-infowindow {
-      padding: 10px 12px;
+      padding: 12px 14px;
       font-family: var(--font-sans);
-      color: var(--color-slate-900);
+      color: var(--ink);
       text-align: left;
-      line-height: 1.5;
-      font-size: 0.88rem;
-      min-width: 180px;
+      line-height: 1.55;
+      font-size: 1rem;
+      min-width: 200px;
     }
     .custom-infowindow strong {
-      font-size: 0.98rem;
-      font-weight: 700;
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: var(--deep-blue);
       display: block;
-      margin-bottom: 4px;
+      margin-bottom: 5px;
     }
     .custom-infowindow a {
-      color: var(--color-brand-primary);
-      font-weight: 600;
+      color: var(--clay);
+      font-weight: 700;
       text-decoration: underline;
       display: inline-block;
-      margin-top: 5px;
+      margin-top: 6px;
     }
 
     /* Loader Overlay */
@@ -824,7 +793,7 @@
       left: 0;
       width: 100%;
       height: 100%;
-      background: rgba(15, 23, 42, 0.4);
+      background: rgba(43, 37, 26, 0.45);
       backdrop-filter: blur(4px);
       display: flex;
       justify-content: center;
@@ -833,22 +802,23 @@
     }
     .loader-content {
       text-align: center;
-      padding: 2rem 2.5rem;
-      background: #ffffff;
-      border-radius: var(--radius-lg);
-      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2);
-      font-size: 1.05rem;
-      font-weight: 600;
-      color: var(--color-slate-900);
+      padding: 2.2rem 2.8rem;
+      background: var(--card-bg);
+      border-radius: var(--radius);
+      box-shadow: 0 20px 30px rgba(0, 0, 0, 0.25);
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: var(--deep-blue);
+      border: 2px solid var(--card-border);
     }
     .spinner {
-      border: 4px solid var(--color-slate-200);
-      border-top: 4px solid var(--color-brand-primary);
+      border: 4px solid var(--card-border);
+      border-top: 4px solid var(--deep-blue);
       border-radius: 50%;
-      width: 44px;
-      height: 44px;
+      width: 48px;
+      height: 48px;
       animation: spin 0.8s linear infinite;
-      margin: 0 auto 1rem;
+      margin: 0 auto 1.1rem;
     }
     @keyframes spin {
       0% { transform: rotate(0deg); }
@@ -858,17 +828,15 @@
 </head>
 <body>
   <header class="hero-header">
-    <div class="hero-content">
-      <div class="hero-brand">
-        <span class="hero-icon" aria-hidden="true">
-          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
-            <polyline points="9 22 9 12 15 12 15 22"/>
-          </svg>
-        </span>
-        <div class="hero-title-group">
+    <div class="header-inner">
+      <div class="brand-row">
+        <div class="brand-logo">
+          <span class="logo-main">888</span>
+          <span class="logo-sub">PULSE</span>
+        </div>
+        <div class="brand-text">
           <h1>Store Pulse 店面脈搏</h1>
-          <p>Google Maps 多分店即時評價速查與營運深度分析</p>
+          <p>Google Maps 多分店即時評價速查與營運深度診斷</p>
         </div>
       </div>
     </div>
@@ -881,38 +849,35 @@
     </div>
   </div>
 
-  <div class="container">
-    <div id="controls">
-      <div class="search-input-wrapper">
-        <span class="search-icon-hint" aria-hidden="true">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+  <main class="main-layout">
+    <div class="search-panel">
+      <form id="searchForm" onsubmit="event.preventDefault(); searchStores();" class="search-form">
+        <div class="search-input-wrapper">
+          <span class="search-icon-hint" aria-hidden="true">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="11" cy="11" r="8"></circle>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+          </span>
+          <input id="searchQuery" type="text" placeholder="輸入品牌或店名（例：麥當勞、藏壽司、星巴克）" aria-label="搜尋店家名稱" autofocus>
+        </div>
+        <button class="btn-search" type="submit">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
             <circle cx="11" cy="11" r="8"></circle>
             <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
           </svg>
-        </span>
-        <input id="searchQuery" type="text" placeholder="輸入品牌或店名（例：麥當勞、藏壽司、星巴克）" aria-label="搜尋店家名稱">
-      </div>
-      <button class="btn-search" onclick="searchStores()" type="button">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <circle cx="11" cy="11" r="8"></circle>
-          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-        </svg>
-        <span>搜尋分店</span>
-      </button>
-      <button id="keyConfigBtn" class="btn-config" type="button" onclick="promptCustomKey()" title="自訂或更換 Google Maps API Key">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"></path>
-        </svg>
-        <span>金鑰設定</span>
-      </button>
+          <span>搜尋分店</span>
+        </button>
+      </form>
     </div>
 
     <div id="mapNotice" style="display: none;"></div>
     <div id="map"></div>
-    <div id="results">
+
+    <section id="results">
       <div class="results-heading-row">
         <h2>
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--color-brand-primary);">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" style="color: var(--deep-blue);">
             <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
             <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
           </svg>
@@ -920,11 +885,11 @@
         </h2>
         <span class="results-count-label" id="resultsCount">請輸入店家名稱開始搜尋</span>
       </div>
-      <div class="card-container" id="restaurantCards">
-        <p style="color: var(--color-slate-500); grid-column: 1 / -1; text-align: center; padding: 2.5rem 0;">請在上方搜尋列輸入品牌名稱開始比對各分店評價。</p>
+      <div class="store-grid" id="restaurantCards">
+        <p style="color: var(--text-muted); grid-column: 1 / -1; text-align: center; padding: 3rem 0; font-size: 1.15rem; font-weight: 600;">請在上方搜尋列輸入品牌名稱開始比對各分店評價。</p>
       </div>
-    </div>
-  </div>
+    </section>
+  </main>
 
   <script>
     let map, geocoder, placesService;
@@ -934,6 +899,15 @@
     let userLocation = null;
 
     const EARTH_RADIUS_METERS = 6371000;
+
+    // 網頁一打開，游標自動聚焦在搜尋輸入窗
+    window.addEventListener('DOMContentLoaded', () => {
+      const input = document.getElementById('searchQuery');
+      if (input) {
+        input.focus();
+        input.select?.();
+      }
+    });
 
     function toRadians(degrees) {
       return degrees * (Math.PI / 180);
@@ -978,7 +952,7 @@
           activeInfoWindow.close();
           activeInfoWindow = null;
         }
-        document.querySelectorAll('.card').forEach(c => c.classList.remove('active'));
+        document.querySelectorAll('.store-card').forEach(c => c.classList.remove('active'));
       });
 
       if (navigator.geolocation) {
@@ -998,13 +972,6 @@
           maximumAge: 300000
         });
       }
-
-      document.getElementById('searchQuery').addEventListener('keyup', function(event) {
-        if (event.key === 'Enter') {
-          event.preventDefault();
-          searchStores();
-        }
-      });
     }
 
     function showGmapsErrorNotice(customMsg) {
@@ -1014,19 +981,19 @@
       const currentOrigin = window.location.origin;
       const customKey = localStorage.getItem('CUSTOM_GMAPS_KEY');
       banner.innerHTML = `
-        <div style="background:#fff7f7;border:1px solid #fecdd3;border-radius:10px;padding:14px 16px;color:#9f1239;font-size:14px;line-height:1.6;margin-bottom:12px;">
+        <div style="background:var(--clay-light);border:1.5px solid var(--clay-border);border-radius:12px;padding:16px 18px;color:var(--clay);font-size:15px;line-height:1.65;margin-bottom:18px;">
           <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
-            <strong style="font-size:15px;color:#be123c;">⚠️ Google Maps 地圖載入失敗（HTTP 參照位址限制）</strong>
-            <button onclick="document.getElementById('mapNotice').style.display='none'" style="background:transparent;border:none;color:#9f1239;cursor:pointer;font-size:16px;">✕</button>
+            <strong style="font-size:16px;color:var(--clay);font-weight:800;">⚠️ Google Maps 地圖載入失敗（HTTP 參照位址限制）</strong>
+            <button onclick="document.getElementById('mapNotice').style.display='none'" style="background:transparent;border:none;color:var(--clay);cursor:pointer;font-size:18px;font-weight:700;">✕</button>
           </div>
-          <p style="margin:4px 0;">${customMsg || '目前 Google Maps API Key 啟用了網域白名單限制，目前的網址尚未列入授權清單。'}</p>
-          <div style="background:#fff;border:1px dashed #fca5a5;padding:8px 12px;border-radius:6px;margin:8px 0;font-family:var(--font-mono);font-size:13px;word-break:break-all;color:#0f172a;">
+          <p style="margin:6px 0;">${customMsg || '目前 Google Maps API Key 啟用了網域白名單限制，目前的網址尚未列入授權清單。'}</p>
+          <div style="background:#fff;border:1px dashed var(--clay);padding:10px 14px;border-radius:8px;margin:10px 0;font-family:var(--font-mono);font-size:14px;word-break:break-all;color:var(--ink);">
             請至 Google Cloud Console 憑證設定將此網址加入白名單：<br>
-            <strong style="color:#b91c1c;">${currentOrigin}/*</strong>
+            <strong style="color:var(--clay);">${currentOrigin}/*</strong>
           </div>
           <div style="display:flex;gap:10px;margin-top:10px;align-items:center;flex-wrap:wrap;">
-            <button onclick="promptCustomKey()" style="background:#be123c;color:white;border:none;padding:6px 14px;border-radius:6px;cursor:pointer;font-weight:600;font-size:13px;">更換自訂 Google Maps Key</button>
-            ${customKey ? `<button onclick="resetCustomKey()" style="background:#64748b;color:white;border:none;padding:6px 12px;border-radius:6px;cursor:pointer;font-size:13px;">重設為預設 Key</button>` : ''}
+            <button onclick="promptCustomKey()" style="background:var(--deep-blue);color:white;border:none;padding:8px 16px;border-radius:8px;cursor:pointer;font-weight:700;font-size:14px;">更換自訂 Google Maps Key</button>
+            ${customKey ? `<button onclick="resetCustomKey()" style="background:var(--text-muted);color:white;border:none;padding:8px 14px;border-radius:8px;cursor:pointer;font-size:14px;">重設為預設 Key</button>` : ''}
           </div>
         </div>
       `;
@@ -1061,7 +1028,7 @@
       if (!query) return alert("請輸入店家名稱");
 
       if (!placesService) {
-        showGmapsErrorNotice("無法搜尋：Google Maps 服務尚未就緒。請確認 Google Cloud Console 憑證已授權目前網址，或點選上方「金鑰設定」按鈕自訂可用 Key。");
+        showGmapsErrorNotice("無法搜尋：Google Maps 服務尚未就緒。請確認 Google Cloud Console 憑證已授權目前網址。");
         return;
       }
 
@@ -1135,7 +1102,7 @@
             });
           });
         } else {
-          container.innerHTML = `<p style="color: var(--color-slate-500); grid-column: 1 / -1; text-align: center; padding: 2rem 0;">找不到符合條件的店家，請嘗試其他關鍵字。</p>`;
+          container.innerHTML = `<p style="color: var(--text-muted); grid-column: 1 / -1; text-align: center; padding: 3rem 0; font-size: 1.15rem; font-weight: 600;">找不到符合條件的店家，請嘗試其他關鍵字。</p>`;
           const countEl = document.getElementById("resultsCount");
           if (countEl) countEl.textContent = `0 間結果`;
         }
@@ -1145,7 +1112,7 @@
     function createCard(place) {
         const container = document.getElementById("restaurantCards");
         const card = document.createElement("div");
-        card.className = "card";
+        card.className = "store-card";
 
         let reviewsHtml = '';
         if (place.reviews && place.reviews.length > 0) {
@@ -1186,15 +1153,15 @@
             : '';
 
         card.innerHTML = `
-            <div class="card-header">
-              <h3 class="card-title">${escapeHtml(place.name || '未命名分店')}</h3>
-              <div class="card-meta-row">
+            <div class="store-header">
+              <h3 class="store-title">${escapeHtml(place.name || '未命名分店')}</h3>
+              <div class="store-meta-row">
                 <span class="rating-badge jetbrains-mono">⭐ ${place.rating || '—'}</span>
                 <span class="reviews-total-text jetbrains-mono">(${place.user_ratings_total || 0} 則評論)</span>
                 ${distanceBadge}
               </div>
-              <div class="card-address">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+              <div class="store-address">
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
                 <a href="${safeHttpUrl(place.url)}" target="_blank" rel="noopener noreferrer">${escapeHtml(place.vicinity || '地址未提供')} ↗</a>
               </div>
             </div>
@@ -1226,7 +1193,7 @@
               </div>
             </div>
             <button type="button" class="analysis-button">
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
               <span>門市深度營運分析</span>
             </button>
           </div>
@@ -1243,7 +1210,7 @@
             const marker = markerMap.get(place.place_id);
             if (marker) {
                 google.maps.event.trigger(marker, 'click');
-                document.querySelectorAll('.card').forEach(c => c.classList.remove('active'));
+                document.querySelectorAll('.store-card').forEach(c => c.classList.remove('active'));
                 card.classList.add('active');
             }
         };
@@ -1278,8 +1245,8 @@
       button.disabled = true;
       output.hidden = false;
       output.innerHTML = `
-        <div style="display:flex;align-items:center;gap:8px;color:var(--color-slate-600);font-size:0.88rem;">
-          <span class="spinner" style="width:18px;height:18px;border-width:2.5px;margin:0;"></span>
+        <div style="display:flex;align-items:center;gap:10px;color:var(--deep-blue);font-size:1.05rem;font-weight:600;">
+          <span class="spinner" style="width:20px;height:20px;border-width:3px;margin:0;"></span>
           <span>正在擷取評論並整理營運分析摘要…</span>
         </div>
       `;
@@ -1393,8 +1360,8 @@
 
           const metaText = document.createElement('span');
           metaText.className = 'jetbrains-mono';
-          metaText.style.fontSize = '0.8rem';
-          metaText.style.color = '#d97706';
+          metaText.style.fontSize = '0.94rem';
+          metaText.style.color = '#92400e';
           metaText.textContent = `(⭐ ${evidence.rating ?? '—'}) `;
           item.appendChild(metaText);
 
@@ -1417,19 +1384,19 @@
       (payload.signals || []).forEach(signal => {
         const note = document.createElement('div');
         note.className = 'analysis-meta';
-        note.style.borderLeft = '1px solid #f59e0b';
+        note.style.borderLeft = '3px solid var(--primary)';
         note.textContent = `⚠️ 樣本訊號：評論中出現行銷誘因關鍵字（${signal.evidence_ids?.length || 0} 則），可能影響評分中立性。`;
         output.appendChild(note);
       });
 
       if (!observations.length) {
         const note = document.createElement('div');
-        note.style.marginTop = '0.65rem';
+        note.style.marginTop = '0.8rem';
         if (payload.status === 'insufficient_evidence') {
           note.innerHTML = `
-            <p style="margin:0 0 6px 0;color:var(--color-rose-700);font-weight:600;font-size:0.92rem;">⚠️ 設定時間內符合條件之評論數為 0。</p>
-            <p style="margin:0 0 10px 0;font-size:0.86rem;color:var(--color-slate-600);line-height:1.5;">Google Places API 每次預設僅提供 5 則精選評論。若評論發表時間較久，請直接切換為「全部評論」。</p>
-            <button type="button" class="switch-all-btn" style="background:var(--color-brand-primary);color:white;padding:6px 14px;font-size:0.86rem;border-radius:6px;border:none;cursor:pointer;font-weight:600;">切換為「全部評論」並立即分析</button>
+            <p style="margin:0 0 6px 0;color:var(--clay);font-weight:700;font-size:1.08rem;">⚠️ 設定時間內符合條件之評論數為 0。</p>
+            <p style="margin:0 0 10px 0;font-size:1rem;color:var(--text-muted);line-height:1.6;">Google Places API 每次預設僅提供 5 則精選評論。若評論發表時間較久，請直接切換為「全部評論」。</p>
+            <button type="button" class="switch-all-btn" style="background:var(--deep-blue);color:var(--warm-cream);padding:8px 18px;font-size:1rem;border-radius:8px;border:none;cursor:pointer;font-weight:700;">切換為「全部評論」並立即分析</button>
           `;
           const switchBtn = note.querySelector('.switch-all-btn');
           if (switchBtn) {
@@ -1443,8 +1410,8 @@
           }
         } else {
           note.innerHTML = `
-            <p style="margin:0 0 4px 0;font-weight:600;color:var(--color-slate-800);">${payload.status === 'timeout' ? '⏱️ 分析請求逾時，請稍後重試。' : (payload.usage?.summary_error ? `⚠️ 分析暫不可用（${payload.usage.summary_error}）` : '📋 已保留評論證據，模型摘要目前不可用。')}</p>
-            <p style="margin:0;font-size:0.85rem;color:var(--color-slate-500);">原有評論資料仍可完整查閱。</p>
+            <p style="margin:0 0 4px 0;font-weight:700;color:var(--ink);">${payload.status === 'timeout' ? '⏱️ 分析請求逾時，請稍後重試。' : (payload.usage?.summary_error ? `⚠️ 分析暫不可用（${payload.usage.summary_error}）` : '📋 已保留評論證據，模型摘要目前不可用。')}</p>
+            <p style="margin:0;font-size:0.98rem;color:var(--text-muted);">原有評論資料仍可完整查閱。</p>
           `;
         }
         output.appendChild(note);
@@ -1512,15 +1479,15 @@
         position: fixed;
         bottom: 20px;
         right: 20px;
-        background: #0f766e;
-        color: white;
-        border: none;
-        padding: 10px 18px;
+        background: var(--deep-blue);
+        color: var(--warm-cream);
+        border: 2px solid var(--saffron);
+        padding: 12px 22px;
         border-radius: 25px;
-        font-size: 14px;
-        font-weight: 600;
+        font-size: 15px;
+        font-weight: 700;
         cursor: pointer;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        box-shadow: 0 6px 18px rgba(23, 50, 77, 0.35);
         display: none;
         z-index: 1000;
         font-family: inherit;
