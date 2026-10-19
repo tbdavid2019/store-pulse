@@ -177,7 +177,7 @@ export async function summarize(
     }
 
     // Default to latest high-capability Llama 3.3 70B or Qwen 2.5 72B
-    const aiModel = modelName || '@cf/meta/llama-3.3-70b-instruct';
+    const aiModel = modelName || '@cf/meta/llama-3.3-70b-instruct-fp8-fast';
     try {
       const response = await env.AI.run(aiModel, {
         messages: [
@@ -194,11 +194,28 @@ export async function summarize(
         response_format: { type: 'json_object' },
       });
 
-      const raw = typeof response === 'string' ? JSON.parse(response) : (response?.response ? JSON.parse(response.response) : response);
+      let raw: unknown = response;
+      if (raw && typeof raw === 'object' && 'response' in (raw as Record<string, any>)) {
+        raw = (raw as Record<string, any>).response;
+      }
+      if (typeof raw === 'string') {
+        try {
+          raw = JSON.parse(raw);
+        } catch {
+          const match = (raw as string).match(/```(?:json)?\s*([\s\S]*?)\s*```/);
+          if (match) {
+            try {
+              raw = JSON.parse(match[1]);
+            } catch {
+              // fallback
+            }
+          }
+        }
+      }
       return parseModelObservations(raw, evidence, aiModel);
     } catch (err: any) {
       if (err instanceof SummaryError) throw err;
-      throw new SummaryError('model_request_failed');
+      throw new SummaryError(`model_request_failed: ${err.message || String(err)}`);
     }
   }
 

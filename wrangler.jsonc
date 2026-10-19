@@ -1,7 +1,7 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "store-pulse",
-  "account_id": "379570860738dd1757ba7f67ef2bdffe",
+  "account_id": "aa3bf2b79b8bbdbf05b4e289bd7c4d91",
   "workers_dev": true,
   "main": "src/index.ts",
   "compatibility_date": "2026-03-01",
@@ -19,7 +19,9 @@
     "STORE_PULSE_DAILY_MODEL_BUDGET": "100",
     "STORE_PULSE_API_ORIGINS": ""
   },
-  // "ai": { "binding": "AI" },
+  "ai": {
+    "binding": "AI"
+  },
   "observability": {
     "enabled": true
   }
