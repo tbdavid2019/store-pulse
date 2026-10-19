@@ -1395,6 +1395,8 @@
     const markerMap = new Map();
     let activeInfoWindow = null;
     let userLocation = null;
+    let analysisGeneration = 0;
+    const analysisControllers = new Set();
 
     const EARTH_RADIUS_METERS = 6371000;
 
@@ -1539,6 +1541,13 @@
       const searchGeneration = analysisGeneration;
       analysisControllers.forEach(controller => controller.abort());
       analysisControllers.clear();
+      if (drawerAbortController) {
+        drawerAbortController.abort();
+        drawerAbortController = null;
+      }
+      if (typeof closeAnalysisDrawer === 'function') {
+        closeAnalysisDrawer();
+      }
 
       const loader = document.getElementById('loader');
       loader.style.display = 'flex';
@@ -1595,13 +1604,14 @@
 
             placesService.getDetails(detailsRequest, (placeDetails, detailsStatus) => {
               if (searchGeneration !== analysisGeneration) return;
-              if (detailsStatus === google.maps.places.PlacesServiceStatus.OK) {
-                if (typeof place.distanceFromUser === 'number') {
-                  placeDetails.distanceFromUser = place.distanceFromUser;
-                }
-                createMarker(placeDetails);
-                createCard(placeDetails);
+              const targetPlace = (detailsStatus === google.maps.places.PlacesServiceStatus.OK && placeDetails)
+                ? placeDetails
+                : place;
+              if (typeof place.distanceFromUser === 'number') {
+                targetPlace.distanceFromUser = place.distanceFromUser;
               }
+              createMarker(targetPlace);
+              createCard(targetPlace);
             });
           });
         } else {
