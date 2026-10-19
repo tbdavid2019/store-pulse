@@ -318,6 +318,15 @@
       geocoder = new google.maps.Geocoder();
       placesService = new google.maps.places.PlacesService(map);
 
+      // 當用戶點擊地圖其他地方時，關閉 InfoWindow
+      map.addListener('click', () => {
+        if (activeInfoWindow) {
+          activeInfoWindow.close();
+          activeInfoWindow = null;
+        }
+        document.querySelectorAll('.card').forEach(c => c.classList.remove('active'));
+      });
+
       // 頁面載入時請求 GPS 位置
       if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(position => {
@@ -543,7 +552,7 @@
         card.onclick = () => {
             const marker = markerMap.get(place.place_id);
             if (marker) {
-                new google.maps.event.trigger(marker, 'click');
+                google.maps.event.trigger(marker, 'click');
                 document.querySelectorAll('.card').forEach(c => c.classList.remove('active'));
                 card.classList.add('active');
             }
@@ -723,15 +732,6 @@
         markers.push(marker);
         markerMap.set(place.place_id, marker);
     }
-
-    // 當用戶點擊地圖其他地方時，關閉 InfoWindow
-    google.maps.event.addDomListener(map, 'click', () => {
-        if (activeInfoWindow) {
-            activeInfoWindow.close();
-            activeInfoWindow = null;
-        }
-        document.querySelectorAll('.card').forEach(c => c.classList.remove('active'));
-    });
 
     // 註冊 Service Worker (PWA 支援)
     if ('serviceWorker' in navigator) {
