@@ -297,8 +297,9 @@ export default {
         result.usage.summary_error = err.message || 'unknown_error';
       }
 
-      // Cache successful or degraded analysis (do not cache quota exceeded)
-      if (result.status !== 'quota_exceeded') {
+      // Cache successful analyses or clean unconfigured fallback, but NEVER cache transient model errors
+      const hasModelError = Boolean(result.usage.summary_error) || result.status === 'quota_exceeded' || result.status === 'timeout';
+      if (!hasModelError) {
         await storage.put(cacheKey, result, defaultTtl);
       }
 

@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="搜尋與比較連鎖店面的 Google Maps 評價，快速掌握各分店聲量與 AI 深度洞察">
-  <title>Store Pulse 店面脈搏 - 多店面評價速查與 AI 深度分析</title>
+  <meta name="description" content="搜尋與比較連鎖店面的 Google Maps 評價，快速掌握各分店顧客回饋與營運洞察">
+  <title>Store Pulse 店面脈搏 - 多店面評價速查與營運深度分析</title>
   
   <!-- PWA 支援 -->
   <link rel="manifest" href="manifest.json">
@@ -24,7 +24,7 @@
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://store-pulse.oobwei.workers.dev">
   <meta property="og:title" content="Store Pulse 店面脈搏">
-  <meta property="og:description" content="搜尋與比較連鎖店面的 Google Maps 評價，快速掌握各分店聲量與 AI 深度洞察">
+  <meta property="og:description" content="搜尋與比較連鎖店面的 Google Maps 評價，快速掌握各分店顧客回饋與營運洞察">
   <meta property="og:image" content="icons/icon-512x512.png">
   
   <!-- Fonts: JetBrains Mono & Noto Sans TC / Gen Jyuu Gothic -->
@@ -868,11 +868,8 @@
         </span>
         <div class="hero-title-group">
           <h1>Store Pulse 店面脈搏</h1>
-          <p>Google Maps 多分店即時評價速查與 AI 深度洞察</p>
+          <p>Google Maps 多分店即時評價速查與營運深度分析</p>
         </div>
-      </div>
-      <div class="hero-badges">
-        <span class="hero-badge jetbrains-mono">Workers AI · LLaMA 3.3</span>
       </div>
     </div>
   </header>
@@ -1230,7 +1227,7 @@
             </div>
             <button type="button" class="analysis-button">
               <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
-              <span>門市 AI 深度分析</span>
+              <span>門市深度營運分析</span>
             </button>
           </div>
           <div class="analysis-output" hidden></div>
@@ -1283,7 +1280,7 @@
       output.innerHTML = `
         <div style="display:flex;align-items:center;gap:8px;color:var(--color-slate-600);font-size:0.88rem;">
           <span class="spinner" style="width:18px;height:18px;border-width:2.5px;margin:0;"></span>
-          <span>正在擷取評論並由 Workers AI 進行分析…</span>
+          <span>正在擷取評論並整理營運分析摘要…</span>
         </div>
       `;
 
