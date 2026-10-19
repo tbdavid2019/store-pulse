@@ -1,0 +1,11 @@
+# Python
+.data/
+__pycache__/
+*.py[cod]
+.env
+
+# Cloudflare & Node
+node_modules/
+.wrangler/
+public/
+worker-configuration.d.ts

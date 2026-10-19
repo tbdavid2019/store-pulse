@@ -37,10 +37,10 @@
     body {
       font-family: "Segoe UI", sans-serif;
       margin: 0;
-      background: #fff1e0;
+      background: #eef4f2;
     }
     header {
-      background: linear-gradient(to right, #fff4e6, #ff6f61);
+      background: linear-gradient(to right, #8f3938, #b54a43);
       color: white;
       padding: 2rem;
       margin: 2rem auto 0;
@@ -78,7 +78,7 @@
       border-radius: 8px;
     }
     button {
-      background: linear-gradient(to right, #667eea, #764ba2);
+      background: #173b3f;
       color: white;
       cursor: pointer;
       border: none;
@@ -137,6 +137,45 @@
     }
     .reviews-container li:last-child {
       border-bottom: none;
+    }
+    .analysis-panel {
+      margin-top: 1rem;
+      padding-top: 1rem;
+      border-top: 1px solid #e8e1d9;
+    }
+    .analysis-controls {
+      display: grid;
+      grid-template-columns: 1fr 1fr auto;
+      gap: .5rem;
+      align-items: center;
+    }
+    .analysis-controls select, .analysis-controls button {
+      min-height: 42px;
+      width: 100%;
+      box-sizing: border-box;
+    }
+    .analysis-controls button {
+      background: #173b3f;
+      font-weight: 700;
+    }
+    .analysis-controls button:disabled { opacity: .6; cursor: wait; }
+    .analysis-output {
+      margin-top: .75rem;
+      padding: .85rem;
+      background: #f7f5f1;
+      border-radius: 10px;
+      color: #263538;
+      line-height: 1.55;
+    }
+    .analysis-output[hidden] { display: none; }
+    .analysis-status { color: #405054; font-size: .9rem; }
+    .analysis-observation { margin: .65rem 0; }
+    .analysis-observation strong { color: #173b3f; }
+    .evidence-list { margin: .45rem 0 0; padding-left: 1.2rem; }
+    .evidence-list li { margin: .35rem 0; }
+    .analysis-meta { color: #405054; font-size: .82rem; margin-top: .75rem; }
+    @media (max-width: 560px) {
+      .analysis-controls { grid-template-columns: 1fr; }
     }
     .reviews-container li p {
       margin: 0.2rem 0;
@@ -308,6 +347,10 @@
     function searchStores() {
       const query = document.getElementById("searchQuery").value;
       if (!query) return alert("請輸入店家名稱");
+      analysisGeneration += 1;
+      const searchGeneration = analysisGeneration;
+      analysisControllers.forEach(controller => controller.abort());
+      analysisControllers.clear();
 
       const loader = document.getElementById('loader');
       loader.style.display = 'flex';
@@ -333,6 +376,7 @@
       };
 
       placesService.textSearch(request, (results, status) => {
+        if (searchGeneration !== analysisGeneration) return;
         loader.style.display = 'none';
         
         if (status === google.maps.places.PlacesServiceStatus.OK && results && results.length) {
@@ -364,6 +408,7 @@
             };
 
             placesService.getDetails(detailsRequest, (placeDetails, detailsStatus) => {
+              if (searchGeneration !== analysisGeneration) return;
               if (detailsStatus === google.maps.places.PlacesServiceStatus.OK) {
                 if (typeof place.distanceFromUser === 'number') {
                   placeDetails.distanceFromUser = place.distanceFromUser;
@@ -388,14 +433,14 @@
         let reviewsHtml = '';
         if (place.reviews && place.reviews.length > 0) {
             reviewsHtml = '<div class="reviews-container">';
-            reviewsHtml += '<h5>最新評論：</h5>';
+            reviewsHtml += '<h5>評論摘錄：</h5>';
             reviewsHtml += '<ul>';
             place.reviews.forEach(review => {
                 const ratingClass = review.rating <= 3 ? 'class="low-rating-review"' : '';
                 reviewsHtml += `
                     <li ${ratingClass}>
-                        <p><strong>${review.author_name}</strong> (⭐ ${review.rating})</p>
-                        <p style="white-space: pre-wrap;">${review.text}</p>
+                        <p><strong>${escapeHtml(review.author_name || '匿名使用者')}</strong> (⭐ ${review.rating || '—'})</p>
+                        <p style="white-space: pre-wrap;">${escapeHtml(review.text || '')}</p>
                     </li>
                 `;
             });
@@ -407,12 +452,36 @@
             : '';
 
         card.innerHTML = `
-            <h4>${place.name}</h4>
+            <h4>${escapeHtml(place.name || '未命名分店')}</h4>
             <p>⭐ ${place.rating || '無評分'} (${place.user_ratings_total || 0} 則評論)</p>
-            <p>📍 <a href="${place.url}" target="_blank">${place.vicinity}</a></p>
+            <p>📍 <a href="${safeHttpUrl(place.url)}" target="_blank" rel="noopener">${escapeHtml(place.vicinity || '地址未提供')}</a></p>
             ${distanceText}
             ${reviewsHtml}
         `;
+
+        const analysisPanel = document.createElement('section');
+        analysisPanel.className = 'analysis-panel';
+        analysisPanel.setAttribute('aria-label', '分店深度分析');
+        analysisPanel.innerHTML = `
+          <div class="analysis-controls">
+            <select aria-label="評論分析方式" class="analysis-mode">
+              <option value="recent">近期評論</option>
+              <option value="low_rating">低分評論（3 星以下）</option>
+            </select>
+            <select aria-label="評論分析期間" class="analysis-window">
+              <option value="90">近 90 天</option>
+              <option value="30">近 30 天</option>
+            </select>
+            <button type="button" class="analysis-button">深度分析</button>
+          </div>
+          <div class="analysis-output" hidden></div>
+        `;
+        card.appendChild(analysisPanel);
+        const analysisButton = analysisPanel.querySelector('.analysis-button');
+        analysisButton.addEventListener('click', event => {
+          event.stopPropagation();
+          requestBranchAnalysis(place, analysisPanel);
+        });
 
         card.onclick = () => {
             const marker = markerMap.get(place.place_id);
@@ -423,6 +492,139 @@
             }
         };
         container.appendChild(card);
+    }
+
+    let analysisGeneration = 0;
+    const ANALYSIS_API_BASE = window.STORE_PULSE_API_BASE || '';
+    const analysisControllers = new Set();
+
+    function escapeHtml(value) {
+      return String(value ?? '').replace(/[&<>'"]/g, character => ({
+        '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;'
+      }[character]));
+    }
+
+    function safeHttpUrl(value) {
+      try {
+        const url = new URL(value || '', window.location.href);
+        return /^https?:$/.test(url.protocol) ? url.href : '#';
+      } catch (_) { return '#'; }
+    }
+
+    function requestBranchAnalysis(place, panel) {
+      const button = panel.querySelector('.analysis-button');
+      const output = panel.querySelector('.analysis-output');
+      const mode = panel.querySelector('.analysis-mode').value;
+      const windowDays = Number(panel.querySelector('.analysis-window').value);
+      const generation = analysisGeneration;
+      const controller = new AbortController();
+      analysisControllers.add(controller);
+      button.disabled = true;
+      output.hidden = false;
+      output.textContent = '正在整理評論證據…';
+      fetch(`${ANALYSIS_API_BASE}/api/review-analysis`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          place_id: place.place_id,
+          mode,
+          window_days: windowDays,
+          place: {
+            place_id: place.place_id,
+            name: place.name,
+            address: place.vicinity || '',
+            rating: place.rating || null,
+            url: place.url || ''
+          },
+          reviews: (place.reviews || []).slice(0, 5).map(review => ({
+            author_name: review.author_name,
+            text: review.text,
+            rating: review.rating,
+            time: review.time,
+            relative_time_description: review.relative_time_description,
+            language: review.language
+          }))
+        }),
+        signal: controller.signal
+      }).then(async response => {
+        const payload = await response.json().catch(() => ({}));
+        if (!response.ok) throw new Error(payload.message || payload.status || '分析服務暫時無法使用');
+        return payload;
+      }).then(payload => {
+        if (generation !== analysisGeneration || !panel.isConnected) return;
+        renderAnalysis(payload, panel);
+      }).catch(error => {
+        if (generation !== analysisGeneration || !panel.isConnected) return;
+        output.textContent = !navigator.onLine || error instanceof TypeError
+          ? '目前離線，連線恢復後可重新分析。'
+          : `分析未完成：${error.message}。原有評論仍可查看。`;
+      }).finally(() => {
+        analysisControllers.delete(controller);
+        if (generation === analysisGeneration && panel.isConnected) button.disabled = false;
+      });
+    }
+
+    function renderAnalysis(payload, panel) {
+      const output = panel.querySelector('.analysis-output');
+      output.replaceChildren();
+      const title = document.createElement('strong');
+      title.textContent = payload.status === 'success' ? '營運摘要' : (payload.status === 'insufficient_evidence' ? '目前樣本不足' : '證據已取得，摘要暫不可用');
+      output.appendChild(title);
+      const sampling = payload.sampling || {};
+      const meta = document.createElement('div');
+      meta.className = 'analysis-meta';
+      const excluded = sampling.excluded || {};
+      const excludedCount = Object.values(excluded).reduce((sum, value) => sum + Number(value || 0), 0);
+      meta.textContent = `樣本：使用 ${sampling.used || 0}／符合 ${sampling.eligible || 0}／擷取 ${sampling.fetched || 0} 則｜排除 ${excludedCount} 則｜${sampling.mode === 'low_rating' ? '低分評論' : '近期評論'}｜近 ${sampling.window_days || '—'} 天${sampling.truncated ? '｜已達擷取上限，樣本可能不完整' : ''}${payload.fetched_at ? `｜擷取 ${payload.fetched_at}` : ''}${payload.analyzed_at ? `｜分析 ${payload.analyzed_at}` : ''}${payload.cache?.hit ? '｜快取命中' : ''}`;
+      output.appendChild(meta);
+      const observations = payload.summary && Array.isArray(payload.summary.observations) ? payload.summary.observations : [];
+      observations.forEach(observation => {
+        const row = document.createElement('div');
+        row.className = 'analysis-observation';
+        const label = document.createElement('strong');
+        label.textContent = `${observation.category}：`;
+        row.appendChild(label);
+        row.appendChild(document.createTextNode(observation.finding));
+        if (observation.suggested_action) row.appendChild(document.createTextNode(` 建議：${observation.suggested_action}`));
+        const evidenceList = document.createElement('ul');
+        evidenceList.className = 'evidence-list';
+        (observation.evidence_ids || []).forEach(id => {
+          const evidence = (payload.evidence || []).find(item => item.evidence_id === id);
+          if (!evidence) return;
+          const item = document.createElement('li');
+          const excerpt = evidence.is_excerpt ? '（節錄）' : '';
+          item.appendChild(document.createTextNode(`${evidence.author || '匿名'}（${evidence.rating ?? '—'} 星，${evidence.published_at || '日期未知'}）${excerpt}：${evidence.text} `));
+          const sourceUrl = safeHttpUrl(evidence.source_url);
+          if (sourceUrl !== '#') {
+            const source = document.createElement('a');
+            source.href = sourceUrl;
+            source.target = '_blank';
+            source.rel = 'noopener noreferrer';
+            source.textContent = evidence.source_url_kind === 'review' ? '查看原評論' : '查看店家';
+            item.appendChild(source);
+          } else {
+            item.appendChild(document.createTextNode('來源連結未提供'));
+          }
+          evidenceList.appendChild(item);
+        });
+        row.appendChild(evidenceList);
+        output.appendChild(row);
+      });
+      (payload.signals || []).forEach(signal => {
+        const note = document.createElement('p');
+        note.className = 'analysis-meta';
+        note.textContent = `樣本訊號：評論中出現可能的誘因描述（${signal.evidence_ids?.length || 0} 則），請展開原文查證；這不代表評論已被證實造假。`;
+        output.appendChild(note);
+      });
+      if (!observations.length) {
+        const note = document.createElement('p');
+        note.textContent = payload.status === 'insufficient_evidence'
+          ? '符合條件的評論不足，請改用近 90 天或查看評論摘錄。'
+          : payload.status === 'timeout'
+            ? '分析逾時；目前取得的證據仍可供檢視，請稍後重試。'
+            : '已保留評論證據，模型摘要目前不可用。';
+        output.appendChild(note);
+      }
     }
 
     function createMarker(place) {
@@ -438,10 +640,9 @@
 
         const infoWindowContent = `
             <div class="custom-infowindow">
-                <span class="close-btn" onclick="this.parentElement.parentElement.style.display='none';">&times;</span>
-                <strong>${place.name}</strong><br>
-                ⭐ ${place.rating || 'N/A'} | 評論: ${place.user_ratings_total || 0}<br>
-                <a href="${place.url}" target="_blank">在 Google 地圖上查看</a>${distanceInfo}
+                <strong>${escapeHtml(place.name || '未命名分店')}</strong><br>
+                ⭐ ${escapeHtml(place.rating || 'N/A')} | 評論: ${escapeHtml(place.user_ratings_total || 0)}<br>
+                <a href="${safeHttpUrl(place.url)}" target="_blank" rel="noopener">在 Google 地圖上查看</a>${distanceInfo}
             </div>
         `;
 
@@ -496,7 +697,7 @@
         position: fixed;
         bottom: 20px;
         right: 20px;
-        background: linear-gradient(to right, #667eea, #764ba2);
+        background: #173b3f;
         color: white;
         border: none;
         padding: 12px 20px;

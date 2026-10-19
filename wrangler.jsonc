@@ -1,0 +1,26 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "store-pulse",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-03-01",
+  "compatibility_flags": ["nodejs_compat"],
+  "assets": {
+    "directory": "./public",
+    "binding": "ASSETS",
+    "not_found_handling": "single-page-application"
+  },
+  "vars": {
+    "STORE_PULSE_ENABLE_ANALYSIS": "true",
+    "STORE_PULSE_CACHE_TTL_SECONDS": "21600",
+    "STORE_PULSE_EMPTY_CACHE_TTL_SECONDS": "600",
+    "STORE_PULSE_CLIENT_RATE_LIMIT": "5",
+    "STORE_PULSE_DAILY_MODEL_BUDGET": "100",
+    "STORE_PULSE_API_ORIGINS": ""
+  },
+  "ai": {
+    "binding": "AI"
+  },
+  "observability": {
+    "enabled": true
+  }
+}

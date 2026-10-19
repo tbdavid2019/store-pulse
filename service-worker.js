@@ -1,4 +1,4 @@
-const CACHE_NAME = 'store-pulse-v1';
+const CACHE_NAME = 'store-pulse-v2';
 const urlsToCache = [
   '/',
   '/index.html',
@@ -26,7 +26,9 @@ self.addEventListener('install', event => {
 // 攔截網路請求
 self.addEventListener('fetch', event => {
   // 只快取同源請求，避免快取 Google Maps API
-  if (event.request.url.startsWith(self.location.origin)) {
+  const isSameOrigin = event.request.url.startsWith(self.location.origin);
+  const isApi = new URL(event.request.url).pathname.startsWith('/api/');
+  if (event.request.method === 'GET' && isSameOrigin && !isApi) {
     event.respondWith(
       caches.match(event.request)
         .then(response => {

@@ -1,0 +1,19 @@
+{
+  "name": "store-pulse",
+  "version": "1.0.0",
+  "description": "Store Pulse - 多店面管理評價速查與深度分析 (Cloudflare Worker)",
+  "type": "module",
+  "scripts": {
+    "build": "node scripts/build.js",
+    "dev": "npm run build && wrangler dev",
+    "deploy": "npm run build && wrangler deploy",
+    "types": "wrangler types",
+    "test": "node --experimental-strip-types --test tests/worker.test.mjs"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^5.20261019.1",
+    "@types/node": "^26.6.5",
+    "typescript": "^7.0.2",
+    "wrangler": "^4.151.1"
+  }
+}
