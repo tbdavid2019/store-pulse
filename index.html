@@ -2316,7 +2316,7 @@
         </span>
         <div>
           <h2 id="settingsModalTitle" class="settings-title">進階設定：自備金鑰中心 (BYOK Hub)</h2>
-          <p class="settings-subtitle">自備 SerpApi 突破評論上限，或自備 Gemini / Groq / OpenAI / xAI / Claude 自由切換模型。</p>
+          <p class="settings-subtitle">自備 SerpApi 突破評論上限，或自備各大 AI 供應商金鑰自由選用模型。</p>
         </div>
       </div>
       <button type="button" class="settings-close-btn" onclick="closeSettingsModal()" aria-label="關閉設定">
@@ -2413,7 +2413,7 @@
             <span class="callout-quota">支援動態 Get Model List</span>
           </div>
           <p class="callout-desc">
-            您可以自備個人 API Key 直接使用 Gemini 2.5 Flash / Pro、Groq Llama 3.3 70B、OpenAI GPT-4o、xAI Grok 或 Claude 3.5 Sonnet，不佔用本站每日配額限制。
+            您可以自備個人 API Key 串接各大 AI 供應商，支援動態取得可用模型清單，不佔用本站每日配額限制。
           </p>
         </div>
 
@@ -2426,12 +2426,12 @@
             <span id="byokStoredIndicator" class="key-status-indicator"></span>
           </label>
           <select id="byokProviderSelect" class="settings-select" onchange="onBYOKProviderChange()">
-            <option value="none">Cloudflare Workers AI（免費原生推論 · 預設）</option>
-            <option value="gemini">Google Gemini（Gemini 2.5 Flash / Pro 等）</option>
-            <option value="groq">Groq（極速推理 Llama 3.3 70B 等）</option>
-            <option value="openai">OpenAI / ChatGPT（GPT-4o / GPT-4o-mini 等）</option>
-            <option value="xai">xAI Grok（Grok 2 / Grok Beta）</option>
-            <option value="anthropic">Anthropic Claude（Claude 3.5 Sonnet / Haiku）</option>
+            <option value="none">Cloudflare（預設）</option>
+            <option value="gemini">Google Gemini</option>
+            <option value="groq">Groq</option>
+            <option value="openai">OpenAI</option>
+            <option value="xai">xAI</option>
+            <option value="anthropic">Anthropic</option>
           </select>
         </div>
 
