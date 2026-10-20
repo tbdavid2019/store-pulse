@@ -122,6 +122,10 @@
       padding: 0;
     }
 
+    [hidden] {
+      display: none !important;
+    }
+
     ::selection {
       background: var(--saffron);
       color: var(--deep-blue);
@@ -934,11 +938,15 @@
       display: flex;
       flex-direction: column;
       transform: translateX(100%);
-      transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+      pointer-events: none;
+      visibility: hidden;
+      transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.28s ease;
     }
 
     .analysis-drawer.is-open {
       transform: translateX(0);
+      pointer-events: auto;
+      visibility: visible;
     }
 
     .drawer-header {
@@ -1651,10 +1659,14 @@
       backdrop-filter: blur(4px);
       z-index: 1100;
       opacity: 0;
-      transition: opacity 0.22s ease-out;
+      pointer-events: none;
+      visibility: hidden;
+      transition: opacity 0.22s ease-out, visibility 0.22s ease-out;
     }
     .settings-backdrop.is-open {
       opacity: 1;
+      pointer-events: auto;
+      visibility: visible;
     }
     .settings-modal {
       position: fixed;
@@ -1671,11 +1683,15 @@
       display: flex;
       flex-direction: column;
       opacity: 0;
+      pointer-events: none;
+      visibility: hidden;
       transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
       overflow: hidden;
     }
     .settings-modal.is-open {
       opacity: 1;
+      pointer-events: auto;
+      visibility: visible;
       transform: translate(-50%, -50%) scale(1);
     }
     .settings-modal-header {
@@ -2981,13 +2997,17 @@
           openAnalysisDrawer(place, openBtn);
         });
 
-        card.onclick = () => {
+        card.onclick = (e) => {
+            if (e && e.target && e.target.closest('a, button, .filter-pill, .review-expand-btn')) {
+              return;
+            }
             const marker = markerMap.get(place.place_id);
             if (marker) {
                 google.maps.event.trigger(marker, 'click');
                 document.querySelectorAll('.store-card').forEach(c => c.classList.remove('active'));
                 card.classList.add('active');
             }
+            openAnalysisDrawer(place, openBtn);
         };
         return card;
     }
