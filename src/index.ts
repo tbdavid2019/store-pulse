@@ -157,6 +157,25 @@ export default {
       );
     }
 
+    // Explicit handler for llms.txt & llms-full.txt to guarantee UTF-8 encoding in web browsers
+    if (url.pathname === '/llms.txt' || url.pathname === '/llms-full.txt') {
+      if (env.ASSETS) {
+        const assetRes = await env.ASSETS.fetch(request);
+        if (assetRes.status === 200) {
+          const content = await assetRes.text();
+          return new Response(content, {
+            status: 200,
+            headers: {
+              'Content-Type': 'text/plain; charset=utf-8',
+              'Content-Disposition': 'inline',
+              'Cache-Control': 'public, max-age=1800, must-revalidate',
+              'Access-Control-Allow-Origin': '*',
+            },
+          });
+        }
+      }
+    }
+
     // SerpApi account validation & quota check endpoint (BYOK)
     if (url.pathname === '/api/serpapi-account') {
       if (request.method !== 'POST') {
@@ -490,7 +509,35 @@ export default {
 
     // Serve static assets if ASSETS binding is present
     if (env.ASSETS) {
-      return await env.ASSETS.fetch(request);
+      const assetRes = await env.ASSETS.fetch(request);
+      const contentType = assetRes.headers.get('Content-Type') || '';
+      const pathname = url.pathname.toLowerCase();
+
+      // Ensure UTF-8 charset is explicitly set on text files (llms.txt, robots.txt, json, xml, markdown) to prevent browser mojibake
+      if (
+        pathname === '/llms.txt' ||
+        pathname === '/llms-full.txt' ||
+        pathname.endsWith('.txt') ||
+        pathname.endsWith('.json') ||
+        pathname.endsWith('.xml') ||
+        contentType.startsWith('text/') ||
+        contentType.includes('application/json')
+      ) {
+        const newHeaders = new Headers(assetRes.headers);
+        if (pathname === '/llms.txt' || pathname === '/llms-full.txt') {
+          newHeaders.set('Content-Type', 'text/plain; charset=utf-8');
+          newHeaders.set('Content-Disposition', 'inline');
+        } else if (!contentType.toLowerCase().includes('charset')) {
+          newHeaders.set('Content-Type', `${contentType || 'text/plain'}; charset=utf-8`);
+        }
+        return new Response(assetRes.body, {
+          status: assetRes.status,
+          statusText: assetRes.statusText,
+          headers: newHeaders,
+        });
+      }
+
+      return assetRes;
     }
 
     return new Response('Not Found', { status: 404 });

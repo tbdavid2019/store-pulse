@@ -1,0 +1,369 @@
+# Store Pulse 店面脈搏 - 全功能技術規格與資料結構手冊 (llms-full.txt)
+
+> 本文件為 Store Pulse 系統的完整技術文件與資料契約（Data Contract），供大型語言模型（LLMs）、AI Agents 及架構師深入理解全端設計、演算法、資料模型與安全性機制。
+
+- 簡要導覽檔：https://storepulse.david888.com/llms.txt
+- 線上服務網址：https://storepulse.david888.com
+- API 端點根目錄：https://storepulse.david888.com/api
+
+---
+
+## 1. 產品目標與設計哲學
+
+實體連鎖門市在 Google Maps 上的平均星等往往因刷榜活動（打卡送禮、五星送餐）或龐大評論基數而被掩蓋真實水準。消費者在不同分店間踩雷，品牌營運主管也難以及時發現特定分店的人員溝通、出餐品質或衛生問題。
+
+Store Pulse 的核心任務：
+1. **去蕪存菁**：過濾因活動贈品產生的虛假評論，凸顯真實顧客聲音。
+2. **避雷導向**：聚焦 1～3 星真實負評，依照在地嚮導加權、長評詳細度排序，讓弱點無所遁形。
+3. **證據錨定**：AI 不得憑空捏造任何結論，每項評語必須精確回溯至對應的評論證據指紋。
+4. **極致隱私**：以零知識（Zero-Knowledge）架構保障使用者的 API 金鑰安全，不設中心化資料庫保存私鑰。
+
+---
+
+## 2. 系統架構與資料流 (Architecture & Data Flow)
+
+```
+[使用者瀏覽器 (Web Client / PWA)]
+   ├── Google Maps JS SDK (地圖渲染、分店檢索)
+   ├── LocalStorage (持久化保存 SerpApi / LLM 金鑰，不外洩)
+   │
+   ▼ (HTTPS 端對端加密傳輸，帶自備金鑰標頭)
+[Cloudflare Workers (Edge Serverless Runtime)]
+   ├── 路由派發 (Route Dispatcher)
+   ├── 速率限制與每日預算防護 (StorageManager / Memory & KV)
+   ├── 雙軌評論整合器 (Places API + SerpApi 4-Tier Curation)
+   ├── 評論清洗、截斷與 SHA-256 證據指紋生成
+   ├── 行銷刷榜誘因正則偵測 (detectIncentiveSignals)
+   │
+   ├── AI 推論引擎 (analysis.ts)
+   │     ├── 原生：Cloudflare Workers AI (@cf/openai/gpt-oss-20b)
+   │     ├── 容錯：備援模型 (@cf/meta/llama-3.3-70b-instruct-fp8-fast)
+   │     ├── 自備：BYOK API (Gemini / Groq / OpenAI / xAI / Claude)
+   │     └── JSON 救援解析器 (Salvation Parser / Repair)
+   │
+   ▼
+[結構化輸出 (Structured Response)]
+   ├── 200 字重點總結 (summary)
+   ├── 六大維度觀察標籤 (observations: wait_time, service_attitude...)
+   ├── 精準證據關聯 (evidence_ids)
+   └── 邊緣快取 (Edge KV Cache 21600s)
+```
+
+---
+
+## 3. 核心 TypeScript 型別定義 (Core Types)
+
+```typescript
+export type AnalysisMode = 'recent' | 'low_rating';
+
+export type ObservationCategory =
+  | 'wait_time'
+  | 'service_attitude'
+  | 'food_beverage_quality'
+  | 'pricing_value'
+  | 'environment_cleanliness'
+  | 'marketing_event';
+
+export type ObservationSentiment = 'positive' | 'negative' | 'mixed';
+
+export interface EvidenceItem {
+  evidence_id: string; // e.g. "ev_9f83a21c"
+  source: 'google_places' | 'serpapi';
+  author?: string;
+  rating?: number;
+  time?: number;
+  relative_time?: string;
+  text: string;
+  is_local_guide?: boolean;
+}
+
+export interface ObservationItem {
+  category: ObservationCategory;
+  sentiment: ObservationSentiment;
+  finding: string;
+  evidence_ids: string[];
+}
+
+export interface AnalysisRequestPayload {
+  place_id: string;
+  mode: AnalysisMode;
+  window_days: number;
+  place: {
+    place_id: string;
+    name: string;
+    vicinity?: string;
+    rating?: number;
+    user_ratings_total?: number;
+    url?: string;
+  };
+  reviews: Array<{
+    author_name?: string;
+    rating?: number;
+    text?: string;
+    time?: number;
+    relative_time_description?: string;
+  }>;
+}
+
+export interface AnalysisResponsePayload {
+  status: 'success' | 'insufficient_evidence' | 'quota_exceeded' | 'timeout' | 'summary_unavailable';
+  place_id: string;
+  generated_at: string;
+  summary: string | null;
+  observations: ObservationItem[];
+  sampling: {
+    eligible: number;
+    used: number;
+    excluded: {
+      date_window?: number;
+      rating_threshold?: number;
+      empty_text?: number;
+      other?: number;
+    };
+    mode: AnalysisMode;
+    window_days: number;
+    truncated: boolean;
+  };
+  evidence: EvidenceItem[];
+  usage: {
+    reviews_fetched: number;
+    review_source: 'places' | 'serpapi';
+    model: string;
+    summary_error?: string;
+  };
+  cache?: {
+    hit: boolean;
+    cached_at: string;
+  };
+}
+```
+
+---
+
+## 4. 完整 REST API 詳細規格
+
+### 端點 1：服務狀態 `GET /api/health`
+- **目的**：檢查服務存活狀態、Edge 執行環境與 AI 分析功能旗標。
+- **回應 HTTP 狀態**：`200 OK`
+- **回應內容**：
+```json
+{
+  "status": "ok",
+  "analysis_enabled": true,
+  "runtime": "cloudflare-worker"
+}
+```
+
+---
+
+### 端點 2：評論分析 `POST /api/review-analysis`
+- **目的**：核心分析端點，接收分店及評論資料，生成避雷摘要與證據。
+- **支援自備金鑰標頭**：
+  - `X-SerpApi-Key`: 突破 5 則評論，啟動 ~25 則深度地圖爬蟲。
+  - `X-LLM-Provider`: 指定推論提供商（`gemini` | `groq` | `openai` | `xai` | `anthropic` | `none`）。
+  - `X-LLM-Key`: 使用者自備之提供商 API Key。
+  - `X-LLM-Model`: 指定選用的模型識別碼。
+- **完整呼叫範例**：
+```bash
+curl -X POST "https://storepulse.david888.com/api/review-analysis" \
+  -H "Content-Type: application/json" \
+  -H "X-LLM-Provider: gemini" \
+  -H "X-LLM-Key: AIzaSyYourGeminiApiKeyHere" \
+  -H "X-LLM-Model: gemini-2.5-flash" \
+  -d '{
+    "place_id": "ChIJN1t_tDeuEmsRUsoyG83frY4",
+    "mode": "low_rating",
+    "window_days": 3650,
+    "place": {
+      "place_id": "ChIJN1t_tDeuEmsRUsoyG83frY4",
+      "name": "示範連鎖咖啡 信義門市",
+      "vicinity": "台北市信義區信義路五段7號",
+      "rating": 3.8,
+      "user_ratings_total": 850
+    },
+    "reviews": [
+      {
+        "author_name": "陳先生 (在地嚮導)",
+        "rating": 2,
+        "text": "假日尖峰時間點餐排隊等了超過半小時，店員態度消極，桌子油膩無人擦拭。",
+        "time": 1735689600
+      },
+      {
+        "author_name": "林小姐",
+        "rating": 1,
+        "text": "外帶咖啡漏了半杯在袋子裡，向店員反映只冷回『我們封膜都這樣』，絕不再來。",
+        "time": 1735603200
+      }
+    ]
+  }'
+```
+- **典型成功回應範例**：
+```json
+{
+  "status": "success",
+  "place_id": "ChIJN1t_tDeuEmsRUsoyG83frY4",
+  "generated_at": "2026-10-20T04:34:00.000Z",
+  "summary": "該門市近期負評主要集中於尖峰時段候位過長、人員溝通態度不佳，以及杯蓋外帶封膜外漏等出餐品質瑕疵。環境桌面整潔亦有改善空間。",
+  "observations": [
+    {
+      "category": "service_attitude",
+      "sentiment": "negative",
+      "finding": "店員面對顧客反映商品外漏問題時應對消極，溝通態度引發強烈不滿。",
+      "evidence_ids": ["ev_7a2b9c1d"]
+    },
+    {
+      "category": "wait_time",
+      "sentiment": "negative",
+      "finding": "假日尖峰時段點餐等候時間超過 30 分鐘，動線管理與出餐節奏不佳。",
+      "evidence_ids": ["ev_1e3f5a7b"]
+    },
+    {
+      "category": "environment_cleanliness",
+      "sentiment": "negative",
+      "finding": "內用座位區桌面油膩且未及時清潔。",
+      "evidence_ids": ["ev_1e3f5a7b"]
+    }
+  ],
+  "sampling": {
+    "eligible": 2,
+    "used": 2,
+    "excluded": { "date_window": 0, "rating_threshold": 0, "empty_text": 0 },
+    "mode": "low_rating",
+    "window_days": 3650,
+    "truncated": false
+  },
+  "evidence": [
+    {
+      "evidence_id": "ev_1e3f5a7b",
+      "source": "google_places",
+      "author": "陳先生 (在地嚮導)",
+      "rating": 2,
+      "text": "假日尖峰時間點餐排隊等了超過半小時，店員態度消極，桌子油膩無人擦拭。"
+    },
+    {
+      "evidence_id": "ev_7a2b9c1d",
+      "source": "google_places",
+      "author": "林小姐",
+      "rating": 1,
+      "text": "外帶咖啡漏了半杯在袋子裡，向店員反映只冷回『我們封膜都這樣』，絕不再來。"
+    }
+  ],
+  "usage": {
+    "reviews_fetched": 2,
+    "review_source": "places",
+    "model": "gemini-2.5-flash"
+  },
+  "cache": {
+    "hit": false,
+    "cached_at": "2026-10-20T04:34:00.000Z"
+  }
+}
+```
+
+---
+
+### 端點 3：SerpApi 金鑰與餘額查詢 `POST /api/serpapi-account`
+- **目的**：即時測試使用者的 SerpApi Key 是否有效，並回報剩餘搜尋配額。
+- **請求標頭**：`X-SerpApi-Key: 2d14cf...`
+- **回應內容**：
+```json
+{
+  "valid": true,
+  "account_email": "user@example.com",
+  "total_searches_left": 238,
+  "plan_searches_left": 238
+}
+```
+
+---
+
+### 端點 4：SerpApi 深度評論獲取 `POST /api/serpapi-reviews`
+- **目的**：利用 SerpApi Google Maps Engine 抓取 ~25 則精選評論。
+- **請求欄位**：
+```json
+{
+  "place_id": "ChIJN1t_tDeuEmsRUsoyG83frY4",
+  "title": "麥當勞-台北信義店",
+  "latitude": 25.033,
+  "longitude": 121.565
+}
+```
+- **回應內容**：
+```json
+{
+  "reviews": [
+    {
+      "author": "王大明",
+      "rating": 1,
+      "text": "點大薯只有裝一半，反應後店員態度很差...",
+      "time": 1735600000,
+      "is_local_guide": true
+    }
+  ],
+  "source": "serpapi"
+}
+```
+
+---
+
+### 端點 5：動態可用模型清單 `POST /api/llm-models`
+- **目的**：針對自備 AI 供應商即時查詢該 API Key 當前支援的所有可用模型清單。
+- **請求欄位**：`{ "provider": "groq", "api_key": "gsk_..." }`
+- **回應內容**：
+```json
+{
+  "models": [
+    { "id": "llama-3.3-70b-versatile", "name": "llama-3.3-70b-versatile" },
+    { "id": "llama-3.1-8b-instant", "name": "llama-3.1-8b-instant" }
+  ]
+}
+```
+
+---
+
+## 5. 安全性、速率限制與隱私規範
+
+1. **IP 速率限制**：
+   - 預設每分鐘每個 IP 最多 5 次分析請求。
+   - SerpApi 餘額查詢每分鐘最多 10 次。
+   - 超過時回傳 HTTP `429 Too Many Requests`。
+2. **每日全站預算防護 (Daily Model Budget)**：
+   - 當日全站原生推論消耗達上限時，自動回傳 `status: "quota_exceeded"`，引導訪客使用自備金鑰（BYOK）或隔日再來。
+3. **輸入防禦與長度防護**：
+   - 評論字數截斷至安全上限（避免 context window 溢出）。
+   - 系統提示詞（System Prompt）內建防 Prompt Injection 指令，嚴禁模型執行評論文字中的任何攻擊性指令。
+4. **快取失效策略**：
+   - 分析成功結果快取 6 小時（21,600 秒）。
+   - 暫時性錯誤（如逾時、模型額度超額）絕不寫入快取，確保下次重試能正常執行。
+
+---
+
+## 6. AI Agent 工具調用定義 (Function Calling / Tool Schema)
+
+若您正在開發智慧代理人（如 OpenAI Assistants, Anthropic Tool Use, LangChain Agent），可直接導入以下 JSON Schema：
+
+```json
+{
+  "name": "analyze_store_reviews",
+  "description": "分析指定 Google Maps 分店評論，提煉核心顧客痛點與避雷觀察",
+  "parameters": {
+    "type": "object",
+    "properties": {
+      "place_id": {
+        "type": "string",
+        "description": "Google Place ID (例如 ChIJ...)"
+      },
+      "mode": {
+        "type": "string",
+        "enum": ["recent", "low_rating"],
+        "description": "分析模式：recent 為近期綜合評論，low_rating 為 3 星以下低分痛點"
+      },
+      "window_days": {
+        "type": "integer",
+        "description": "分析時間窗口天數 (例如 90 或 3650 代表不限)"
+      }
+    },
+    "required": ["place_id", "mode"]
+  }
+}
+```

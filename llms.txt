@@ -1,17 +1,148 @@
 # Store Pulse 店面脈搏
 
-> Store Pulse 是繁體中文的 Google Maps 多店面搜尋與評論分析工具，協助使用者比較連鎖店分店、查看顧客回饋，並協助營運團隊掌握服務趨勢。
+> Store Pulse（店面脈搏）是一套專為實體門市、連鎖餐飲與零售品牌打造的 Google Maps 多分店評價速查、顧客負評標記與避雷深度分析系統。透過邊緣運算（Cloudflare Workers）與自備金鑰（BYOK）雙軌機制，協助消費者比較門市水準，並為連鎖品牌營運主管自動提煉各門市真實痛點與服務缺口。
 
-網站提供互動式店家與分店搜尋、地址與星等速查、Google Maps 精選評論，以及依近期或低分評論整理的營運分析。搜尋結果和評論由 Google Maps 提供；評論內容屬於外部使用者資料。
+本文件依據 [llms.txt 規範](https://llmstxt.org/) 撰寫，專供大型語言模型（LLMs）、AI Agents（如 AutoGPT、Claude Computer Use、OpenAI Operator、瀏覽器代理人）及開發者快速索引與呼叫 Store Pulse 所提供的資料結構與 REST API。
 
-搜尋工具使用者可輸入店名、品牌或地區，例如「台北 星巴克」。首頁的地圖搜尋需要瀏覽器支援 Google Maps，店家搜尋與評論資料依 Google Maps 服務及其可用性提供。AI 深度分析會依站點當前設定提供，並以評論證據為基礎。
+- 完整詳細規格檔：[llms-full.txt](https://storepulse.david888.com/llms-full.txt)
+- 線上網址：https://storepulse.david888.com
+- API 基礎端點：https://storepulse.david888.com/api
 
-## 網站
+---
 
-- [Store Pulse 首頁](https://storepulse.david888.com/): 搜尋連鎖品牌與多間分店、比較評價並查看營運洞察。
-- [服務健康狀態](https://storepulse.david888.com/api/health): 檢視 API 服務狀態與深度分析功能是否啟用。
+## 核心功能與架構 (Core Capabilities)
 
-## 相關技術
+1. **多分店即時地圖搜尋與比對**
+   - 整合 Google Maps JavaScript API 與 Places Service，支援全台連鎖品牌（例：星巴克、麥當勞、藏壽司）一鍵搜尋鄰近所有分店。
+   - 快速比對分店評分（Rating）、總評論數、距離使用者公里數（Haversine 公式計算）。
 
-- [WebMCP 官方文件](https://developer.chrome.com/docs/ai/webmcp?hl=zh-tw): 網頁代理程式可使用的結構化工具介面。
-- [llms.txt 格式提案](https://llmstxt.org/): 網站提供 LLM 易讀導覽檔案的格式說明。
+2. **雙軌評論擷取引擎 (Dual-Source Review Ingestion)**
+   - **Google Places 官方標準模式**：提供即時 5 則官方精選評論，零設定門檻，適合快速瀏覽。
+   - **SerpApi Google Maps 深度爬蟲模式（BYOK）**：使用者填入個人 SerpApi 免費 Key（每月 250 次），突破 5 則限制，單次擷取 20～25 則豐富評論。
+   - **四層優先級評論篩選演算法 (4-Tier Curation)**：
+     - Tier 1: 在地嚮導（Local Guide）且給予 1～3 星之高價值痛點負評。
+     - Tier 2: 一般顧客 1～3 星痛點負評。
+     - Tier 3: 在地嚮導之具體深度好評。
+     - Tier 4: 字數大於 30 字之詳細評論，排除灌水短評。
+
+3. **防幻覺審計與證據引用機制 (Anti-Hallucination Guardrails)**
+   - **確定性證據指紋**：每則評論根據內容與評分生成 SHA-256 唯一指紋（`ev_<hash>`）。
+   - **強迫引用證據**：AI 提煉之每一項觀察（Finding）必須強制連結至對應的 `evidence_id`，杜絕 LLM 憑空捏造或誇大。
+   - **行銷與刷榜誘因過濾 (Incentive Signal Detection)**：自動正則偵測「打卡送、五星好評送、買一送一、抽獎」等非自願好評，並在分析報告中標註警示。
+
+4. **六大維度營運觀察分類 (6 Operational Observation Categories)**
+   - `wait_time`：排隊時間、出餐候位、入座等待。
+   - `service_attitude`：店員態度、口氣溝通、處理客訴效率。
+   - `food_beverage_quality`：餐點口感、食材新鮮度、異物瑕疵。
+   - `pricing_value`：性價比（CP 值）、收費透明度、額外清潔服務費。
+   - `environment_cleanliness`：桌面整潔、洗手間衛生、動線擁擠、油煙異味。
+   - `marketing_event`：評論是否受打卡送小菜/活動贈品誘因而失真。
+
+5. **BYOK（自備金鑰）與零知識隱私架構 (Zero-Knowledge Privacy)**
+   - 支援 SerpApi 金鑰（突破評論抓取上限）。
+   - 支援各大 AI 提供商（Google Gemini、Groq、OpenAI、xAI、Anthropic Claude、Cloudflare Workers AI 原生推論）。
+   - **零知識承諾**：所有金鑰僅存於訪客本機瀏覽器（localStorage），透過端對端 HTTPS 加密標頭傳輸；伺服器記憶體完成轉發後即刻銷毀，絕不持久化寫入任何資料庫或 Log 日誌。
+
+---
+
+## REST API 規格與端點 (API Reference)
+
+### 1. 服務狀態檢查
+- **端點**：`GET /api/health`
+- **說明**：確認 Edge Worker 服務運行狀態及 AI 分析模組是否已啟用。
+- **回應範例**：
+```json
+{
+  "status": "ok",
+  "analysis_enabled": true,
+  "runtime": "cloudflare-worker"
+}
+```
+
+### 2. 評論深度分析 (Core Review Analysis)
+- **端點**：`POST /api/review-analysis`
+- **說明**：接收店家資料與評論陣列，依據所選分析模式（近期或低分痛點）進行清洗、指紋雜湊，並交由 AI 生成結構化摘要與證據觀察。
+- **請求標頭 (Headers)**：
+  - `Content-Type: application/json`
+  - `X-SerpApi-Key`（可選）：使用者的 SerpApi Private Key。
+  - `X-LLM-Provider`（可選）：`gemini` | `groq` | `openai` | `xai` | `anthropic` | `none`。
+  - `X-LLM-Key`（可選）：自備 AI 供應商 API Key。
+  - `X-LLM-Model`（可選）：自備推論模型名稱（例：`gemini-2.5-flash`、`llama-3.3-70b-versatile`、`gpt-4o-mini`）。
+- **請求欄位 (Request Body)**：
+  - `place_id` (string, required): Google Place ID（例如 `ChIJ...`）。
+  - `mode` (string, required): 分析模式，`recent`（近期評論）或 `low_rating`（3 星以下低分痛點）。
+  - `window_days` (number, default: 90): 時間窗口（天數，1～3650）。
+  - `place` (object, required): 店家資訊物件（含 `place_id`, `name`, `vicinity`, `rating`, `user_ratings_total`）。
+  - `reviews` (array, required): 原始評論清單（每則含 `author_name`, `rating`, `text`, `time` 等）。
+- **回應欄位 (Response Body)**：
+  - `status`: `success` | `insufficient_evidence` | `quota_exceeded` | `timeout` | `summary_unavailable`。
+  - `summary`: AI 繁體中文重點摘要（200 字以內，直指關鍵現況）。
+  - `observations`: 結構化觀察陣列，每項包含：
+    - `category`: 六大營運維度之一。
+    - `sentiment`: `positive` | `negative` | `mixed`。
+    - `finding`: 繁體中文具體客觀陳述。
+    - `evidence_ids`: 引用的證據指紋 ID 清單（例 `["ev_a1b2c3d4"]`）。
+  - `sampling`: 採樣統計（`eligible`, `used`, `excluded`, `mode`, `window_days`）。
+  - `evidence`: 標準化後的證據清單。
+  - `usage`: 執行資訊（包含 `review_source`: `places` 或 `serpapi`）。
+
+### 3. SerpApi 帳號與額度驗證
+- **端點**：`POST /api/serpapi-account`
+- **標頭**：`X-SerpApi-Key: <KEY>` 或傳入 JSON `{ "api_key": "<KEY>" }`。
+- **說明**：向 SerpApi 官方即時檢驗金鑰合法性，並取得當月剩餘免費搜尋次數與帳號信箱。
+
+### 4. SerpApi 深度評論抓取
+- **端點**：`POST /api/serpapi-reviews`
+- **標頭**：`X-SerpApi-Key: <KEY>`
+- **請求欄位**：`{ "place_id": "ChIJ...", "title": "品牌分店名", "latitude": 25.033, "longitude": 121.565 }`
+- **說明**：透過 SerpApi Google Maps Engine 抓取 ~25 則深度評論，並自動套用四層優先級排序。
+
+### 5. 動態可用模型清單查詢 (Get Model List)
+- **端點**：`POST /api/llm-models`
+- **標頭**：`X-LLM-Provider: <provider>`, `X-LLM-Key: <key>`
+- **說明**：向使用者指定的提供商（Gemini / Groq / OpenAI / xAI）即時拉取該帳號目前可使用的最新模型清單。
+
+---
+
+## AI Agent 使用範例 (Agent Integration Workflow)
+
+針對 LLM Agent（如 Claude Computer Use, ReAct Agent, LangChain, AutoGen）：
+
+```bash
+# 步驟 1：檢查 Store Pulse API 健康狀態
+curl -s "https://storepulse.david888.com/api/health"
+
+# 步驟 2：提交指定分店進行低分評論避雷分析 (以 cURL 為例)
+curl -X POST "https://storepulse.david888.com/api/review-analysis" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "place_id": "ChIJN1t_tDeuEmsRUsoyG83frY4",
+    "mode": "low_rating",
+    "window_days": 3650,
+    "place": {
+      "place_id": "ChIJN1t_tDeuEmsRUsoyG83frY4",
+      "name": "示範連鎖咖啡分店",
+      "vicinity": "台北市信義區信義路五段7號",
+      "rating": 4.1,
+      "user_ratings_total": 450
+    },
+    "reviews": [
+      {
+        "author_name": "王小明 (在地嚮導)",
+        "rating": 2,
+        "text": "假日排隊點餐等了將近 30 分鐘，店員動作很慢且態度不耐煩，拿鐵拿到時已經變溫的。",
+        "time": 1735689600
+      }
+    ]
+  }'
+```
+
+---
+
+## 相關參考連結 (References)
+
+- [Store Pulse 首頁](https://storepulse.david888.com/)：實時多分店評估與避雷操作介面。
+- [完整規格檔案 (llms-full.txt)](https://storepulse.david888.com/llms-full.txt)：包含完整的 TypeScript 資料結構、JSON Schema 與詳細範例。
+- [llms.txt 標準規格](https://llmstxt.org/)：由 Answer.ai 提出的標準化 AI 索引規範。
+- [SerpApi Google Maps Reviews API](https://serpapi.com/google-maps-reviews-api)：突破 5 則評論上限的爬蟲技術依據。
+- [Cloudflare Workers AI 文件](https://developers.cloudflare.com/workers-ai/)：邊緣輕量化原生推論引擎。
