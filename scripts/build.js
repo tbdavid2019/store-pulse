@@ -13,7 +13,7 @@ if (!fs.existsSync(publicDir)) {
 }
 
 // Copy top-level static files
-const staticFiles = ['index.html', 'manifest.json', 'service-worker.js', 'llms.txt', 'robots.txt', 'sitemap.xml'];
+const staticFiles = ['index.html', 'manifest.json', 'service-worker.js', 'llms.txt', 'robots.txt', 'sitemap.xml', 'CHANGELOG.md'];
 for (const file of staticFiles) {
   const src = path.join(root, file);
   const dest = path.join(publicDir, file);
