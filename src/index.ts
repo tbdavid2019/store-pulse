@@ -6,6 +6,13 @@ import {
   normalizeEvidence,
   parseGooglePlacesPayload,
 } from './reviews.ts';
+import {
+  SerpApiError,
+  curateSerpApiReviews,
+  fetchSerpApiReviews,
+  validateSerpApiKey,
+  type SerpApiReviewItem,
+} from './serpapi.ts';
 import { StorageManager } from './storage.ts';
 import type {
   AnalysisMode,
@@ -36,7 +43,7 @@ function getCorsHeaders(request: Request, env: Env): HeadersInit {
 
   const headers: Record<string, string> = {
     'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
-    'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+    'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-SerpApi-Key',
     'Access-Control-Max-Age': '86400',
   };
   if (allowedOrigin) {
@@ -88,21 +95,28 @@ function validatePayload(payload: unknown): { placeId: string; mode: AnalysisMod
   if (!body.place || typeof body.place !== 'object' || String(body.place.place_id || '') !== placeId) {
     throw new Error('place must match place_id');
   }
-  if (!Array.isArray(body.reviews) || body.reviews.length > 5) {
-    throw new Error('reviews must be a list of up to five Google Places reviews');
+  if (!Array.isArray(body.reviews) || body.reviews.length > 50) {
+    throw new Error('reviews must be a list of up to 50 reviews');
   }
 
   return { placeId, mode, windowDays };
 }
 
-function computeCacheKey(env: Env, placeId: string, mode: string, windowDays: number, sourceSha?: string): string {
+function computeCacheKey(
+  env: Env,
+  placeId: string,
+  mode: string,
+  windowDays: number,
+  sourceSha?: string,
+  sourcePrefix = 'places'
+): string {
   const modelUrl = env.MODEL_API_URL || '';
   const modelName = env.MODEL_NAME || '';
   const modelAuth = Boolean(env.MODEL_API_KEY);
-  const analysisVersion = env.STORE_PULSE_ANALYSIS_VERSION || '5';
-  const material = [analysisVersion, modelUrl, modelName, String(modelAuth), 'zh-TW', sourceSha || ''].join('|');
+  const analysisVersion = env.STORE_PULSE_ANALYSIS_VERSION || '6';
+  const material = [analysisVersion, modelUrl, modelName, String(modelAuth), 'zh-TW', sourceSha || '', sourcePrefix].join('|');
   const versionHash = createHash('sha256').update(material, 'utf8').digest('hex').slice(0, 16);
-  return `cache:${versionHash}|${placeId}|${mode}|${windowDays}`;
+  return `cache:${versionHash}|${placeId}|${mode}|${windowDays}|${sourcePrefix}`;
 }
 
 export default {
@@ -130,6 +144,35 @@ export default {
         200,
         corsHeaders
       );
+    }
+
+    // SerpApi account validation & quota check endpoint (BYOK)
+    if (url.pathname === '/api/serpapi-account') {
+      if (request.method !== 'POST') {
+        return errorResponse('method_not_allowed', 'Only POST is supported', 405, corsHeaders);
+      }
+
+      let key = request.headers.get('X-SerpApi-Key')?.trim() || '';
+      if (!key) {
+        try {
+          const body: any = await request.json();
+          key = String(body.api_key || body.key || '').trim();
+        } catch {}
+      }
+
+      if (!key) {
+        return errorResponse('missing_key', '請提供 SerpApi 金鑰', 400, corsHeaders);
+      }
+
+      const clientIp = request.headers.get('cf-connecting-ip') || 'anonymous';
+      const storage = new StorageManager(env);
+      const allowed = await storage.allowClient(`serp_check:${clientIp}`, 10);
+      if (!allowed) {
+        return errorResponse('rate_limited', '驗證請求過於頻繁，請稍後再試。', 429, corsHeaders);
+      }
+
+      const checkResult = await validateSerpApiKey(key);
+      return jsonResponse(checkResult, checkResult.valid ? 200 : 400, corsHeaders);
     }
 
     // Review analysis endpoint
@@ -186,51 +229,85 @@ export default {
 
       const { place, reviews } = placeParsed;
 
-      // Sort reviews based on mode
-      if (mode === 'recent') {
-        reviews.sort((a, b) => (b.published_at || '').localeCompare(a.published_at || ''));
-      } else {
-        reviews.sort((a, b) => {
-          const rA = a.rating ?? 6;
-          const rB = b.rating ?? 6;
-          if (rA !== rB) return rA - rB;
-          return (b.published_at || '').localeCompare(a.published_at || '');
-        });
+      // Check for BYOK SerpApi Key in request header or body
+      const serpApiKey = request.headers.get('X-SerpApi-Key')?.trim() || '';
+      let rawSerpReviews: SerpApiReviewItem[] | null = null;
+      let reviewSource = 'google_places';
+
+      if (serpApiKey) {
+        try {
+          const serpRes = await fetchSerpApiReviews(serpApiKey, placeId, { mode, lang: 'zh-TW' });
+          if (serpRes.reviews && serpRes.reviews.length > 0) {
+            rawSerpReviews = serpRes.reviews;
+            reviewSource = 'serpapi';
+          }
+        } catch (err: any) {
+          if (err instanceof SerpApiError) {
+            if (err.code === 'invalid_api_key') {
+              return errorResponse('invalid_serpapi_key', 'SerpApi 金鑰無效或不存在，請於「設定」中重新檢查。', 400, corsHeaders);
+            }
+            if (err.code === 'quota_exceeded') {
+              return errorResponse('serpapi_quota_exceeded', 'SerpApi 本月免費搜尋額度已用盡。', 429, corsHeaders);
+            }
+          }
+          console.warn('SerpApi fetching failed, falling back to Google Places:', err.message);
+        }
       }
 
-      const norm = normalizeEvidence(place, reviews, mode, windowDays);
+      let norm: ReturnType<typeof normalizeEvidence> | ReturnType<typeof curateSerpApiReviews>;
+      let usedEvidence: EvidenceItem[] = [];
+      let cacheKey: string;
+
+      if (rawSerpReviews && rawSerpReviews.length > 0) {
+        norm = curateSerpApiReviews(rawSerpReviews, place, mode, windowDays);
+        cacheKey = computeCacheKey(env, placeId, mode, windowDays, norm.source_sha, 'serpapi');
+        usedEvidence = norm.evidence;
+      } else {
+        // Sort reviews based on mode
+        if (mode === 'recent') {
+          reviews.sort((a, b) => (b.published_at || '').localeCompare(a.published_at || ''));
+        } else {
+          reviews.sort((a, b) => {
+            const rA = a.rating ?? 6;
+            const rB = b.rating ?? 6;
+            if (rA !== rB) return rA - rB;
+            return (b.published_at || '').localeCompare(a.published_at || '');
+          });
+        }
+
+        norm = normalizeEvidence(place, reviews, mode, windowDays);
+        cacheKey = computeCacheKey(env, placeId, mode, windowDays, norm.source_sha, 'places');
+        norm.sampling.truncated = (reqBody.reviews || []).length >= 5;
+
+        const rawEvidence = norm.evidence.slice(0, 5);
+        let totalChars = 0;
+
+        for (let item of rawEvidence) {
+          const remaining = 8000 - totalChars;
+          if (remaining <= 0) {
+            norm.sampling.truncated = true;
+            break;
+          }
+          let text = item.text;
+          if (text.length > 1200) {
+            text = text.slice(0, 1200).trimEnd() + '…';
+            item = { ...item, text, is_excerpt: true };
+          }
+          if (text.length > remaining) {
+            item = { ...item, text: text.slice(0, Math.max(1, remaining - 1)).trimEnd() + '…', is_excerpt: true };
+          }
+          totalChars += item.text.length;
+          usedEvidence.push(item);
+        }
+
+        norm.sampling.used = usedEvidence.length;
+      }
 
       // Cache lookup (using verified evidence fingerprint to prevent cache poisoning)
-      const cacheKey = computeCacheKey(env, placeId, mode, windowDays, norm.source_sha);
       const cached = await storage.get<AnalysisResponsePayload>(cacheKey);
       if (cached) {
         return jsonResponse(cached, 200, corsHeaders);
       }
-      norm.sampling.truncated = (reqBody.reviews || []).length >= 5;
-
-      const rawEvidence = norm.evidence.slice(0, 5);
-      const usedEvidence: EvidenceItem[] = [];
-      let totalChars = 0;
-
-      for (let item of rawEvidence) {
-        const remaining = 8000 - totalChars;
-        if (remaining <= 0) {
-          norm.sampling.truncated = true;
-          break;
-        }
-        let text = item.text;
-        if (text.length > 1200) {
-          text = text.slice(0, 1200).trimEnd() + '…';
-          item = { ...item, text, is_excerpt: true };
-        }
-        if (text.length > remaining) {
-          item = { ...item, text: text.slice(0, Math.max(1, remaining - 1)).trimEnd() + '…', is_excerpt: true };
-        }
-        totalChars += item.text.length;
-        usedEvidence.push(item);
-      }
-
-      norm.sampling.used = usedEvidence.length;
 
       const defaultTtl = Number(env.STORE_PULSE_CACHE_TTL_SECONDS) || 21600;
       const emptyTtl = Number(env.STORE_PULSE_EMPTY_CACHE_TTL_SECONDS) || 600;
@@ -251,7 +328,7 @@ export default {
         source_sha: norm.source_sha,
         fetched_at: new Date().toISOString(),
         usage: {
-          review_source: 'google_places',
+          review_source: reviewSource,
           model_calls: 0,
         },
         cache: {

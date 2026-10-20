@@ -6,6 +6,26 @@
 
 ## [2026-10-20]
 
+### ⚡ SerpApi 自備金鑰深度爬蟲 (BYOK Deep Review Extraction)
+- **突破 Places API 5 則評論上限**：提供雙軌制資料擷取架構。未填寫金鑰時維持完全免費的 Google Places API（5 則即時精選）；填寫個人 SerpApi Key 時自動升級至 `~25 則深度地圖爬蟲`。
+- **4 階加權萃取演算法 (TLDReview 4-Tier Curation)**：
+  - 第一優先：在地嚮導（Local Guides）與高等級認證評論者。
+  - 第二優先：1~3 星真實負評與爭議點（低分優先排序，精準捕捉避雷細節）。
+  - 第三優先：獲得高度認同（Helpful votes）的優質評論。
+  - 第四優先：具備客觀長文內容的顧客回饋。
+- **零知識儲存安全性 (Zero-Knowledge Architecture)**：
+  - 使用者金鑰僅存放於本機瀏覽器 `localStorage`，不入庫、不記錄至 Cloudflare KV 或後端日誌。
+  - 呼叫後端分析時透過端對端加密 HTTPS Header (`X-SerpApi-Key`) 傳輸。
+- **金鑰設定彈窗 (Settings Modal)**：
+  - 頂部導航列新增模式狀態標籤（`5 則精選` / `⚡ 深度爬蟲 (~25則)`），點擊即開啟設定面板。
+  - 提供即時測試連線按鈕（`🧪 測試連線與額度`），可直接查詢剩餘額度、本月使用量與帳號狀態。
+  - 支援密碼顯示/隱藏切換、一鍵儲存與一鍵清除金鑰。
+- **優雅降級容錯機制 (Graceful Fallback)**：
+  - 若 SerpApi 額度耗盡或網路波動，後端分析管線自動無縫降級回 Google Places API 5 則評論，確保使用者隨時都能完成分析。
+- **Impeccable 工藝標準達成**：
+  - 符合 Impeccable Craft Floor，嚴格禁止彩光陰影與非對稱粗邊框，採用無障礙鍵盤焦點、中性光影與平滑動態。
+  - Service Worker 快取版本推進至 `v6`。
+
 ### 🌐 網域與基礎建設 (Domain & Infrastructure)
 - **正式自訂網域上線**：綁定 `https://storepulse.david888.com/`，於 `wrangler.jsonc` 配置 Cloudflare Workers 自訂路由，並設定 DNS 與 SSL 憑證。
 - **SEO 與 Open Graph 完整支援**：新增 1200×630 OG 分享縮圖、canonical 標籤、Twitter Card 與 Schema.org JSON-LD 結構化資料。

@@ -1,4 +1,4 @@
-const CACHE_NAME = 'store-pulse-v5';
+const CACHE_NAME = 'store-pulse-v6';
 const urlsToCache = [
   '/',
   '/index.html',

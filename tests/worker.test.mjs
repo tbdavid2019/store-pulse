@@ -9,6 +9,11 @@ import {
   detectIncentiveSignals,
 } from '../src/reviews.ts';
 import { StorageManager } from '../src/storage.ts';
+import {
+  validateSerpApiKey,
+  fetchSerpApiReviews,
+  curateSerpApiReviews,
+} from '../src/serpapi.ts';
 
 test('parseGooglePlacesPayload - normalizes places and reviews', () => {
   const placeData = {
@@ -288,6 +293,228 @@ test('summarize - handles direct Cloudflare REST API fallback when env.AI is una
     assert.ok(res.summary);
     assert.equal(res.summary.observations.length, 1);
     assert.equal(res.summary.observations[0].category, 'product_quality');
+  } finally {
+    globalThis.fetch = originalFetch;
+  }
+});
+
+test('validateSerpApiKey - validates key with SerpApi account endpoint', async () => {
+  const originalFetch = globalThis.fetch;
+  try {
+    globalThis.fetch = async (url) => {
+      if (url.includes('api_key=valid_key')) {
+        return new Response(JSON.stringify({
+          total_searches_left: 245,
+          this_month_usage: 5,
+          account_email: 'tester@example.com',
+        }), { status: 200, headers: { 'Content-Type': 'application/json' } });
+      }
+      return new Response(JSON.stringify({
+        error: 'Invalid API key.',
+      }), { status: 401, headers: { 'Content-Type': 'application/json' } });
+    };
+
+    const validRes = await validateSerpApiKey('valid_key');
+    assert.equal(validRes.valid, true);
+    assert.equal(validRes.total_searches_left, 245);
+    assert.equal(validRes.account_email, 'tester@example.com');
+
+    const invalidRes = await validateSerpApiKey('bad_key');
+    assert.equal(invalidRes.valid, false);
+    assert.ok(invalidRes.error);
+  } finally {
+    globalThis.fetch = originalFetch;
+  }
+});
+
+test('curateSerpApiReviews - prioritizes Local Guides and critical reviews in 4 tiers', () => {
+  const place = {
+    place_id: 'place_test',
+    name: '測試餐廳',
+    address: '台北市',
+    rating: 4.0,
+    source_url: 'https://maps.google.com/?cid=1',
+  };
+
+  const rawReviews = [
+    {
+      author: 'Normal Person',
+      user: { name: 'Normal Person', local_guide: false },
+      rating: 5,
+      snippet: '普通的好評，餐點不錯',
+      iso_date: '2026-10-10T00:00:00Z',
+      likes: 0,
+    },
+    {
+      author: 'Angry Guy',
+      user: { name: 'Angry Guy', local_guide: false },
+      rating: 1,
+      snippet: '等太久了，肉質柴又冷，極度不推！',
+      iso_date: '2026-10-12T00:00:00Z',
+      likes: 1,
+    },
+    {
+      author: 'Elite Guide',
+      user: { name: 'Elite Guide', local_guide: true },
+      rating: 4,
+      snippet: '在地嚮導探店：招牌牛肉麵湯頭濃郁，建議避開中午人潮',
+      iso_date: '2026-10-14T00:00:00Z',
+      likes: 8,
+    },
+    {
+      author: 'Popular Reviewer',
+      user: { name: 'Popular Reviewer', local_guide: false },
+      rating: 5,
+      snippet: '超多人按讚的美味心得',
+      iso_date: '2026-10-15T00:00:00Z',
+      likes: 15,
+    },
+  ];
+
+  const curated = curateSerpApiReviews(rawReviews, place, 'recent', 90, {
+    nowDate: new Date('2026-10-20T00:00:00Z'),
+  });
+
+  assert.equal(curated.evidence.length, 4);
+  // Tier 1 should be Local Guide
+  assert.ok(curated.evidence[0].author.includes('Elite Guide'));
+  assert.ok(curated.evidence[0].author.includes('[在地嚮導]'));
+  // Tier 2 should be critical rating <= 3
+  assert.ok(curated.evidence[1].author.includes('Angry Guy'));
+  // Tier 3 should be liked
+  assert.ok(curated.evidence[2].author.includes('Popular Reviewer'));
+  // Tier 4 should be normal
+  assert.ok(curated.evidence[3].author.includes('Normal Person'));
+});
+
+test('Worker Fetch Handler - /api/serpapi-account validation endpoint', async () => {
+  const originalFetch = globalThis.fetch;
+  try {
+    globalThis.fetch = async (url) => {
+      if (url.includes('api_key=my_serp_key')) {
+        return new Response(JSON.stringify({
+          total_searches_left: 200,
+          this_month_usage: 50,
+        }), { status: 200, headers: { 'Content-Type': 'application/json' } });
+      }
+      return new Response(JSON.stringify({ error: 'Invalid API key.' }), {
+        status: 401,
+        headers: { 'Content-Type': 'application/json' },
+      });
+    };
+
+    const reqValid = new Request('http://localhost:8787/api/serpapi-account', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-SerpApi-Key': 'my_serp_key',
+      },
+    });
+    const resValid = await worker.fetch(reqValid, {}, {});
+    assert.equal(resValid.status, 200);
+    const dataValid = await resValid.json();
+    assert.equal(dataValid.valid, true);
+    assert.equal(dataValid.total_searches_left, 200);
+
+    const reqInvalid = new Request('http://localhost:8787/api/serpapi-account', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-SerpApi-Key': 'invalid_key',
+      },
+    });
+    const resInvalid = await worker.fetch(reqInvalid, {}, {});
+    assert.equal(resInvalid.status, 400);
+    const dataInvalid = await resInvalid.json();
+    assert.equal(dataInvalid.valid, false);
+  } finally {
+    globalThis.fetch = originalFetch;
+  }
+});
+
+test('Worker Fetch Handler - /api/review-analysis with BYOK X-SerpApi-Key', async () => {
+  const originalFetch = globalThis.fetch;
+  try {
+    globalThis.fetch = async (url) => {
+      if (url.includes('engine=google_maps_reviews')) {
+        return new Response(JSON.stringify({
+          reviews: [
+            {
+              author: 'Serp User 1',
+              user: { name: 'Serp User 1', local_guide: true },
+              rating: 5,
+              snippet: '這是在地嚮導透過 SerpApi 抓取的評論',
+              iso_date: '2026-10-18T00:00:00Z',
+            },
+            {
+              author: 'Serp User 2',
+              user: { name: 'Serp User 2', local_guide: false },
+              rating: 2,
+              snippet: '等太久了很不滿意',
+              iso_date: '2026-10-19T00:00:00Z',
+            },
+          ],
+        }), { status: 200, headers: { 'Content-Type': 'application/json' } });
+      }
+      return new Response(JSON.stringify({}), { status: 200 });
+    };
+
+    const mockEnv = {
+      AI: {
+        async run() {
+          return {
+            choices: [{
+              message: {
+                content: JSON.stringify({
+                  observations: [
+                    { category: 'service', finding: '等候時間過長', evidence_ids: [] },
+                  ],
+                }),
+              },
+            }],
+          };
+        },
+      },
+    };
+
+    const payload = {
+      place_id: 'branch_byok',
+      mode: 'recent',
+      window_days: 90,
+      place: {
+        place_id: 'branch_byok',
+        name: 'BYOK 測試門市',
+        address: '台北市信義區',
+        rating: 4.3,
+        url: 'https://maps.google.com/?cid=byok',
+      },
+      reviews: [
+        {
+          author_name: 'Places Fallback',
+          text: '原本 Places 的備援評論',
+          rating: 4,
+          time: Math.floor(Date.now() / 1000) - 3600,
+        },
+      ],
+    };
+
+    const req = new Request('http://localhost:8787/api/review-analysis', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-SerpApi-Key': 'valid_byok_serp_key',
+        'cf-connecting-ip': 'client-byok-test',
+      },
+      body: JSON.stringify(payload),
+    });
+
+    const res = await worker.fetch(req, mockEnv, {});
+    assert.equal(res.status, 200);
+    const data = await res.json();
+    assert.equal(data.usage.review_source, 'serpapi');
+    assert.equal(data.evidence.length, 2);
+    assert.ok(data.evidence[0].author.includes('Serp User 1'));
+    assert.ok(data.evidence[0].author.includes('[在地嚮導]'));
   } finally {
     globalThis.fetch = originalFetch;
   }

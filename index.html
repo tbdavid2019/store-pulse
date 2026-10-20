@@ -162,7 +162,7 @@
       background: var(--primary);
       border-bottom: 2px solid var(--text);
       padding: 24px 0 26px;
-      box-shadow: 0 4px 16px rgba(150, 98, 0, 0.15);
+      box-shadow: 0 4px 16px rgba(43, 37, 26, 0.08);
     }
 
     .header-inner {
@@ -273,7 +273,8 @@
 
     .search-input-wrapper input:focus {
       border-color: var(--deep-blue);
-      box-shadow: 0 0 0 3.5px rgba(23, 50, 77, 0.18);
+      outline: 3px solid rgba(43, 37, 26, 0.16);
+      outline-offset: 1px;
     }
 
     .search-input-wrapper input::placeholder {
@@ -307,7 +308,7 @@
       align-items: center;
       gap: 10px;
       transition: all 0.18s ease;
-      box-shadow: 0 4px 12px rgba(23, 50, 77, 0.25);
+      box-shadow: 0 4px 12px rgba(43, 37, 26, 0.16);
       white-space: nowrap;
     }
 
@@ -315,7 +316,7 @@
       background: var(--primary);
       border-color: var(--deep-blue);
       color: var(--ink);
-      box-shadow: 0 6px 16px rgba(255, 176, 16, 0.4);
+      box-shadow: 0 6px 16px rgba(43, 37, 26, 0.18);
       transform: translateY(-1px);
     }
 
@@ -328,7 +329,7 @@
       height: 420px;
       border-radius: var(--radius);
       border: 2px solid var(--card-border);
-      box-shadow: 0 4px 16px rgba(79, 58, 14, 0.08);
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
       margin-bottom: 30px;
       background: var(--card-bg);
     }
@@ -384,7 +385,7 @@
       border: 1px solid var(--card-border);
       border-radius: var(--radius);
       padding: 22px;
-      box-shadow: 0 6px 20px rgba(79, 58, 14, 0.08);
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
       transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
       cursor: pointer;
       display: flex;
@@ -395,7 +396,7 @@
 
     .store-card:hover, .store-card.active {
       transform: translateY(-3px);
-      box-shadow: 0 12px 28px rgba(23, 50, 77, 0.16);
+      box-shadow: 0 12px 28px rgba(0, 0, 0, 0.14);
       border-color: var(--deep-blue);
     }
 
@@ -750,7 +751,7 @@
       background: #dc2626;
       color: #ffffff;
       border-color: #b91c1c;
-      box-shadow: 0 1px 4px rgba(220, 38, 38, 0.25);
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
     }
 
     .preview-snippets {
@@ -776,8 +777,7 @@
     .card-review-item.is-low-rating {
       background: #fff5f5;
       border: 1.5px solid #ef4444;
-      border-left: 5px solid #dc2626;
-      box-shadow: 0 2px 6px rgba(220, 38, 38, 0.1);
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
     }
 
     .card-review-item .review-author-row {
@@ -810,7 +810,7 @@
       border-radius: 6px;
       background: #dc2626;
       color: #ffffff;
-      box-shadow: 0 1px 4px rgba(220, 38, 38, 0.25);
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
       letter-spacing: 0.02em;
     }
 
@@ -869,14 +869,14 @@
       justify-content: center;
       gap: 8px;
       transition: all 0.18s ease;
-      box-shadow: 0 3px 8px rgba(23, 50, 77, 0.2);
+      box-shadow: 0 3px 8px rgba(0, 0, 0, 0.12);
     }
 
     .btn-open-analysis:hover {
       background: var(--primary);
       border-color: var(--deep-blue);
       color: var(--ink);
-      box-shadow: 0 4px 14px rgba(255, 176, 16, 0.4);
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.14);
       transform: translateY(-1px);
     }
 
@@ -893,7 +893,7 @@
     .drawer-backdrop {
       position: fixed;
       inset: 0;
-      background: rgba(23, 50, 77, 0.48);
+      background: rgba(43, 37, 26, 0.55);
       backdrop-filter: blur(5px);
       -webkit-backdrop-filter: blur(5px);
       z-index: 1040;
@@ -916,7 +916,7 @@
       height: 100dvh;
       background: var(--card-bg);
       border-left: 2px solid var(--card-border);
-      box-shadow: -8px 0 36px rgba(23, 50, 77, 0.25);
+      box-shadow: -8px 0 36px rgba(0, 0, 0, 0.22);
       z-index: 1050;
       display: flex;
       flex-direction: column;
@@ -1061,7 +1061,8 @@
 
     .drawer-select:focus {
       border-color: var(--deep-blue);
-      box-shadow: 0 0 0 3px rgba(23, 50, 77, 0.16);
+      outline: 2px solid var(--deep-blue);
+      outline-offset: 1px;
     }
 
     .drawer-action-btn {
@@ -1080,14 +1081,14 @@
       gap: 8px;
       transition: all 0.18s ease;
       white-space: nowrap;
-      box-shadow: 0 3px 10px rgba(23, 50, 77, 0.2);
+      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.12);
     }
 
     .drawer-action-btn:hover {
       background: var(--primary);
       border-color: var(--deep-blue);
       color: var(--ink);
-      box-shadow: 0 4px 14px rgba(255, 176, 16, 0.4);
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.14);
     }
 
     .drawer-action-btn:disabled {
@@ -1174,7 +1175,7 @@
       letter-spacing: 0.02em;
       white-space: nowrap;
       flex-shrink: 0;
-      box-shadow: 0 1px 3px rgba(23, 50, 77, 0.15);
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
     }
 
     .category-badge svg {
@@ -1309,12 +1310,11 @@
 
     .drawer-review-item.is-low {
       border: 1.5px solid #ef4444;
-      border-left: 5px solid #dc2626;
       padding: 14px 16px;
       margin: 10px 0;
       background: #fff5f5;
       border-radius: var(--radius-sm);
-      box-shadow: 0 2px 8px rgba(220, 38, 38, 0.1);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
     }
     .drawer-review-item.is-low .review-author {
       color: #991b1b;
@@ -1393,7 +1393,7 @@
       margin-top: 64px;
       padding: 48px 0 calc(32px + env(safe-area-inset-bottom, 0px));
       position: relative;
-      box-shadow: 0 -4px 20px rgba(23, 50, 77, 0.12);
+      box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.12);
     }
 
     .footer-inner {
@@ -1497,7 +1497,7 @@
       color: var(--deep-blue);
       border-color: var(--saffron);
       transform: translateY(-2px);
-      box-shadow: 0 4px 14px rgba(255, 176, 16, 0.32);
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
     }
 
     .tech-link:focus-visible {
@@ -1570,6 +1570,372 @@
         gap: 12px;
       }
     }
+
+    /* Header Settings Pill Button */
+    .btn-settings-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 16px;
+      background: var(--warm-cream);
+      color: var(--deep-blue);
+      border: 2px solid var(--deep-blue);
+      border-radius: 9999px;
+      font-size: 0.96rem;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 2px 6px rgba(43, 37, 26, 0.1);
+      transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+      user-select: none;
+    }
+    .btn-settings-pill:hover {
+      background: #fff;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 10px rgba(43, 37, 26, 0.14);
+    }
+    .btn-settings-pill:focus-visible {
+      outline: 3px solid var(--deep-blue);
+      outline-offset: 2px;
+    }
+    .header-mode-badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 3px 8px;
+      border-radius: 9999px;
+      font-size: 0.82rem;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+    }
+    .header-mode-badge.mode-places {
+      background: var(--saffron-light);
+      border: 1px solid var(--card-border);
+      color: var(--text);
+    }
+    .header-mode-badge.mode-serpapi {
+      background: #ecfdf5;
+      border: 1px solid #a7f3d0;
+      color: #065f46;
+    }
+
+    /* Settings Modal (BYOK) */
+    .settings-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(43, 37, 26, 0.55);
+      backdrop-filter: blur(4px);
+      z-index: 1100;
+      opacity: 0;
+      transition: opacity 0.22s ease-out;
+    }
+    .settings-backdrop.is-open {
+      opacity: 1;
+    }
+    .settings-modal {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -48%) scale(0.96);
+      width: min(620px, calc(100% - 32px));
+      max-height: calc(100vh - 64px);
+      background: var(--warm-cream);
+      border: 2px solid var(--card-border);
+      border-radius: var(--radius);
+      box-shadow: 0 24px 48px -12px rgba(43, 37, 26, 0.35), 0 0 0 1px rgba(43, 37, 26, 0.12);
+      z-index: 1101;
+      display: flex;
+      flex-direction: column;
+      opacity: 0;
+      transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+      overflow: hidden;
+    }
+    .settings-modal.is-open {
+      opacity: 1;
+      transform: translate(-50%, -50%) scale(1);
+    }
+    .settings-modal-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 22px 26px 18px;
+      border-bottom: 1.5px solid var(--card-border-subtle);
+      background: #fffdf7;
+    }
+    .settings-header-title-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+    }
+    .settings-icon-wrapper {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 42px;
+      height: 42px;
+      border-radius: 10px;
+      background: var(--primary-light);
+      border: 1.5px solid var(--primary);
+      color: var(--deep-blue);
+      flex-shrink: 0;
+    }
+    .settings-title {
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: var(--deep-blue);
+      margin: 0 0 4px;
+      line-height: 1.35;
+    }
+    .settings-subtitle {
+      font-size: 0.92rem;
+      color: var(--text-muted);
+      margin: 0;
+      line-height: 1.5;
+    }
+    .settings-close-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      padding: 6px;
+      border-radius: 6px;
+      transition: background 0.15s, color 0.15s;
+    }
+    .settings-close-btn:hover {
+      background: var(--primary-light);
+      color: var(--deep-blue);
+    }
+    .settings-modal-body {
+      padding: 24px 26px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+    .settings-callout {
+      background: var(--canvas);
+      border: 1.5px solid var(--card-border);
+      border-radius: var(--radius-sm);
+      padding: 16px 18px;
+      font-size: 0.95rem;
+      line-height: 1.6;
+    }
+    .callout-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+    .callout-badge {
+      font-weight: 800;
+      color: var(--deep-blue);
+      font-size: 0.95rem;
+    }
+    .callout-quota {
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--clay);
+      background: var(--clay-light);
+      padding: 2px 8px;
+      border-radius: 4px;
+      border: 1px solid var(--clay-border);
+    }
+    .callout-desc {
+      margin: 0 0 10px;
+      color: var(--ink);
+    }
+    .link-external-serp {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      color: var(--deep-blue);
+      font-weight: 700;
+      text-decoration: underline;
+      font-size: 0.92rem;
+    }
+    .settings-field-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .settings-field-label {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-weight: 700;
+      font-size: 0.98rem;
+      color: var(--deep-blue);
+    }
+    .key-status-indicator {
+      font-family: var(--font-mono);
+      font-size: 0.82rem;
+      font-weight: 600;
+    }
+    .key-status-indicator.saved {
+      color: #047857;
+    }
+    .key-input-wrapper {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+    .settings-key-input {
+      width: 100%;
+      padding: 12px 44px 12px 14px;
+      font-size: 0.95rem;
+      border: 2px solid var(--card-border);
+      border-radius: var(--radius-sm);
+      background: #fff;
+      color: var(--ink);
+      transition: border-color 0.15s, box-shadow 0.15s;
+    }
+    .settings-key-input:focus {
+      outline: 2px solid var(--deep-blue);
+      outline-offset: 1px;
+      border-color: var(--deep-blue);
+    }
+    .btn-toggle-key {
+      position: absolute;
+      right: 8px;
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      padding: 6px;
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .btn-toggle-key:hover {
+      color: var(--deep-blue);
+    }
+    .settings-actions-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .btn-save-key {
+      padding: 10px 22px;
+      background: var(--deep-blue);
+      color: #fff;
+      border: 2px solid var(--deep-blue);
+      border-radius: var(--radius-sm);
+      font-size: 0.98rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 0.15s, transform 0.15s;
+    }
+    .btn-save-key:hover {
+      background: var(--deep-blue-hover);
+      transform: translateY(-1px);
+    }
+    .btn-test-key {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 18px;
+      background: var(--card-bg);
+      color: var(--deep-blue);
+      border: 2px solid var(--card-border);
+      border-radius: var(--radius-sm);
+      font-size: 0.98rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .btn-test-key:hover {
+      background: #fff;
+      border-color: var(--deep-blue);
+    }
+    .btn-clear-key {
+      padding: 10px 16px;
+      background: transparent;
+      color: #b91c1c;
+      border: 1.5px solid #fca5a5;
+      border-radius: var(--radius-sm);
+      font-size: 0.92rem;
+      font-weight: 700;
+      cursor: pointer;
+      margin-left: auto;
+      transition: background 0.15s;
+    }
+    .btn-clear-key:hover {
+      background: #fef2f2;
+    }
+    .settings-feedback-box {
+      padding: 12px 16px;
+      border-radius: var(--radius-sm);
+      font-size: 0.94rem;
+      line-height: 1.5;
+    }
+    .settings-feedback-box.success {
+      background: #ecfdf5;
+      border: 1.5px solid #a7f3d0;
+      color: #065f46;
+    }
+    .settings-feedback-box.error {
+      background: var(--clay-light);
+      border: 1.5px solid var(--clay-border);
+      color: var(--clay);
+    }
+    .settings-security-callout {
+      background: #fff;
+      border: 1px dashed var(--card-border);
+      border-radius: var(--radius-sm);
+      padding: 14px 16px;
+      font-size: 0.88rem;
+      color: var(--text-muted);
+      line-height: 1.55;
+    }
+    .security-title {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.92rem;
+      color: var(--deep-blue);
+      margin-bottom: 4px;
+    }
+
+    /* Drawer source indicators */
+    .drawer-source-indicator {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 10px 14px;
+      background: var(--canvas);
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius-sm);
+      font-size: 0.92rem;
+      line-height: 1.45;
+      margin-bottom: 12px;
+    }
+    .drawer-source-indicator.is-serpapi {
+      background: #ecfdf5;
+      border-color: #a7f3d0;
+      color: #065f46;
+      font-weight: 600;
+    }
+    .badge-source-serpapi {
+      background: #047857;
+      color: #fff;
+      font-weight: 700;
+      font-size: 0.85rem;
+      padding: 3px 9px;
+      border-radius: 9999px;
+    }
+    .badge-source-places {
+      background: var(--deep-blue);
+      color: #fff;
+      font-weight: 700;
+      font-size: 0.85rem;
+      padding: 3px 9px;
+      border-radius: 9999px;
+    }
   </style>
 </head>
 <body>
@@ -1584,6 +1950,16 @@
           <h1>Store Pulse 店面脈搏</h1>
           <p>Google Maps 多分店評價速查 · 顧客負評標記與避雷深度分析</p>
         </div>
+      </div>
+      <div class="header-actions">
+        <button id="openSettingsBtn" class="btn-settings-pill" type="button" onclick="openSettingsModal()" aria-haspopup="dialog" aria-expanded="false" title="進階設定：自備 SerpApi 金鑰 (BYOK)">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/>
+            <circle cx="12" cy="12" r="3"/>
+          </svg>
+          <span class="settings-pill-text">設定 (BYOK)</span>
+          <span id="headerModeBadge" class="header-mode-badge mode-places">5 則精選</span>
+        </button>
       </div>
     </div>
   </header>
@@ -1733,6 +2109,7 @@
       </div>
 
       <!-- Analysis Output in Drawer -->
+      <div id="drawerSourceIndicator" class="drawer-source-indicator"></div>
       <div id="drawerOutput" class="drawer-output"></div>
 
       <!-- Full Reviews Section in Drawer -->
@@ -1745,6 +2122,101 @@
       </div>
     </div>
   </aside>
+
+  <!-- Settings Modal (BYOK SerpApi) -->
+  <div id="settingsBackdrop" class="settings-backdrop" onclick="closeSettingsModal()" hidden></div>
+  <div id="settingsModal" class="settings-modal" role="dialog" aria-modal="true" aria-labelledby="settingsModalTitle" hidden>
+    <div class="settings-modal-header">
+      <div class="settings-header-title-row">
+        <span class="settings-icon-wrapper">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/>
+            <circle cx="12" cy="12" r="3"/>
+          </svg>
+        </span>
+        <div>
+          <h2 id="settingsModalTitle" class="settings-title">進階設定：自備 SerpApi 金鑰 (BYOK)</h2>
+          <p class="settings-subtitle">突破 Google 官方 5 則評論上限，解鎖 20～25 則深度爬蟲與在地嚮導/負評精選。</p>
+        </div>
+      </div>
+      <button type="button" class="settings-close-btn" onclick="closeSettingsModal()" aria-label="關閉設定">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+    </div>
+
+    <div class="settings-modal-body">
+      <!-- Info Callout -->
+      <div class="settings-callout">
+        <div class="callout-header">
+          <span class="callout-badge">💡 免費額度說明</span>
+          <span class="callout-quota">每月 250 次免費搜尋（每小時 50 次）</span>
+        </div>
+        <p class="callout-desc">
+          SerpApi 提供個人帳號永久免費額度，無需綁定信用卡。前往 SerpApi 官網註冊後即可複製您的私密 API 金鑰。
+        </p>
+        <div class="callout-links">
+          <a href="https://serpapi.com/manage-api-key" target="_blank" rel="noopener noreferrer" class="link-external-serp">
+            <span>前往 SerpApi 取得免費金鑰</span>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h6v6"/><path d="M10 14 21 3"/><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/></svg>
+          </a>
+        </div>
+      </div>
+
+      <!-- Key Input Group -->
+      <div class="settings-field-group">
+        <label for="serpApiKeyInput" class="settings-field-label">
+          <span>SerpApi Private API Key</span>
+          <span id="keyStoredIndicator" class="key-status-indicator"></span>
+        </label>
+        <div class="key-input-wrapper">
+          <input
+            type="password"
+            id="serpApiKeyInput"
+            class="jetbrains-mono settings-key-input"
+            placeholder="請貼上 64 碼 SerpApi API Key"
+            autocomplete="off"
+            spellcheck="false"
+          >
+          <button type="button" id="toggleKeyVisibilityBtn" class="btn-toggle-key" onclick="toggleKeyVisibility()" title="顯示/隱藏金鑰">
+            <svg id="keyEyeIcon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Action Buttons Row -->
+      <div class="settings-actions-row">
+        <button type="button" id="btnTestSerpKey" class="btn-test-key" onclick="testSerpApiKey()">
+          <span id="btnTestSpinner" class="spinner" style="display:none;width:14px;height:14px;border-width:2px;margin:0;"></span>
+          <span id="btnTestText">🧪 測試連線與額度</span>
+        </button>
+        <button type="button" id="btnSaveSerpKey" class="btn-save-key" onclick="saveSerpApiKey()">
+          儲存金鑰
+        </button>
+        <button type="button" id="btnClearSerpKey" class="btn-clear-key" onclick="clearSerpApiKey()" style="display:none;">
+          清除金鑰
+        </button>
+      </div>
+
+      <!-- Live Feedback Box -->
+      <div id="serpApiFeedbackBox" class="settings-feedback-box" style="display:none;"></div>
+
+      <!-- Security / Zero Knowledge Callout -->
+      <div class="settings-security-callout">
+        <div class="security-title">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--clay);"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10"/><path d="m9 12 2 2 4-4"/></svg>
+          <strong>資安與零知識承諾 (Zero-Knowledge)</strong>
+        </div>
+        <p>
+          您的金鑰<strong>僅保存在您目前的本機瀏覽器（localStorage）</strong>。發送深度分析請求時透過 HTTPS 直接傳輸，Cloudflare Worker 僅在記憶體中調用 SerpApi，<strong>伺服器絕不寫入資料庫或 Log 日誌，用完即丟</strong>。
+        </p>
+      </div>
+    </div>
+  </div>
 
   <script>
     const LUCIDE_ICONS = {
@@ -2261,6 +2733,7 @@
         lastActiveTriggerElement = triggerEl;
       }
       currentDrawerPlace = place;
+      updateDrawerSourceIndicator();
 
       // Populate Drawer Header
       document.getElementById('drawerTitle').textContent = place.name || '未命名分店';
@@ -2372,9 +2845,223 @@
       }, 280);
     }
 
+    // --- Settings & BYOK SerpApi Management ---
+    const STORAGE_KEY_SERPAPI = 'storepulse_serpapi_key';
+
+    function getStoredSerpApiKey() {
+      try {
+        return (localStorage.getItem(STORAGE_KEY_SERPAPI) || '').trim();
+      } catch (_) {
+        return '';
+      }
+    }
+
+    function updateHeaderBadge() {
+      const key = getStoredSerpApiKey();
+      const badge = document.getElementById('headerModeBadge');
+      const clearBtn = document.getElementById('btnClearSerpKey');
+      const indicator = document.getElementById('keyStoredIndicator');
+      if (!badge) return;
+
+      if (key) {
+        badge.className = 'header-mode-badge mode-serpapi';
+        badge.textContent = '⚡ 深度爬蟲 (~25則)';
+        if (clearBtn) clearBtn.style.display = 'inline-block';
+        if (indicator) {
+          indicator.className = 'key-status-indicator saved';
+          indicator.textContent = '✓ 已就緒 (本機儲存)';
+        }
+      } else {
+        badge.className = 'header-mode-badge mode-places';
+        badge.textContent = '5 則精選';
+        if (clearBtn) clearBtn.style.display = 'none';
+        if (indicator) {
+          indicator.className = 'key-status-indicator';
+          indicator.textContent = '未設定';
+        }
+      }
+      updateDrawerSourceIndicator();
+    }
+
+    function updateDrawerSourceIndicator() {
+      const indicator = document.getElementById('drawerSourceIndicator');
+      if (!indicator) return;
+      const key = getStoredSerpApiKey();
+      if (key) {
+        indicator.className = 'drawer-source-indicator is-serpapi';
+        indicator.innerHTML = `
+          <div style="display:flex;align-items:center;gap:8px;">
+            <span style="font-size:1.1rem;">⚡</span>
+            <span><strong>已啟用 SerpApi 深度爬蟲模式</strong>（將擷取 ~25 則精選評論，含在地嚮導與痛點負評）</span>
+          </div>
+          <button type="button" onclick="openSettingsModal()" style="background:none;border:none;color:var(--deep-blue);font-weight:700;text-decoration:underline;cursor:pointer;font-size:0.9rem;">設定</button>
+        `;
+      } else {
+        indicator.className = 'drawer-source-indicator';
+        indicator.innerHTML = `
+          <div style="display:flex;align-items:center;gap:8px;">
+            <span>💡 目前使用 Google Places 官方 5 則精選。</span>
+          </div>
+          <button type="button" onclick="openSettingsModal()" style="background:none;border:none;color:var(--clay);font-weight:800;text-decoration:underline;cursor:pointer;font-size:0.9rem;">+ 免費輸入 SerpApi Key 解鎖 25 則</button>
+        `;
+      }
+    }
+
+    function openSettingsModal() {
+      const backdrop = document.getElementById('settingsBackdrop');
+      const modal = document.getElementById('settingsModal');
+      const input = document.getElementById('serpApiKeyInput');
+      const feedback = document.getElementById('serpApiFeedbackBox');
+      if (!modal) return;
+
+      if (feedback) feedback.style.display = 'none';
+      if (input) input.value = getStoredSerpApiKey();
+      updateHeaderBadge();
+
+      backdrop.hidden = false;
+      modal.hidden = false;
+      requestAnimationFrame(() => {
+        backdrop.classList.add('is-open');
+        modal.classList.add('is-open');
+        if (input) input.focus();
+      });
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeSettingsModal() {
+      const backdrop = document.getElementById('settingsBackdrop');
+      const modal = document.getElementById('settingsModal');
+      if (!modal) return;
+
+      backdrop.classList.remove('is-open');
+      modal.classList.remove('is-open');
+      if (!document.getElementById('analysisDrawer')?.classList.contains('is-open')) {
+        document.body.style.overflow = '';
+      }
+      setTimeout(() => {
+        backdrop.hidden = true;
+        modal.hidden = true;
+        const trigger = document.getElementById('openSettingsBtn');
+        if (trigger) trigger.focus();
+      }, 220);
+    }
+
+    function saveSerpApiKey() {
+      const input = document.getElementById('serpApiKeyInput');
+      const feedback = document.getElementById('serpApiFeedbackBox');
+      const val = (input?.value || '').trim();
+
+      if (!val) {
+        if (feedback) {
+          feedback.style.display = 'block';
+          feedback.className = 'settings-feedback-box error';
+          feedback.textContent = '請先填入 SerpApi API Key，或點擊「清除金鑰」。';
+        }
+        return;
+      }
+
+      try {
+        localStorage.setItem(STORAGE_KEY_SERPAPI, val);
+        updateHeaderBadge();
+        if (feedback) {
+          feedback.style.display = 'block';
+          feedback.className = 'settings-feedback-box success';
+          feedback.textContent = '✅ 金鑰已成功儲存至本機瀏覽器！深度分析模式已啟用。';
+        }
+      } catch (err) {
+        if (feedback) {
+          feedback.style.display = 'block';
+          feedback.className = 'settings-feedback-box error';
+          feedback.textContent = '儲存失敗：' + err.message;
+        }
+      }
+    }
+
+    function clearSerpApiKey() {
+      try {
+        localStorage.removeItem(STORAGE_KEY_SERPAPI);
+      } catch (_) {}
+      const input = document.getElementById('serpApiKeyInput');
+      const feedback = document.getElementById('serpApiFeedbackBox');
+      if (input) input.value = '';
+      if (feedback) {
+        feedback.style.display = 'block';
+        feedback.className = 'settings-feedback-box success';
+        feedback.textContent = '金鑰已成功清除，已恢復為 Google Places 官方標準模式。';
+      }
+      updateHeaderBadge();
+    }
+
+    async function testSerpApiKey() {
+      const input = document.getElementById('serpApiKeyInput');
+      const feedback = document.getElementById('serpApiFeedbackBox');
+      const spinner = document.getElementById('btnTestSpinner');
+      const text = document.getElementById('btnTestText');
+      const key = (input?.value || '').trim();
+
+      if (!key) {
+        if (feedback) {
+          feedback.style.display = 'block';
+          feedback.className = 'settings-feedback-box error';
+          feedback.textContent = '請先輸入欲測試的 SerpApi 金鑰。';
+        }
+        return;
+      }
+
+      if (spinner) spinner.style.display = 'inline-block';
+      if (text) text.textContent = '連線測試中…';
+      if (feedback) feedback.style.display = 'none';
+
+      try {
+        const res = await fetch(`${ANALYSIS_API_BASE}/api/serpapi-account`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-SerpApi-Key': key
+          },
+          body: JSON.stringify({ api_key: key })
+        });
+        const data = await res.json().catch(() => ({}));
+        if (res.ok && data.valid) {
+          feedback.style.display = 'block';
+          feedback.className = 'settings-feedback-box success';
+          feedback.innerHTML = `✅ <strong>金鑰驗證成功！</strong><br>本月剩餘免費額度：<strong>${data.total_searches_left ?? '—'}</strong> 次搜尋${data.account_email ? `（帳號：${escapeHtml(data.account_email)}）` : ''}`;
+        } else {
+          feedback.style.display = 'block';
+          feedback.className = 'settings-feedback-box error';
+          feedback.textContent = `❌ 驗證失敗：${data.error || data.message || '金鑰無效或連線逾時'}`;
+        }
+      } catch (err) {
+        feedback.style.display = 'block';
+        feedback.className = 'settings-feedback-box error';
+        feedback.textContent = `連線測試發生錯誤：${err.message}`;
+      } finally {
+        if (spinner) spinner.style.display = 'none';
+        if (text) text.textContent = '🧪 測試連線與額度';
+      }
+    }
+
+    function toggleKeyVisibility() {
+      const input = document.getElementById('serpApiKeyInput');
+      const eyeIcon = document.getElementById('keyEyeIcon');
+      if (!input || !eyeIcon) return;
+      if (input.type === 'password') {
+        input.type = 'text';
+        eyeIcon.innerHTML = `<path d="9.88 9.88a3 3 0 1 0 4.24 4.24"/><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"/><path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"/><line x1="2" x2="22" y1="2" y2="22"/>`;
+      } else {
+        input.type = 'password';
+        eyeIcon.innerHTML = `<path d="2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/>`;
+      }
+    }
+
     window.addEventListener('keydown', (e) => {
       if (e.key === 'Escape') {
-        closeAnalysisDrawer();
+        const settingsModal = document.getElementById('settingsModal');
+        if (settingsModal && settingsModal.classList.contains('is-open')) {
+          closeSettingsModal();
+        } else {
+          closeAnalysisDrawer();
+        }
       }
     });
 
@@ -2400,9 +3087,15 @@
         </div>
       `;
 
+      const serpKey = getStoredSerpApiKey();
+      const headers = { 'Content-Type': 'application/json' };
+      if (serpKey) {
+        headers['X-SerpApi-Key'] = serpKey;
+      }
+
       fetch(`${ANALYSIS_API_BASE}/api/review-analysis`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers,
         body: JSON.stringify({
           place_id: place.place_id,
           mode,
@@ -2459,11 +3152,60 @@
       const sampling = payload.sampling || {};
       const meta = document.createElement('div');
       meta.className = 'drawer-meta-bar';
+
+      const isSerpApi = payload.usage?.review_source === 'serpapi';
+      const badgeSpan = document.createElement('span');
+      if (isSerpApi) {
+        badgeSpan.className = 'badge-source-serpapi';
+        badgeSpan.textContent = `⚡ SerpApi 深度模式 (${sampling.used || payload.evidence?.length || 0} 則)`;
+      } else {
+        badgeSpan.className = 'badge-source-places';
+        badgeSpan.textContent = `官方 Places 精選 (${sampling.used || payload.evidence?.length || 0} 則)`;
+      }
+      meta.appendChild(badgeSpan);
+
+      const metaText = document.createElement('span');
       const excluded = sampling.excluded || {};
       const excludedCount = Object.values(excluded).reduce((sum, value) => sum + Number(value || 0), 0);
       const windowLabel = Number(sampling.window_days) >= 3650 ? '全部評論（不限時間）' : `近 ${sampling.window_days || '—'} 天`;
-      meta.textContent = `樣本：使用 ${sampling.used || 0} / 符合 ${sampling.eligible || 0} / 擷取 ${sampling.fetched || 0} 則 | 排除 ${excludedCount} 則 | ${sampling.mode === 'low_rating' ? '低分評論' : '近期評論'} | ${windowLabel}${sampling.truncated ? ' | 上限' : ''}${payload.cache?.hit ? ' | 快取' : ''}`;
+      metaText.textContent = ` 樣本：使用 ${sampling.used || 0} / 符合 ${sampling.eligible || 0} / 擷取 ${sampling.fetched || 0} 則 | 排除 ${excludedCount} 則 | ${sampling.mode === 'low_rating' ? '低分評論' : '近期評論'} | ${windowLabel}${sampling.truncated ? ' | 上限' : ''}${payload.cache?.hit ? ' | 快取' : ''}`;
+      meta.appendChild(metaText);
       output.appendChild(meta);
+
+      // If SerpApi returned richer evidence, also update the reviews list in drawer!
+      if (isSerpApi && Array.isArray(payload.evidence) && payload.evidence.length > 0) {
+        const reviewsList = document.getElementById('drawerReviewsList');
+        const tabCount = document.getElementById('drawerReviewsTabCount');
+        if (reviewsList) {
+          reviewsList.replaceChildren();
+          if (tabCount) tabCount.textContent = `共 ${payload.evidence.length} 則 (SerpApi 精選)`;
+          payload.evidence.forEach(review => {
+            const item = document.createElement('div');
+            const ratingNum = typeof review.rating === 'number' ? review.rating : null;
+            const isLow = ratingNum !== null && ratingNum <= 3;
+            item.className = isLow ? 'drawer-review-item is-low' : 'drawer-review-item';
+            item.id = `drawer-rev-${review.evidence_id}`;
+
+            const ratingPillClass = isLow ? 'badge-negative-alert' : 'rating-pill rating-pill-high';
+            const ratingLabel = ratingNum !== null
+              ? (isLow
+                  ? `${lucideSvg('alert-triangle', 12)} <span>負評 ${ratingNum}★</span>`
+                  : `${lucideSvg('star-fill', 12)} <span>${ratingNum}★</span>`)
+              : `${lucideSvg('star', 12)} <span>—</span>`;
+
+            item.innerHTML = `
+              <div class="review-author-row">
+                <span class="review-author">${escapeHtml(review.author || '匿名顧客')}</span>
+                <div class="review-meta-group">
+                  <span class="${ratingPillClass} jetbrains-mono">${ratingLabel}</span>
+                </div>
+              </div>
+              <div class="review-body">${escapeHtml((review.text || '').trim())}</div>
+            `;
+            reviewsList.appendChild(item);
+          });
+        }
+      }
 
       const categoryMeta = {
         service: { icon: 'users', label: '服務態度' },
@@ -2681,7 +3423,7 @@
         font-size: 15px;
         font-weight: 700;
         cursor: pointer;
-        box-shadow: 0 6px 18px rgba(23, 50, 77, 0.35);
+        box-shadow: 0 6px 18px rgba(0, 0, 0, 0.25);
         display: none;
         align-items: center;
         gap: 8px;
@@ -2710,6 +3452,11 @@
         console.log('PWA 已安裝成功');
         installButton.style.display = 'none';
     });
+
+    // Initialize BYOK Settings Badge on startup
+    if (typeof updateHeaderBadge === 'function') {
+      updateHeaderBadge();
+    }
 
     (function loadGoogleMaps() {
       const customKey = localStorage.getItem('CUSTOM_GMAPS_KEY');
