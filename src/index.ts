@@ -99,7 +99,7 @@ function computeCacheKey(env: Env, placeId: string, mode: string, windowDays: nu
   const modelUrl = env.MODEL_API_URL || '';
   const modelName = env.MODEL_NAME || '';
   const modelAuth = Boolean(env.MODEL_API_KEY);
-  const analysisVersion = env.STORE_PULSE_ANALYSIS_VERSION || '3';
+  const analysisVersion = env.STORE_PULSE_ANALYSIS_VERSION || '4';
   const material = [analysisVersion, modelUrl, modelName, String(modelAuth), 'zh-TW', sourceSha || ''].join('|');
   const versionHash = createHash('sha256').update(material, 'utf8').digest('hex').slice(0, 16);
   return `cache:${versionHash}|${placeId}|${mode}|${windowDays}`;

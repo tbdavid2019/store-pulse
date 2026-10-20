@@ -576,13 +576,53 @@
     }
 
     .rating-pill-low {
-      color: var(--clay);
-      background: #fde8e1;
-      border: 1px solid var(--clay-border);
+      color: #991b1b;
+      background: #fee2e2;
+      border: 1.5px solid #ef4444;
+      font-weight: 800;
     }
 
     .rating-pill-low svg {
-      color: var(--clay);
+      color: #dc2626;
+      flex-shrink: 0;
+    }
+
+    .badge-negative-summary {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-family: var(--font-mono);
+      font-size: 0.88rem;
+      font-weight: 800;
+      color: #991b1b;
+      background: #fee2e2;
+      border: 1.5px solid #ef4444;
+      border-radius: var(--radius-sm);
+      padding: 3px 9px;
+      box-shadow: 0 1px 3px rgba(239, 68, 68, 0.15);
+    }
+
+    .badge-negative-summary svg {
+      color: #dc2626;
+      flex-shrink: 0;
+    }
+
+    .badge-positive-summary {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-family: var(--font-mono);
+      font-size: 0.88rem;
+      font-weight: 700;
+      color: #065f46;
+      background: #d1fae5;
+      border: 1.5px solid #10b981;
+      border-radius: var(--radius-sm);
+      padding: 3px 9px;
+    }
+
+    .badge-positive-summary svg {
+      color: #059669;
       flex-shrink: 0;
     }
 
@@ -594,83 +634,185 @@
       word-break: break-word;
     }
 
-    /* Card Reviews Preview */
+    /* Card Reviews Container */
     .card-reviews-preview {
       margin-top: 14px;
       padding-top: 12px;
-      border-top: 1px solid var(--card-border-subtle);
+      border-top: 1.5px solid var(--card-border-subtle);
       flex: 1;
       display: flex;
       flex-direction: column;
       gap: 8px;
     }
 
-    .reviews-preview-header {
+    .card-reviews-header {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      margin-bottom: 2px;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 6px;
+      padding-bottom: 6px;
+      border-bottom: 1px solid var(--card-border-subtle);
+    }
+
+    .reviews-header-left {
+      display: flex;
+      align-items: center;
+      gap: 8px;
     }
 
     .preview-title {
-      font-size: 0.96rem;
-      font-weight: 700;
+      font-size: 1rem;
+      font-weight: 800;
       color: var(--deep-blue);
+      letter-spacing: -0.01em;
     }
 
     .preview-count {
-      font-size: 0.85rem;
+      font-size: 0.86rem;
       color: var(--text-muted);
-      font-weight: 600;
+      font-weight: 700;
+    }
+
+    .reviews-filter-pills {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .filter-pill {
+      font-family: var(--font-mono);
+      font-size: 0.82rem;
+      font-weight: 700;
+      padding: 3px 9px;
+      border-radius: 6px;
+      cursor: pointer;
+      background: rgba(23, 50, 77, 0.08);
+      color: var(--deep-blue);
+      border: 1px solid transparent;
+      transition: all 0.15s ease;
+      line-height: 1.35;
+    }
+
+    .filter-pill:hover {
+      background: rgba(23, 50, 77, 0.15);
+    }
+
+    .filter-pill.active {
+      background: var(--deep-blue);
+      color: var(--warm-cream);
+    }
+
+    .filter-pill.pill-negative {
+      color: #991b1b;
+      background: #fee2e2;
+      border-color: #fca5a5;
+    }
+
+    .filter-pill.pill-negative:hover {
+      background: #fecaca;
+    }
+
+    .filter-pill.pill-negative.active {
+      background: #dc2626;
+      color: #ffffff;
+      border-color: #b91c1c;
+      box-shadow: 0 1px 4px rgba(220, 38, 38, 0.25);
     }
 
     .preview-snippets {
       display: flex;
       flex-direction: column;
-      gap: 6px;
+      gap: 8px;
     }
 
-    .snippet-item {
-      font-size: 0.95rem;
-      line-height: 1.55;
-      color: var(--text);
-      padding: 6px 0;
-      border-bottom: 1px solid var(--card-border-subtle);
+    /* Card Review Item (High Prominence Negative Reviews) */
+    .card-review-item {
+      font-size: 0.96rem;
+      line-height: 1.6;
+      padding: 10px 12px;
+      border-radius: 8px;
+      transition: background 0.15s ease, border-color 0.15s ease;
     }
 
-    .snippet-item:last-child {
-      border-bottom: none;
+    .card-review-item.is-normal-rating {
+      background: rgba(255, 255, 255, 0.75);
+      border: 1px solid var(--card-border-subtle);
     }
 
-    .snippet-item.is-low {
-      border: 1px solid var(--clay-border);
-      padding: 8px 10px;
-      background: var(--clay-light);
-      border-radius: var(--radius-sm);
+    .card-review-item.is-low-rating {
+      background: #fff5f5;
+      border: 1.5px solid #ef4444;
+      border-left: 5px solid #dc2626;
+      box-shadow: 0 2px 6px rgba(220, 38, 38, 0.1);
     }
 
-    .snippet-author-row {
+    .card-review-item .review-author-row {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 6px;
-      margin-bottom: 2px;
+      gap: 8px;
+      margin-bottom: 5px;
     }
 
-    .snippet-author {
-      font-size: 0.95rem;
+    .card-review-item .review-author {
+      font-size: 0.98rem;
       font-weight: 700;
       color: var(--ink);
     }
 
-    .snippet-text {
-      font-size: 0.92rem;
-      color: var(--text-muted);
-      line-height: 1.5;
-      display: -webkit-box;
-      -webkit-line-clamp: 2;
-      -webkit-box-orient: vertical;
-      overflow: hidden;
+    .card-review-item.is-low-rating .review-author {
+      color: #991b1b;
+      font-weight: 800;
+    }
+
+    .badge-negative-alert {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-family: var(--font-mono);
+      font-size: 0.86rem;
+      font-weight: 800;
+      padding: 2px 8px;
+      border-radius: 6px;
+      background: #dc2626;
+      color: #ffffff;
+      box-shadow: 0 1px 4px rgba(220, 38, 38, 0.25);
+      letter-spacing: 0.02em;
+    }
+
+    .badge-negative-alert svg {
+      color: #ffffff;
+      flex-shrink: 0;
+    }
+
+    .card-review-text {
+      color: var(--text);
+      font-size: 0.95rem;
+      line-height: 1.58;
+      word-break: break-word;
+      white-space: pre-wrap;
+    }
+
+    .card-review-item.is-low-rating .card-review-text {
+      color: #1f2937;
+      font-weight: 500;
+    }
+
+    .review-expand-btn {
+      color: var(--deep-blue);
+      font-weight: 700;
+      font-size: 0.88rem;
+      cursor: pointer;
+      text-decoration: underline;
+      margin-left: 6px;
+      display: inline-block;
+      user-select: none;
+    }
+
+    .review-expand-btn:hover {
+      color: #dc2626;
     }
 
     /* Store Card Open Drawer Button */
@@ -1158,11 +1300,17 @@
     }
 
     .drawer-review-item.is-low {
-      border: 1px solid var(--clay-border);
-      padding: 12px 14px;
-      margin: 8px 0;
-      background: var(--clay-light);
+      border: 1.5px solid #ef4444;
+      border-left: 5px solid #dc2626;
+      padding: 14px 16px;
+      margin: 10px 0;
+      background: #fff5f5;
       border-radius: var(--radius-sm);
+      box-shadow: 0 2px 8px rgba(220, 38, 38, 0.1);
+    }
+    .drawer-review-item.is-low .review-author {
+      color: #991b1b;
+      font-weight: 800;
     }
 
     /* Custom InfoWindow */
@@ -1426,7 +1574,7 @@
         </div>
         <div class="brand-text">
           <h1>Store Pulse 店面脈搏</h1>
-          <p>Google Maps 多分店即時評價速查與營運深度診斷</p>
+          <p>Google Maps 多分店評價速查 · 顧客負評標記與避雷深度分析</p>
         </div>
       </div>
     </div>
@@ -1491,7 +1639,7 @@
           </div>
           <div class="footer-brand-info">
             <h3>Store Pulse 店面脈搏</h3>
-            <p>Google Maps 多分店即時評價速查與營運深度診斷系統</p>
+            <p>Google Maps 多分店評價速查 · 顧客負評標記與避雷深度分析系統</p>
           </div>
         </div>
         <div class="footer-tech">
@@ -1572,7 +1720,7 @@
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
             <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
           </svg>
-          <span>即時深度診斷</span>
+          <span>AI 顧客避雷深度分析</span>
         </button>
       </div>
 
@@ -1897,35 +2045,61 @@
         card.className = "store-card";
         card.dataset.placeId = place.place_id;
 
+        const reviews = place.reviews || [];
+        const lowRatingReviews = reviews.filter(r => typeof r.rating === 'number' && r.rating <= 3);
+        const lowRatingCount = lowRatingReviews.length;
+
         let reviewsSnippetHtml = '';
-        if (place.reviews && place.reviews.length > 0) {
-            const snippetReviews = place.reviews.slice(0, 2);
+        if (reviews.length > 0) {
             reviewsSnippetHtml = `
               <div class="card-reviews-preview">
-                <div class="reviews-preview-header">
-                  <span class="preview-title">最新顧客回饋</span>
-                  <span class="preview-count jetbrains-mono">精選 ${snippetReviews.length}/${place.reviews.length} 則</span>
+                <div class="card-reviews-header">
+                  <div class="reviews-header-left">
+                    <span class="preview-title">顧客真實評價</span>
+                    <span class="preview-count jetbrains-mono">共 ${reviews.length} 則</span>
+                  </div>
+                  ${lowRatingCount > 0 ? `
+                    <div class="reviews-filter-pills" role="tablist">
+                      <button type="button" class="filter-pill active" data-filter="all">全部 (${reviews.length})</button>
+                      <button type="button" class="filter-pill pill-negative" data-filter="low">🚨 負評 (${lowRatingCount})</button>
+                    </div>
+                  ` : ''}
                 </div>
-                <div class="preview-snippets">
+                <div class="preview-snippets" id="snippets_${place.place_id}">
             `;
-            snippetReviews.forEach(review => {
+            reviews.forEach((review, index) => {
                 const ratingNum = typeof review.rating === 'number' ? review.rating : null;
                 const isLow = ratingNum !== null && ratingNum <= 3;
-                const ratingPillClass = isLow ? 'rating-pill rating-pill-low' : 'rating-pill rating-pill-high';
-                const ratingLabel = ratingNum !== null ? `${lucideSvg('star-fill', 12)} <span>${ratingNum}</span>` : `${lucideSvg('star', 12)} <span>—</span>`;
-                const previewText = review.text ? (review.text.length > 60 ? review.text.slice(0, 60) + '…' : review.text) : '（無文字評論）';
+                const fullText = review.text || '（無文字評論）';
+                const isLong = fullText.length > 130;
+                const shortText = isLong ? fullText.slice(0, 130) + '…' : fullText;
 
                 reviewsSnippetHtml += `
-                    <div class="snippet-item ${isLow ? 'is-low' : ''}">
-                        <div class="snippet-author-row">
-                          <span class="snippet-author">${escapeHtml(review.author_name || '匿名顧客')}</span>
-                          <span class="${ratingPillClass} jetbrains-mono">${ratingLabel}</span>
+                    <div class="card-review-item ${isLow ? 'is-low-rating' : 'is-normal-rating'}" data-is-low="${isLow}">
+                        <div class="review-author-row">
+                          <span class="review-author">${escapeHtml(review.author_name || '匿名顧客')}</span>
+                          ${isLow ? `
+                            <span class="badge-negative-alert jetbrains-mono">${lucideSvg('alert-triangle', 12)} <span>負評 ${ratingNum}★</span></span>
+                          ` : `
+                            <span class="rating-pill rating-pill-high jetbrains-mono">${lucideSvg('star-fill', 11)} <span>${ratingNum ?? '—'}★</span></span>
+                          `}
                         </div>
-                        <div class="snippet-text">${escapeHtml(previewText)}</div>
+                        <div class="card-review-text">
+                          <span class="text-content">${escapeHtml(shortText)}</span>
+                          ${isLong ? `
+                            <span class="review-expand-btn" data-full="${escapeHtml(fullText)}" data-short="${escapeHtml(shortText)}">展開全文</span>
+                          ` : ''}
+                        </div>
                     </div>
                 `;
             });
             reviewsSnippetHtml += `</div></div>`;
+        } else {
+            reviewsSnippetHtml = `
+              <div class="card-reviews-preview">
+                <p style="color:var(--text-muted);font-size:0.92rem;padding:8px 0;">Google Maps 暫無此分店精選評論資料。</p>
+              </div>
+            `;
         }
 
         const distanceBadge = typeof place.distanceFromUser === 'number'
@@ -1936,6 +2110,10 @@
             ? `<span class="rating-badge jetbrains-mono">${lucideSvg('star-fill', 14)} <span>${place.rating}</span></span>`
             : `<span class="rating-badge jetbrains-mono">${lucideSvg('star', 14)} <span>—</span></span>`;
 
+        const negativeSummaryBadge = lowRatingCount > 0
+            ? `<span class="badge-negative-summary jetbrains-mono">${lucideSvg('alert-triangle', 13)} <span>含 ${lowRatingCount} 則負評</span></span>`
+            : (reviews.length > 0 ? `<span class="badge-positive-summary jetbrains-mono">${lucideSvg('sparkles', 13)} <span>零負評好評</span></span>` : '');
+
         card.innerHTML = `
             <div class="store-header">
               <h3 class="store-title">${escapeHtml(place.name || '未命名分店')}</h3>
@@ -1943,6 +2121,7 @@
                 ${ratingBadge}
                 <span class="reviews-total-text jetbrains-mono">(${place.user_ratings_total || 0} 則評論)</span>
                 ${distanceBadge}
+                ${negativeSummaryBadge}
               </div>
               <div class="store-address">
                 ${lucideSvg('map-pin', 16)}
@@ -1952,10 +2131,46 @@
             ${reviewsSnippetHtml}
             <button type="button" class="btn-open-analysis">
               ${lucideSvg('activity', 18)}
-              <span>查看門市營運深度診斷</span>
+              <span>💡 查看 AI 顧客避雷深度分析</span>
               ${lucideSvg('arrow-right', 16, 'btn-arrow')}
             </button>
         `;
+
+        // Bind filter tabs on card
+        const filterBtns = card.querySelectorAll('.filter-pill');
+        filterBtns.forEach(btn => {
+          btn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            filterBtns.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            const filterMode = btn.dataset.filter;
+            const items = card.querySelectorAll('.card-review-item');
+            items.forEach(item => {
+              if (filterMode === 'low') {
+                item.style.display = item.dataset.isLow === 'true' ? 'block' : 'none';
+              } else {
+                item.style.display = 'block';
+              }
+            });
+          });
+        });
+
+        // Bind expand/collapse full review text
+        const expandBtns = card.querySelectorAll('.review-expand-btn');
+        expandBtns.forEach(btn => {
+          btn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const parent = btn.parentElement;
+            const textContent = parent.querySelector('.text-content');
+            if (btn.textContent === '展開全文') {
+              textContent.textContent = btn.dataset.full;
+              btn.textContent = '收合';
+            } else {
+              textContent.textContent = btn.dataset.short;
+              btn.textContent = '展開全文';
+            }
+          });
+        });
 
         const openBtn = card.querySelector('.btn-open-analysis');
         openBtn.addEventListener('click', (e) => {
@@ -2019,8 +2234,12 @@
           const isLow = ratingNum !== null && ratingNum <= 3;
           item.className = isLow ? 'drawer-review-item is-low' : 'drawer-review-item';
 
-          const ratingPillClass = isLow ? 'rating-pill rating-pill-low' : 'rating-pill rating-pill-high';
-          const ratingLabel = ratingNum !== null ? `${lucideSvg('star-fill', 12)} <span>${ratingNum}</span>` : `${lucideSvg('star', 12)} <span>—</span>`;
+          const ratingPillClass = isLow ? 'badge-negative-alert' : 'rating-pill rating-pill-high';
+          const ratingLabel = ratingNum !== null
+            ? (isLow
+                ? `${lucideSvg('alert-triangle', 12)} <span>負評 ${ratingNum}★</span>`
+                : `${lucideSvg('star-fill', 12)} <span>${ratingNum}★</span>`)
+            : `${lucideSvg('star', 12)} <span>—</span>`;
           const timeLabel = escapeHtml(review.relative_time_description || '');
 
           item.innerHTML = `
@@ -2114,7 +2333,7 @@
       output.innerHTML = `
         <div style="display:flex;align-items:center;gap:12px;color:var(--deep-blue);font-size:1.1rem;font-weight:700;padding:24px 0;">
           <span class="spinner" style="width:24px;height:24px;border-width:3px;margin:0;"></span>
-          <span>正在進行門市營運深度診斷摘要…</span>
+          <span>正在站在顧客視角提煉門市評價與避雷分析…</span>
         </div>
       `;
 
@@ -2170,7 +2389,7 @@
       title.className = 'drawer-output-title';
       title.innerHTML = `
         ${lucideSvg('activity', 22, 'drawer-title-icon')}
-        <span>${payload.status === 'success' ? '門市營運深度分析報告' : (payload.status === 'insufficient_evidence' ? '目前設定區間無符合評論' : '評論已取得，摘要暫不可用')}</span>
+        <span>${payload.status === 'success' ? 'AI 顧客避雷指南 & 體驗深度分析' : (payload.status === 'insufficient_evidence' ? '目前設定區間無符合評論' : '評論已取得，摘要暫不可用')}</span>
       `;
       output.appendChild(title);
 
@@ -2216,7 +2435,7 @@
           actionDiv.className = 'suggested-action-box';
           actionDiv.innerHTML = `
             <span class="action-icon">${lucideSvg('lightbulb', 18)}</span>
-            <span><strong>改善建議：</strong>${escapeHtml(observation.suggested_action)}</span>
+            <span><strong>💡 給消費者的避雷提醒：</strong>${escapeHtml(observation.suggested_action)}</span>
           `;
           row.appendChild(actionDiv);
         }
