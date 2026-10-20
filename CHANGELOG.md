@@ -6,9 +6,17 @@
 
 ## [2026-10-20]
 
+### 🧠 自備 AI 模型金鑰 (BYOK LLM Hub & Get Model List)
+- **支援 5 大主流 AI 提供商**：使用者可於設定中填入個人的 API Key，直接使用 Google Gemini、Groq、OpenAI / ChatGPT、xAI Grok 或 Anthropic Claude，自由選用喜愛的大語言模型且不佔用站點每日配額。
+- **動態取得模型清單 (Get Model List)**：填寫金鑰後點擊一鍵查詢，由後端安全端點 [`/api/llm-models`](file:///Users/david/Documents/git/tbdavid2019/store-pulse/src/index.ts) 代理查詢官方 API，即時動態抓取該金鑰支援的所有模型選單（如 Gemini 2.5 Flash / Pro、Llama 3.3 70B、GPT-4o、Claude 3.5 Sonnet 等）。
+- **零知識儲存安全性**：AI 金鑰純存放於客戶端 `localStorage`，伺服器記憶體完成推論轉發後即時銷毀，絕不持久化儲存。
+
 ### ⚡ SerpApi 自備金鑰深度爬蟲 (BYOK Deep Review Extraction)
 - **突破 Places API 5 則評論上限**：提供雙軌制資料擷取架構。未填寫金鑰時維持完全免費的 Google Places API（5 則即時精選）；填寫個人 SerpApi Key 時自動啟用多頁游標翻頁（`next_page_token`）升級至 `~25 則深度地圖爬蟲`。
-- **主畫面分店卡片深度評論同步**：當使用者開啟分析抽屜獲取 SerpApi 深度佐證評論後，主畫面分店卡片同步更新為 `共 N 則 (⚡ SerpApi 深度爬蟲)` 並即時重繪負評警示標記與篩選標籤；同時於卡片標題提示點擊分析即可載入 ~25 則。
+- **首頁店家卡片直接載入 ~25 則深度評論**：
+  - 店家卡片標題處新增 `[⚡ 載入 ~25 則深度評論]` 按鈕，點擊即時發送 [`/api/serpapi-reviews`](file:///Users/david/Documents/git/tbdavid2019/store-pulse/src/index.ts) 擷取並就地展開所有深度評論與負評標籤。
+  - 搜尋店家時，系統自動為搜尋結果前 2 間分店自動載入深度評論，告別死板的 5 則限制。
+  - 當開啟右側分析抽屜時，亦同步連動將所有萃取的真實佐證評論即時回繪至首頁卡片。
 - **4 階加權萃取演算法 (TLDReview 4-Tier Curation)**：
   - 第一優先：在地嚮導（Local Guides）與高等級認證評論者。
   - 第二優先：1~3 星真實負評與爭議點（低分優先排序，精準捕捉避雷細節）。
@@ -25,7 +33,7 @@
   - 若 SerpApi 額度耗盡或網路波動，後端分析管線自動無縫降級回 Google Places API 5 則評論，確保使用者隨時都能完成分析。
 - **Impeccable 工藝標準達成**：
   - 符合 Impeccable Craft Floor，嚴格禁止彩光陰影與非對稱粗邊框，採用無障礙鍵盤焦點、中性光影與平滑動態。
-  - Service Worker 快取版本推進至 `v8`。
+  - Service Worker 快取版本推進至 `v9`。
 
 ### 🌐 網域與基礎建設 (Domain & Infrastructure)
 - **正式自訂網域上線**：綁定 `https://storepulse.david888.com/`，於 `wrangler.jsonc` 配置 Cloudflare Workers 自訂路由，並設定 DNS 與 SSL 憑證。

@@ -13,6 +13,10 @@ import {
   validateSerpApiKey,
   type SerpApiReviewItem,
 } from './serpapi.ts';
+import {
+  fetchProviderModels,
+  type LLMProvider,
+} from './llm.ts';
 import { StorageManager } from './storage.ts';
 import type {
   AnalysisMode,
@@ -43,7 +47,7 @@ function getCorsHeaders(request: Request, env: Env): HeadersInit {
 
   const headers: Record<string, string> = {
     'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
-    'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-SerpApi-Key',
+    'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-SerpApi-Key, X-LLM-Provider, X-LLM-Key, X-LLM-Model',
     'Access-Control-Max-Age': '86400',
   };
   if (allowedOrigin) {
@@ -108,14 +112,15 @@ function computeCacheKey(
   mode: string,
   windowDays: number,
   sourceSha?: string,
-  sourcePrefix = 'places'
+  sourcePrefix = 'places',
+  byokModel?: string
 ): string {
   const modelUrl = env.MODEL_API_URL || '';
-  const modelName = env.MODEL_NAME || '';
-  const modelAuth = Boolean(env.MODEL_API_KEY);
-  const analysisVersion = env.STORE_PULSE_ANALYSIS_VERSION || '6';
+  const modelName = env.MODEL_NAME || byokModel || '';
+  const modelAuth = Boolean(env.MODEL_API_KEY || byokModel);
+  const analysisVersion = env.STORE_PULSE_ANALYSIS_VERSION || '7';
   const material = [analysisVersion, modelUrl, modelName, String(modelAuth), 'zh-TW', sourceSha || '', sourcePrefix].join('|');
-  const versionHash = createHash('sha256').update(material, 'utf8').digest('hex').slice(0, 16);
+  const versionHash = createHash('sha256').update(material, 'utf8').digest('hex').slice(0, 24);
   return `cache:${versionHash}|${placeId}|${mode}|${windowDays}|${sourcePrefix}`;
 }
 
@@ -173,6 +178,83 @@ export default {
 
       const checkResult = await validateSerpApiKey(key);
       return jsonResponse(checkResult, checkResult.valid ? 200 : 400, corsHeaders);
+    }
+
+    // BYOK LLM models query endpoint
+    if (url.pathname === '/api/llm-models') {
+      if (request.method !== 'POST') {
+        return errorResponse('method_not_allowed', 'Only POST is supported', 405, corsHeaders);
+      }
+
+      let provider = (request.headers.get('X-LLM-Provider')?.trim().toLowerCase() || '') as LLMProvider;
+      let key = request.headers.get('X-LLM-Key')?.trim() || '';
+
+      if (!provider || !key) {
+        try {
+          const body: any = await request.json();
+          if (!provider) provider = String(body.provider || '').trim().toLowerCase() as LLMProvider;
+          if (!key) key = String(body.api_key || body.key || '').trim();
+        } catch {}
+      }
+
+      const validProviders: LLMProvider[] = ['gemini', 'groq', 'openai', 'xai', 'anthropic'];
+      if (!validProviders.includes(provider)) {
+        return errorResponse('invalid_provider', '請選擇合法的 LLM 提供商 (gemini, groq, openai, xai, anthropic)', 400, corsHeaders);
+      }
+      if (!key) {
+        return errorResponse('missing_key', '請輸入該提供商的 API 金鑰', 400, corsHeaders);
+      }
+
+      try {
+        const models = await fetchProviderModels(provider, key);
+        return jsonResponse({ provider, models }, 200, corsHeaders);
+      } catch (err: any) {
+        return errorResponse('fetch_models_failed', err.message || '無法取得模型清單，請檢查金鑰是否正確', 400, corsHeaders);
+      }
+    }
+
+    // Direct SerpApi deep reviews fetching endpoint for store cards
+    if (url.pathname === '/api/serpapi-reviews') {
+      if (request.method !== 'POST') {
+        return errorResponse('method_not_allowed', 'Only POST is supported', 405, corsHeaders);
+      }
+
+      let key = request.headers.get('X-SerpApi-Key')?.trim() || '';
+      let body: any = {};
+      try {
+        body = await request.json();
+      } catch {}
+
+      if (!key) key = String(body.api_key || body.key || '').trim();
+      if (!key) return errorResponse('missing_key', '未提供 SerpApi 金鑰', 400, corsHeaders);
+
+      const placeId = String(body.place_id || '').trim();
+      if (!placeId) return errorResponse('missing_place_id', '未提供 place_id', 400, corsHeaders);
+
+      const mode = (String(body.mode || 'recent').trim() as AnalysisMode);
+      const windowDays = Number(body.window_days || 3650);
+
+      try {
+        const serpRes = await fetchSerpApiReviews(key, placeId, { mode, lang: 'zh-TW' });
+        const placeStub: NormalizedPlace = {
+          place_id: placeId,
+          name: String(body.place?.name || body.name || '分店'),
+          address: String(body.place?.address || body.address || ''),
+          rating: typeof body.place?.rating === 'number' ? body.place.rating : null,
+          user_ratings_total: typeof serpRes.total === 'number' ? serpRes.total : null,
+          source_url: null,
+        };
+        const norm = curateSerpApiReviews(serpRes.reviews, placeStub, mode, windowDays);
+        return jsonResponse({
+          status: 'success',
+          place_id: placeId,
+          total: serpRes.total || norm.evidence.length,
+          evidence: norm.evidence,
+          sampling: norm.sampling,
+        }, 200, corsHeaders);
+      } catch (err: any) {
+        return errorResponse('serpapi_error', err.message || '無法擷取 SerpApi 評論', 400, corsHeaders);
+      }
     }
 
     // Review analysis endpoint
@@ -234,6 +316,14 @@ export default {
       let rawSerpReviews: SerpApiReviewItem[] | null = null;
       let reviewSource = 'google_places';
 
+      // Check for BYOK LLM Key in request headers or body
+      const byokProvider = (request.headers.get('X-LLM-Provider')?.trim().toLowerCase() || String(reqBody.llm_provider || '').trim().toLowerCase()) as LLMProvider;
+      const byokKey = request.headers.get('X-LLM-Key')?.trim() || String(reqBody.llm_key || '').trim();
+      const byokModel = request.headers.get('X-LLM-Model')?.trim() || String(reqBody.llm_model || '').trim();
+      const byokConfig = (byokProvider && byokKey && byokModel)
+        ? { provider: byokProvider, key: byokKey, model: byokModel }
+        : undefined;
+
       if (serpApiKey) {
         try {
           const serpRes = await fetchSerpApiReviews(serpApiKey, placeId, { mode, lang: 'zh-TW' });
@@ -257,10 +347,11 @@ export default {
       let norm: ReturnType<typeof normalizeEvidence> | ReturnType<typeof curateSerpApiReviews>;
       let usedEvidence: EvidenceItem[] = [];
       let cacheKey: string;
+      const modelTag = byokConfig ? `${byokConfig.provider}:${byokConfig.model}` : undefined;
 
       if (rawSerpReviews && rawSerpReviews.length > 0) {
         norm = curateSerpApiReviews(rawSerpReviews, place, mode, windowDays);
-        cacheKey = computeCacheKey(env, placeId, mode, windowDays, norm.source_sha, 'serpapi');
+        cacheKey = computeCacheKey(env, placeId, mode, windowDays, norm.source_sha, 'serpapi', modelTag);
         usedEvidence = norm.evidence;
       } else {
         // Sort reviews based on mode
@@ -276,7 +367,7 @@ export default {
         }
 
         norm = normalizeEvidence(place, reviews, mode, windowDays);
-        cacheKey = computeCacheKey(env, placeId, mode, windowDays, norm.source_sha, 'places');
+        cacheKey = computeCacheKey(env, placeId, mode, windowDays, norm.source_sha, 'places', modelTag);
         norm.sampling.truncated = (reqBody.reviews || []).length >= 5;
 
         const rawEvidence = norm.evidence.slice(0, 5);
@@ -347,10 +438,13 @@ export default {
       try {
         const summarizeResult = await summarize(usedEvidence, env, {
           timeoutSeconds: 45,
+          byok: byokConfig,
           beforeRequest: async () => {
-            const hasBudget = await storage.reserveDaily(dailyBudget);
-            if (!hasBudget) {
-              throw new SummaryError('quota_exceeded');
+            if (!byokConfig) {
+              const hasBudget = await storage.reserveDaily(dailyBudget);
+              if (!hasBudget) {
+                throw new SummaryError('quota_exceeded');
+              }
             }
           },
         });

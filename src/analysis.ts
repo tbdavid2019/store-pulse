@@ -1,4 +1,5 @@
 import type { Env, EvidenceItem, Observation } from './types.ts';
+import { executeBYOKChat, type LLMProvider } from './llm.ts';
 
 export class SummaryError extends Error {
   constructor(message: string) {
@@ -27,6 +28,11 @@ export async function summarize(
     timeoutSeconds?: number;
     beforeRequest?: () => Promise<void> | void;
     modelName?: string;
+    byok?: {
+      provider: LLMProvider;
+      key: string;
+      model: string;
+    };
   } = {}
 ): Promise<SummarizeResult> {
   if (!evidence || evidence.length === 0) {
@@ -68,6 +74,35 @@ export async function summarize(
   const userInstruction = `請客觀分析以下店面評論，精準提煉顧客抱怨痛點與真實體驗發現（finding），嚴禁提供任何建議或提醒，並一律以「繁體中文（台灣）」輸出合法 JSON 物件：\n${JSON.stringify(prompt)}`;
 
   const timeoutMs = (options.timeoutSeconds || 25) * 1000;
+
+  // 0. User BYOK Custom LLM Provider (Gemini / Groq / OpenAI / xAI / Anthropic)
+  if (options.byok && options.byok.key) {
+    if (options.beforeRequest) {
+      await options.beforeRequest();
+    }
+    try {
+      const text = await executeBYOKChat(
+        options.byok.provider,
+        options.byok.key,
+        options.byok.model,
+        systemInstruction,
+        userInstruction,
+        Math.max(timeoutMs, 35000)
+      );
+      const parsedJson = extractJsonPayload(text);
+      const observations = parseModelObservations(parsedJson, evidence);
+      return {
+        summary: { observations },
+        usage: {
+          model_calls: 1,
+          model: `${options.byok.provider}:${options.byok.model}`,
+          status: 'success',
+        },
+      };
+    } catch (err: any) {
+      console.warn(`BYOK LLM (${options.byok.provider}) failed: ${err.message}. Falling back to default Workers AI.`);
+    }
+  }
 
   // 1. External Model API configured (Gemini / OpenAI / Custom)
   if (modelUrl) {

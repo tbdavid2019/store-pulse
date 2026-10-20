@@ -519,3 +519,86 @@ test('Worker Fetch Handler - /api/review-analysis with BYOK X-SerpApi-Key', asyn
     globalThis.fetch = originalFetch;
   }
 });
+
+test('Worker Fetch Handler - /api/llm-models endpoint', async () => {
+  const originalFetch = globalThis.fetch;
+  try {
+    globalThis.fetch = async (url) => {
+      if (url.includes('generativelanguage.googleapis.com')) {
+        return new Response(JSON.stringify({
+          models: [
+            { name: 'models/gemini-2.5-flash', displayName: 'Gemini 2.5 Flash', supportedGenerationMethods: ['generateContent'] },
+            { name: 'models/gemini-2.5-pro', displayName: 'Gemini 2.5 Pro', supportedGenerationMethods: ['generateContent'] },
+          ],
+        }), { status: 200, headers: { 'Content-Type': 'application/json' } });
+      }
+      return new Response(JSON.stringify({ error: 'unsupported' }), { status: 400 });
+    };
+
+    const req = new Request('http://localhost:8787/api/llm-models', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-LLM-Provider': 'gemini',
+        'X-LLM-Key': 'mock-gemini-key',
+      },
+      body: JSON.stringify({}),
+    });
+
+    const res = await worker.fetch(req, {}, {});
+    assert.equal(res.status, 200);
+    const data = await res.json();
+    assert.equal(data.provider, 'gemini');
+    assert.equal(data.models.length, 2);
+    assert.equal(data.models[0].id, 'gemini-2.5-flash');
+  } finally {
+    globalThis.fetch = originalFetch;
+  }
+});
+
+test('Worker Fetch Handler - /api/serpapi-reviews endpoint', async () => {
+  const originalFetch = globalThis.fetch;
+  try {
+    globalThis.fetch = async (url) => {
+      if (url.includes('engine=google_maps_reviews')) {
+        return new Response(JSON.stringify({
+          reviews: [
+            {
+              author: 'Card Reviewer 1',
+              rating: 1,
+              snippet: '負評：服務非常差。',
+              iso_date: '2026-10-19T00:00:00Z',
+            },
+            {
+              author: 'Card Reviewer 2',
+              rating: 5,
+              snippet: '好評：非常好喝。',
+              iso_date: '2026-10-19T00:00:00Z',
+            },
+          ],
+        }), { status: 200, headers: { 'Content-Type': 'application/json' } });
+      }
+      return new Response(JSON.stringify({ error: 'not found' }), { status: 404 });
+    };
+
+    const req = new Request('http://localhost:8787/api/serpapi-reviews', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-SerpApi-Key': 'mock-serp-key',
+      },
+      body: JSON.stringify({
+        place_id: 'test_card_place',
+        place: { name: '測試門市', address: '測試路1號' },
+      }),
+    });
+
+    const res = await worker.fetch(req, {}, {});
+    assert.equal(res.status, 200);
+    const data = await res.json();
+    assert.equal(data.status, 'success');
+    assert.equal(data.evidence.length, 2);
+  } finally {
+    globalThis.fetch = originalFetch;
+  }
+});
