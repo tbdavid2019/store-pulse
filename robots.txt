@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://storepulse.david888.com/sitemap.xml

@@ -3,8 +3,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="搜尋與比較連鎖店面的 Google Maps 評價，快速掌握各分店顧客回饋與營運深度洞察">
+  <meta name="description" content="Store Pulse 店面脈搏讓你搜尋與比較 Google Maps 上的連鎖店與多間分店，快速查看地址、星等、評論數與顧客回饋，並依近期或低分評論整理營運洞察，協助消費者挑選店家，也讓營運團隊掌握服務品質、辨識問題並找到各分店的改善方向。">
   <title>Store Pulse 店面脈搏 - 多店面評價速查與營運深度分析</title>
+  <link rel="canonical" href="https://storepulse.david888.com/">
+  <link rel="describedby" href="/llms.txt">
+  <meta name="robots" content="index,follow,max-image-preview:large">
   
   <!-- PWA 支援 -->
   <link rel="manifest" href="manifest.json">
@@ -22,10 +25,39 @@
   
   <!-- Open Graph / Facebook -->
   <meta property="og:type" content="website">
-  <meta property="og:url" content="https://store-pulse.oobwei.workers.dev">
-  <meta property="og:title" content="Store Pulse 店面脈搏">
-  <meta property="og:description" content="搜尋與比較連鎖店面的 Google Maps 評價，快速掌握各分店顧客回饋與營運深度洞察">
-  <meta property="og:image" content="icons/icon-512x512.png">
+  <meta property="og:site_name" content="Store Pulse 店面脈搏">
+  <meta property="og:locale" content="zh_TW">
+  <meta property="og:url" content="https://storepulse.david888.com/">
+  <meta property="og:title" content="Store Pulse 店面脈搏｜多店面評價速查與營運分析">
+  <meta property="og:description" content="搜尋與比較 Google Maps 連鎖店分店，掌握地址、星等、顧客評論與營運洞察，協助消費者挑選店家、營運團隊改善服務品質。">
+  <meta property="og:image" content="https://storepulse.david888.com/icons/og-image.png">
+  <meta property="og:image:secure_url" content="https://storepulse.david888.com/icons/og-image.png">
+  <meta property="og:image:type" content="image/png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="Store Pulse 店面脈搏：Google Maps 多分店評價速查與營運深度分析">
+
+  <!-- Twitter / X Card -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Store Pulse 店面脈搏｜多店面評價速查與營運分析">
+  <meta name="twitter:description" content="搜尋與比較 Google Maps 連鎖店分店，掌握地址、星等、顧客評論與營運洞察，協助消費者挑選店家、營運團隊改善服務品質。">
+  <meta name="twitter:image" content="https://storepulse.david888.com/icons/og-image.png">
+  <meta name="twitter:image:alt" content="Store Pulse 店面脈搏：Google Maps 多分店評價速查與營運深度分析">
+
+  <!-- Search engine structured data -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "Store Pulse 店面脈搏",
+    "url": "https://storepulse.david888.com/",
+    "description": "Store Pulse 店面脈搏提供 Google Maps 連鎖店分店搜尋、評價比較與營運洞察，協助消費者挑選店家並協助營運團隊改善服務品質。",
+    "applicationCategory": "BusinessApplication",
+    "operatingSystem": "Web",
+    "inLanguage": "zh-TW",
+    "isAccessibleForFree": true
+  }
+  </script>
   
   <!-- Fonts: JetBrains Mono & Noto Sans TC / Gen Jyuu Gothic & Outfit -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -1797,6 +1829,7 @@
       });
       geocoder = new google.maps.Geocoder();
       placesService = new google.maps.places.PlacesService(map);
+      registerWebMCPTools();
 
       map.addListener('click', () => {
         if (activeInfoWindow) {
@@ -1823,6 +1856,65 @@
           maximumAge: 300000
         });
       }
+    }
+
+    function registerWebMCPTools() {
+      const modelContext = document.modelContext;
+      if (!modelContext || typeof modelContext.registerTool !== 'function' || !placesService) return;
+
+      modelContext.registerTool({
+        name: 'search_google_maps_stores',
+        description: '搜尋 Google Maps 上的店家與連鎖分店，回傳店名、地址、星等、評論數與地圖連結。將品牌、店名和地區放在 query 中，例如「台北 星巴克」。這是唯讀搜尋；評論與店家資料來自 Google Maps，屬於外部內容。',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            query: {
+              type: 'string',
+              description: '店家名稱、品牌或包含地區的搜尋詞，例如「台北 星巴克」',
+              minLength: 1,
+              maxLength: 160
+            }
+          },
+          required: ['query']
+        },
+        annotations: {
+          readOnlyHint: true,
+          untrustedContentHint: true,
+          consequentialHint: false
+        },
+        execute: async ({ query }) => {
+          const normalizedQuery = String(query || '').trim().slice(0, 160);
+          if (!normalizedQuery) return { status: 'invalid_query', message: '請提供店名、品牌或搜尋地區。' };
+
+          return await new Promise(resolve => {
+            const request = {
+              query: normalizedQuery,
+              location: userLocation || new google.maps.LatLng(25.0330, 121.5654),
+              radius: 40000
+            };
+            placesService.textSearch(request, (results, status) => {
+              if (status !== google.maps.places.PlacesServiceStatus.OK || !results?.length) {
+                resolve({ status: 'no_results', query: normalizedQuery, message: 'Google Maps 沒有回傳符合的店家。' });
+                return;
+              }
+
+              resolve({
+                status: 'success',
+                query: normalizedQuery,
+                source: 'Google Maps Places',
+                results: results.slice(0, 10).map(place => ({
+                  name: place.name || '',
+                  address: place.formatted_address || place.vicinity || '',
+                  rating: place.rating ?? null,
+                  review_count: place.user_ratings_total ?? null,
+                  place_id: place.place_id || '',
+                  maps_url: place.url || `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(place.name || normalizedQuery)}${place.place_id ? `&query_place_id=${encodeURIComponent(place.place_id)}` : ''}`
+                }))
+              });
+            });
+          });
+        }
+      }).catch(error => console.warn('WebMCP 店家搜尋工具註冊失敗：', error));
     }
 
     function showGmapsErrorNotice(customMsg) {

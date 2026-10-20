@@ -1,7 +1,7 @@
 {
   "name": "Store Pulse 店面脈搏",
   "short_name": "Store Pulse",
-  "description": "搜尋與比較連鎖店面的 Google Maps 評價，快速掌握各分店聲量",
+  "description": "搜尋 Google Maps 連鎖店分店、比較顧客評價與星等，掌握服務品質和營運改善方向。",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#fff1e0",

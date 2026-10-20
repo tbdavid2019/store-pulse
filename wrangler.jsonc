@@ -3,6 +3,9 @@
   "name": "store-pulse",
   "account_id": "379570860738dd1757ba7f67ef2bdffe",
   "workers_dev": true,
+  "routes": [
+    { "pattern": "storepulse.david888.com", "custom_domain": true }
+  ],
   "main": "src/index.ts",
   "compatibility_date": "2026-03-01",
   "compatibility_flags": ["nodejs_compat"],

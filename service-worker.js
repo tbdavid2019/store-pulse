@@ -1,10 +1,11 @@
-const CACHE_NAME = 'store-pulse-v4';
+const CACHE_NAME = 'store-pulse-v5';
 const urlsToCache = [
   '/',
   '/index.html',
   '/manifest.json',
   '/icons/icon-192x192.png',
-  '/icons/icon-512x512.png'
+  '/icons/icon-512x512.png',
+  '/icons/og-image.png'
 ];
 
 // 安裝 Service Worker

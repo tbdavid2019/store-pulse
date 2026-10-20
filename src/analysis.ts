@@ -189,6 +189,8 @@ export async function summarize(
     for (const aiModel of candidateModels) {
       try {
         let raw: unknown;
+        const perModelTimeoutMs = candidateModels.length > 1 ? Math.min(22000, timeoutMs) : timeoutMs;
+
         if (env.AI) {
           const runPromise = env.AI.run(aiModel, {
             messages: [
@@ -205,12 +207,12 @@ export async function summarize(
             max_tokens: 2048,
           });
           const timeoutPromise = new Promise((_, reject) =>
-            setTimeout(() => reject(new SummaryError('model_timeout')), timeoutMs)
+            setTimeout(() => reject(new SummaryError('model_timeout')), perModelTimeoutMs)
           );
           raw = await Promise.race([runPromise, timeoutPromise]);
         } else {
           const controller = new AbortController();
-          const timer = setTimeout(() => controller.abort(), timeoutMs);
+          const timer = setTimeout(() => controller.abort(), perModelTimeoutMs);
           try {
             const res = await fetch(`https://api.cloudflare.com/client/v4/accounts/${cfAccountId}/ai/run/${aiModel}`, {
               method: 'POST',
@@ -262,13 +264,16 @@ export async function summarize(
         return parseModelObservations(raw, evidence, aiModel);
       } catch (err: any) {
         lastError = err;
-        if (err.name === 'AbortError' || err.message === 'model_timeout') {
-          throw new SummaryError('model_timeout');
-        }
-        // If specific candidate model failed (e.g. 404 not available), try next candidate
-        if (candidateModels.length > 1) {
+        const isTimeout = err.name === 'AbortError' || err.message === 'model_timeout';
+        const hasMoreCandidates = candidateModels.indexOf(aiModel) < candidateModels.length - 1;
+        if (hasMoreCandidates) {
+          console.warn(`Model ${aiModel} attempt failed (${err.message || 'error'}). Trying fallback candidate.`);
           continue;
         }
+        if (isTimeout) {
+          throw new SummaryError('model_timeout');
+        }
+        throw new SummaryError(err.message || 'model_request_failed');
       }
     }
 

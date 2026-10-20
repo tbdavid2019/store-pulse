@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <rect width="1200" height="630" fill="#17324d"/>
+  <circle cx="1040" cy="82" r="210" fill="#214463" opacity=".76"/>
+  <circle cx="1090" cy="570" r="275" fill="#10283f" opacity=".9"/>
+  <path d="M0 504c200-102 342-114 515-37s335 98 685-58v221H0z" fill="#ffb010"/>
+  <path d="M0 550c228-72 381-65 571-4s394 44 629-36v120H0z" fill="#fff9e8" opacity=".96"/>
+  <g transform="translate(833 160)">
+    <rect x="0" y="0" width="242" height="242" rx="48" fill="#fff9e8"/>
+    <rect x="28" y="27" width="186" height="188" rx="34" fill="#ffb010" stroke="#17324d" stroke-width="8"/>
+    <path d="M121 55c-38 0-68 30-68 67 0 48 68 102 68 102s68-54 68-102c0-37-30-67-68-67z" fill="#17324d"/>
+    <circle cx="121" cy="120" r="23" fill="#fff9e8"/>
+    <path d="M78 160h12l11-25 17 45 18-37 10 17h14" fill="none" stroke="#ffb010" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+  <g fill="#ffb010">
+    <path d="m780 89 8 21 22 8-22 8-8 22-8-22-21-8 21-8z"/>
+    <circle cx="1118" cy="222" r="8"/>
+    <circle cx="789" cy="452" r="6"/>
+  </g>
+  <text x="84" y="180" fill="#ffb010" font-family="Arial, 'Noto Sans TC', sans-serif" font-size="25" font-weight="700" letter-spacing="5">STORE PULSE</text>
+  <text x="78" y="276" fill="#fff9e8" font-family="Arial, 'Noto Sans TC', sans-serif" font-size="66" font-weight="800">店面脈搏</text>
+  <text x="84" y="344" fill="#fff9e8" font-family="Arial, 'Noto Sans TC', sans-serif" font-size="29" font-weight="600">多店面評價速查與營運深度分析</text>
+  <text x="84" y="403" fill="#d7e1e9" font-family="Arial, 'Noto Sans TC', sans-serif" font-size="23">搜尋分店・比較評論・掌握顧客回饋</text>
+  <text x="84" y="594" fill="#17324d" font-family="Arial, sans-serif" font-size="20" font-weight="700" letter-spacing="1">STOREPULSE.DAVID888.COM</text>
+</svg>

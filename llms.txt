@@ -1,0 +1,17 @@
+# Store Pulse 店面脈搏
+
+> Store Pulse 是繁體中文的 Google Maps 多店面搜尋與評論分析工具，協助使用者比較連鎖店分店、查看顧客回饋，並協助營運團隊掌握服務趨勢。
+
+網站提供互動式店家與分店搜尋、地址與星等速查、Google Maps 精選評論，以及依近期或低分評論整理的營運分析。搜尋結果和評論由 Google Maps 提供；評論內容屬於外部使用者資料。
+
+搜尋工具使用者可輸入店名、品牌或地區，例如「台北 星巴克」。首頁的地圖搜尋需要瀏覽器支援 Google Maps，店家搜尋與評論資料依 Google Maps 服務及其可用性提供。AI 深度分析會依站點當前設定提供，並以評論證據為基礎。
+
+## 網站
+
+- [Store Pulse 首頁](https://storepulse.david888.com/): 搜尋連鎖品牌與多間分店、比較評價並查看營運洞察。
+- [服務健康狀態](https://storepulse.david888.com/api/health): 檢視 API 服務狀態與深度分析功能是否啟用。
+
+## 相關技術
+
+- [WebMCP 官方文件](https://developer.chrome.com/docs/ai/webmcp?hl=zh-tw): 網頁代理程式可使用的結構化工具介面。
+- [llms.txt 格式提案](https://llmstxt.org/): 網站提供 LLM 易讀導覽檔案的格式說明。

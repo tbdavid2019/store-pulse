@@ -269,7 +269,7 @@ export default {
       const dailyBudget = Number(env.STORE_PULSE_DAILY_MODEL_BUDGET) || 100;
       try {
         const summarizeResult = await summarize(usedEvidence, env, {
-          timeoutSeconds: 25,
+          timeoutSeconds: 45,
           beforeRequest: async () => {
             const hasBudget = await storage.reserveDaily(dailyBudget);
             if (!hasBudget) {
