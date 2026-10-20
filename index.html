@@ -2687,6 +2687,11 @@
         const lowRatingReviews = reviews.filter(r => typeof r.rating === 'number' && r.rating <= 3);
         const lowRatingCount = lowRatingReviews.length;
 
+        const hasSerpKey = Boolean(getStoredSerpApiKey());
+        const previewCountLabel = hasSerpKey
+          ? `共 ${reviews.length} 則 · ⚡ 點擊分析抓取 ~25 則`
+          : `共 ${reviews.length} 則`;
+
         let reviewsSnippetHtml = '';
         if (reviews.length > 0) {
             reviewsSnippetHtml = `
@@ -2694,7 +2699,7 @@
                 <div class="card-reviews-header">
                   <div class="reviews-header-left">
                     <span class="preview-title">顧客真實評價</span>
-                    <span class="preview-count jetbrains-mono">共 ${reviews.length} 則</span>
+                    <span class="preview-count jetbrains-mono">${previewCountLabel}</span>
                   </div>
                   ${lowRatingCount > 0 ? `
                     <div class="reviews-filter-pills" role="tablist">
@@ -2769,41 +2774,7 @@
             </button>
         `;
 
-        // Bind filter tabs on card
-        const filterBtns = card.querySelectorAll('.filter-pill');
-        filterBtns.forEach(btn => {
-          btn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            filterBtns.forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-            const filterMode = btn.dataset.filter;
-            const items = card.querySelectorAll('.card-review-item');
-            items.forEach(item => {
-              if (filterMode === 'low') {
-                item.style.display = item.dataset.isLow === 'true' ? 'block' : 'none';
-              } else {
-                item.style.display = 'block';
-              }
-            });
-          });
-        });
-
-        // Bind expand/collapse full review text
-        const expandBtns = card.querySelectorAll('.review-expand-btn');
-        expandBtns.forEach(btn => {
-          btn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            const parent = btn.parentElement;
-            const textContent = parent.querySelector('.text-content');
-            if (btn.textContent === '展開全文') {
-              textContent.textContent = btn.dataset.full;
-              btn.textContent = '收合';
-            } else {
-              textContent.textContent = btn.dataset.short;
-              btn.textContent = '展開全文';
-            }
-          });
-        });
+        bindCardReviewInteractions(card);
 
         const openBtn = card.querySelector('.btn-open-analysis');
         openBtn.addEventListener('click', (e) => {
@@ -2820,6 +2791,123 @@
             }
         };
         return card;
+    }
+
+    function bindCardReviewInteractions(card) {
+      if (!card) return;
+      const filterBtns = card.querySelectorAll('.filter-pill');
+      filterBtns.forEach(btn => {
+        btn.onclick = (e) => {
+          e.stopPropagation();
+          filterBtns.forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          const filterMode = btn.dataset.filter;
+          const items = card.querySelectorAll('.card-review-item');
+          items.forEach(item => {
+            if (filterMode === 'low') {
+              item.style.display = item.dataset.isLow === 'true' ? 'block' : 'none';
+            } else {
+              item.style.display = 'block';
+            }
+          });
+        };
+      });
+
+      const expandBtns = card.querySelectorAll('.review-expand-btn');
+      expandBtns.forEach(btn => {
+        btn.onclick = (e) => {
+          e.stopPropagation();
+          const parent = btn.parentElement;
+          const textContent = parent.querySelector('.text-content');
+          if (btn.textContent === '展開全文') {
+            textContent.textContent = btn.dataset.full;
+            btn.textContent = '收合';
+          } else {
+            textContent.textContent = btn.dataset.short;
+            btn.textContent = '展開全文';
+          }
+        };
+      });
+    }
+
+    function updateStoreCardReviews(placeId, evidence, isSerpApi) {
+      if (!placeId || !Array.isArray(evidence) || evidence.length === 0) return;
+      const card = document.querySelector(`.store-card[data-place-id="${placeId}"]`);
+      if (!card) return;
+
+      const countEl = card.querySelector('.preview-count');
+      if (countEl) {
+        countEl.textContent = isSerpApi ? `共 ${evidence.length} 則 (⚡ SerpApi 深度爬蟲)` : `共 ${evidence.length} 則`;
+      }
+
+      const lowRatingReviews = evidence.filter(r => typeof r.rating === 'number' && r.rating <= 3);
+      const lowRatingCount = lowRatingReviews.length;
+
+      const metaRow = card.querySelector('.store-meta-row');
+      if (metaRow) {
+        let existingSummaryBadge = metaRow.querySelector('.badge-negative-summary, .badge-positive-summary');
+        if (existingSummaryBadge) {
+          if (lowRatingCount > 0) {
+            existingSummaryBadge.className = 'badge-negative-summary jetbrains-mono';
+            existingSummaryBadge.innerHTML = `${lucideSvg('alert-triangle', 13)} <span>含 ${lowRatingCount} 則負評</span>`;
+          } else {
+            existingSummaryBadge.className = 'badge-positive-summary jetbrains-mono';
+            existingSummaryBadge.innerHTML = `${lucideSvg('sparkles', 13)} <span>零負評好評</span>`;
+          }
+        }
+      }
+
+      const cardReviewsHeader = card.querySelector('.card-reviews-header');
+      let filterPills = card.querySelector('.reviews-filter-pills');
+      if (lowRatingCount > 0) {
+        if (!filterPills && cardReviewsHeader) {
+          filterPills = document.createElement('div');
+          filterPills.className = 'reviews-filter-pills';
+          filterPills.setAttribute('role', 'tablist');
+          cardReviewsHeader.appendChild(filterPills);
+        }
+        if (filterPills) {
+          filterPills.innerHTML = `
+            <button type="button" class="filter-pill active" data-filter="all">全部 (${evidence.length})</button>
+            <button type="button" class="filter-pill pill-negative" data-filter="low">🚨 負評 (${lowRatingCount})</button>
+          `;
+        }
+      } else if (filterPills) {
+        filterPills.innerHTML = `<button type="button" class="filter-pill active" data-filter="all">全部 (${evidence.length})</button>`;
+      }
+
+      const snippetsContainer = card.querySelector(`#snippets_${placeId}`);
+      if (snippetsContainer) {
+        snippetsContainer.replaceChildren();
+        evidence.forEach(review => {
+          const ratingNum = typeof review.rating === 'number' ? review.rating : null;
+          const isLow = ratingNum !== null && ratingNum <= 3;
+          const fullText = (review.text || '（無文字評論）').trim();
+          const isLong = fullText.length > 130;
+          const shortText = isLong ? fullText.slice(0, 130).trim() + '…' : fullText;
+
+          const item = document.createElement('div');
+          item.className = `card-review-item ${isLow ? 'is-low-rating' : 'is-normal-rating'}`;
+          item.dataset.isLow = String(isLow);
+          item.innerHTML = `
+            <div class="review-author-row">
+              <span class="review-author">${escapeHtml(review.author || '匿名顧客')}</span>
+              ${isLow ? `
+                <span class="badge-negative-alert jetbrains-mono">${lucideSvg('alert-triangle', 12)} <span>負評 ${ratingNum}★</span></span>
+              ` : `
+                <span class="rating-pill rating-pill-high jetbrains-mono">${lucideSvg('star-fill', 11)} <span>${ratingNum ?? '—'}★</span></span>
+              `}
+            </div>
+            <div class="card-review-text">
+              <span class="text-content">${escapeHtml(shortText)}</span>
+              ${isLong ? `<span class="review-expand-btn" data-full="${escapeHtml(fullText)}" data-short="${escapeHtml(shortText)}">展開全文</span>` : ''}
+            </div>
+          `;
+          snippetsContainer.appendChild(item);
+        });
+
+        bindCardReviewInteractions(card);
+      }
     }
 
     function openAnalysisDrawer(place, triggerEl) {
@@ -3303,6 +3391,11 @@
             reviewsList.appendChild(item);
           });
         }
+      }
+
+      // Also update the store card in the main list with these rich evidence reviews!
+      if (currentDrawerPlace?.place_id && Array.isArray(payload.evidence) && payload.evidence.length > 0) {
+        updateStoreCardReviews(currentDrawerPlace.place_id, payload.evidence, isSerpApi);
       }
 
       const categoryMeta = {

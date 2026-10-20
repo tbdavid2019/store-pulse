@@ -90,6 +90,7 @@ export async function validateSerpApiKey(apiKey: string): Promise<{
 
 /**
  * Fetches reviews for a given place ID from SerpApi's google_maps_reviews engine.
+ * Automatically paginates using `next_page_token` to retrieve up to ~25 reviews.
  */
 export async function fetchSerpApiReviews(
   apiKey: string,
@@ -98,6 +99,8 @@ export async function fetchSerpApiReviews(
     mode?: AnalysisMode;
     lang?: string;
     timeoutMs?: number;
+    maxPages?: number;
+    targetReviews?: number;
   } = {}
 ): Promise<{
   reviews: SerpApiReviewItem[];
@@ -111,45 +114,74 @@ export async function fetchSerpApiReviews(
   const mode = options.mode || 'recent';
   const lang = options.lang || 'zh-TW';
   const sortBy = mode === 'low_rating' ? 'ratingLow' : 'newestFirst';
-
-  const params = new URLSearchParams({
-    engine: 'google_maps_reviews',
-    place_id: placeId,
-    api_key: key,
-    hl: lang,
-    sort_by: sortBy,
-  });
+  const maxPages = options.maxPages || 3;
+  const targetReviews = options.targetReviews || 25;
 
   const controller = new AbortController();
-  const timer = setTimeout(() => controller.abort(), options.timeoutMs || 25000);
+  const timer = setTimeout(() => controller.abort(), options.timeoutMs || 35000);
+
+  const allReviews: SerpApiReviewItem[] = [];
+  let totalReviewsCount: number | undefined;
+  let nextToken: string | null = null;
+  let page = 0;
 
   try {
-    const res = await fetch(`${SERPAPI_ENDPOINT}?${params.toString()}`, {
-      signal: controller.signal,
-      headers: {
-        Accept: 'application/json',
-      },
-    });
-
-    const data: any = await res.json().catch(() => null);
-
-    if (!res.ok || (data && data.error)) {
-      const errMsg = String(data?.error || `HTTP ${res.status}`);
-      if (errMsg.toLowerCase().includes('invalid api key')) {
-        throw new SerpApiError('invalid_api_key', 'SerpApi 金鑰無效，請於設定中檢查。');
+    while (page < maxPages && allReviews.length < targetReviews) {
+      page++;
+      const params = new URLSearchParams({
+        engine: 'google_maps_reviews',
+        place_id: placeId,
+        api_key: key,
+        hl: lang,
+        sort_by: sortBy,
+      });
+      if (nextToken) {
+        params.set('next_page_token', nextToken);
       }
-      if (errMsg.toLowerCase().includes('run out of searches') || errMsg.toLowerCase().includes('quota')) {
-        throw new SerpApiError('quota_exceeded', 'SerpApi 免費搜尋額度已用盡。');
+
+      const res = await fetch(`${SERPAPI_ENDPOINT}?${params.toString()}`, {
+        signal: controller.signal,
+        headers: {
+          Accept: 'application/json',
+        },
+      });
+
+      const data: any = await res.json().catch(() => null);
+
+      if (!res.ok || (data && data.error)) {
+        if (page === 1) {
+          const errMsg = String(data?.error || `HTTP ${res.status}`);
+          if (errMsg.toLowerCase().includes('invalid api key')) {
+            throw new SerpApiError('invalid_api_key', 'SerpApi 金鑰無效，請於設定中檢查。');
+          }
+          if (errMsg.toLowerCase().includes('run out of searches') || errMsg.toLowerCase().includes('quota')) {
+            throw new SerpApiError('quota_exceeded', 'SerpApi 免費搜尋額度已用盡。');
+          }
+          throw new SerpApiError('upstream_error', `SerpApi 回傳錯誤: ${errMsg}`);
+        } else {
+          // If subsequent pages fail, gracefully continue with reviews gathered so far
+          break;
+        }
       }
-      throw new SerpApiError('upstream_error', `SerpApi 回傳錯誤: ${errMsg}`);
+
+      const rawList: any[] = data?.reviews || data?.reviews_results || [];
+      if (typeof data?.place_info?.reviews === 'number') {
+        totalReviewsCount = data.place_info.reviews;
+      } else if (typeof data?.place_info?.user_ratings_total === 'number') {
+        totalReviewsCount = data.place_info.user_ratings_total;
+      }
+
+      allReviews.push(...rawList);
+      nextToken = data?.serpapi_pagination?.next_page_token || null;
+
+      if (!nextToken || rawList.length === 0 || allReviews.length >= targetReviews) {
+        break;
+      }
     }
 
-    const rawList: any[] = data?.reviews || data?.reviews_results || [];
-    const total = data?.place_info?.reviews || data?.place_info?.user_ratings_total;
-
     return {
-      reviews: rawList,
-      total: typeof total === 'number' ? total : undefined,
+      reviews: allReviews,
+      total: totalReviewsCount,
     };
   } catch (err: any) {
     if (err.name === 'AbortError') {
