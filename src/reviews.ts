@@ -50,7 +50,7 @@ export function parseGooglePlacesPayload(
   let placeUrl = String(p.url || '');
   try {
     const parsed = new URL(placeUrl);
-    if (parsed.protocol !== 'https:' || !['maps.google.com', 'www.google.com', 'google.com'].includes(parsed.hostname)) {
+    if (parsed.protocol !== 'https:' || !['maps.google.com', 'www.google.com', 'google.com', 'maps.app.goo.gl', 'goo.gl'].includes(parsed.hostname)) {
       placeUrl = '';
     }
   } catch {
@@ -87,10 +87,15 @@ function parseReview(item: ReviewInput): NormalizedReview {
 }
 
 function parsePublishedAt(item: ReviewInput): string | null {
-  const raw = item.published_at ?? item.time ?? item.timestamp;
-  if (typeof raw === 'number') {
-    // Unix timestamp in seconds
-    return new Date(raw * 1000).toISOString();
+  let raw = item.published_at ?? item.time ?? item.timestamp;
+  if (typeof raw === 'string' && /^\d+$/.test(raw.trim())) {
+    raw = Number(raw.trim());
+  }
+  if (typeof raw === 'number' && Number.isFinite(raw)) {
+    // Determine if timestamp is in seconds or milliseconds
+    const ms = raw > 1e11 ? raw : raw * 1000;
+    const d = new Date(ms);
+    return isNaN(d.getTime()) ? null : d.toISOString();
   }
   if (typeof raw === 'string') {
     const cleaned = raw.trim();

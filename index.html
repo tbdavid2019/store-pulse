@@ -30,9 +30,6 @@
   <!-- Fonts: JetBrains Mono & Noto Sans TC / Gen Jyuu Gothic & Outfit -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;600;700;800&family=Outfit:wght@600;700;800&display=swap" rel="stylesheet">
-  
-  <!-- Icons: Lucide -->
-  <script src="https://unpkg.com/lucide@latest"></script>
 
   <style>
     @font-face {
@@ -735,6 +732,7 @@
       right: 0;
       width: min(720px, 94vw);
       height: 100vh;
+      height: 100dvh;
       background: var(--card-bg);
       border-left: 2px solid var(--card-border);
       box-shadow: -8px 0 36px rgba(23, 50, 77, 0.25);
@@ -1396,7 +1394,6 @@
     let activeInfoWindow = null;
     let userLocation = null;
     let analysisGeneration = 0;
-    const analysisControllers = new Set();
 
     const EARTH_RADIUS_METERS = 6371000;
 
@@ -1539,8 +1536,6 @@
 
       analysisGeneration += 1;
       const searchGeneration = analysisGeneration;
-      analysisControllers.forEach(controller => controller.abort());
-      analysisControllers.clear();
       if (drawerAbortController) {
         drawerAbortController.abort();
         drawerAbortController = null;
@@ -1596,7 +1591,29 @@
             map.setZoom(13);
           }
 
-          limitedResults.forEach(place => {
+          // Pre-allocate slots in distance-sorted order to prevent async network race condition
+          const cardSlots = limitedResults.map(place => {
+            const slot = document.createElement("div");
+            slot.className = "store-card";
+            slot.dataset.placeId = place.place_id;
+            slot.innerHTML = `
+              <div class="store-header">
+                <h3 class="store-title">${escapeHtml(place.name || '分店資料載入中…')}</h3>
+                <div class="store-meta-row">
+                  <span class="rating-badge jetbrains-mono">${lucideSvg('star', 14)} <span>${place.rating || '—'}</span></span>
+                  ${typeof place.distanceFromUser === 'number' ? `<span class="distance-badge jetbrains-mono">${lucideSvg('navigation', 13)} <span>${(place.distanceFromUser / 1000).toFixed(1)} km</span></span>` : ''}
+                </div>
+              </div>
+              <div style="padding: 1.2rem 0; color: var(--text-muted); font-size: 0.95rem; display: flex; align-items: center; gap: 8px;">
+                <span class="spinner" style="width: 16px; height: 16px; border-width: 2.5px; margin: 0;"></span>
+                <span>載入精選評論中…</span>
+              </div>
+            `;
+            container.appendChild(slot);
+            return { place, slot };
+          });
+
+          cardSlots.forEach(({ place, slot }) => {
             const detailsRequest = {
               placeId: place.place_id,
               fields: ['name', 'rating', 'user_ratings_total', 'vicinity', 'geometry', 'place_id', 'reviews', 'url']
@@ -1611,7 +1628,10 @@
                 targetPlace.distanceFromUser = place.distanceFromUser;
               }
               createMarker(targetPlace);
-              createCard(targetPlace);
+              const card = createCardElement(targetPlace);
+              if (slot.parentNode) {
+                slot.replaceWith(card);
+              }
             });
           });
         } else {
@@ -1624,6 +1644,8 @@
 
     let currentDrawerPlace = null;
     let drawerAbortController = null;
+    let drawerCloseTimer = null;
+    let lastActiveTriggerElement = null;
     const ANALYSIS_API_BASE = window.STORE_PULSE_API_BASE || '';
 
     function escapeHtml(value) {
@@ -1633,14 +1655,14 @@
     }
 
     function safeHttpUrl(value) {
+      if (!value || typeof value !== 'string') return '#';
       try {
-        const url = new URL(value || '', window.location.href);
-        return /^https?:$/.test(url.protocol) ? url.href : '#';
+        const url = new URL(value.trim());
+        return (url.protocol === 'https:' || url.protocol === 'http:') ? url.href : '#';
       } catch (_) { return '#'; }
     }
 
-    function createCard(place) {
-        const container = document.getElementById("restaurantCards");
+    function createCardElement(place) {
         const card = document.createElement("div");
         card.className = "store-card";
         card.dataset.placeId = place.place_id;
@@ -1708,7 +1730,7 @@
         const openBtn = card.querySelector('.btn-open-analysis');
         openBtn.addEventListener('click', (e) => {
           e.stopPropagation();
-          openAnalysisDrawer(place);
+          openAnalysisDrawer(place, openBtn);
         });
 
         card.onclick = () => {
@@ -1719,10 +1741,17 @@
                 card.classList.add('active');
             }
         };
-        container.appendChild(card);
+        return card;
     }
 
-    function openAnalysisDrawer(place) {
+    function openAnalysisDrawer(place, triggerEl) {
+      if (drawerCloseTimer) {
+        clearTimeout(drawerCloseTimer);
+        drawerCloseTimer = null;
+      }
+      if (triggerEl) {
+        lastActiveTriggerElement = triggerEl;
+      }
       currentDrawerPlace = place;
 
       // Populate Drawer Header
@@ -1788,6 +1817,8 @@
       requestAnimationFrame(() => {
         backdrop.classList.add('is-open');
         drawer.classList.add('is-open');
+        const closeBtn = drawer.querySelector('.drawer-close-btn');
+        if (closeBtn) closeBtn.focus();
       });
       document.body.style.overflow = 'hidden';
 
@@ -1807,6 +1838,10 @@
     function closeAnalysisDrawer() {
       const backdrop = document.getElementById('drawerBackdrop');
       const drawer = document.getElementById('analysisDrawer');
+      if (drawerCloseTimer) {
+        clearTimeout(drawerCloseTimer);
+        drawerCloseTimer = null;
+      }
       if (drawerAbortController) {
         drawerAbortController.abort();
         drawerAbortController = null;
@@ -1814,9 +1849,14 @@
       backdrop.classList.remove('is-open');
       drawer.classList.remove('is-open');
       document.body.style.overflow = '';
-      setTimeout(() => {
+      drawerCloseTimer = setTimeout(() => {
         backdrop.hidden = true;
         drawer.hidden = true;
+        drawerCloseTimer = null;
+        if (lastActiveTriggerElement && typeof lastActiveTriggerElement.focus === 'function') {
+          lastActiveTriggerElement.focus();
+          lastActiveTriggerElement = null;
+        }
       }, 280);
     }
 
@@ -2059,7 +2099,7 @@
             <div style="background:var(--card-bg);border:1px solid var(--card-border);border-radius:var(--radius-sm);padding:16px 18px;">
               <p style="margin:0 0 4px 0;font-weight:700;color:var(--ink);display:flex;align-items:center;gap:8px;">
                 ${lucideSvg(statusIcon, 18)}
-                <span>${statusText}</span>
+                <span>${escapeHtml(statusText)}</span>
               </p>
               <p style="margin:0;font-size:0.98rem;color:var(--text-muted);">下方原有評論資料仍可完整查閱。</p>
             </div>

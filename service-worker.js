@@ -1,4 +1,4 @@
-const CACHE_NAME = 'store-pulse-v3';
+const CACHE_NAME = 'store-pulse-v4';
 const urlsToCache = [
   '/',
   '/index.html',
@@ -45,7 +45,7 @@ self.addEventListener('fetch', event => {
     const isNavigationOrHtml = event.request.mode === 'navigate' || url.pathname === '/' || url.pathname === '/index.html';
 
     if (isNavigationOrHtml) {
-      // Network-First：優先從網路取得最新 HTML，若離線才使用快取
+      // Network-First：優先從網路取得最新 HTML，若離線才使用快取（支援帶參忽略與 SPA 首頁回退）
       event.respondWith(
         fetch(event.request)
           .then(networkResponse => {
@@ -55,14 +55,17 @@ self.addEventListener('fetch', event => {
             }
             return networkResponse;
           })
-          .catch(() => caches.match(event.request))
+          .catch(() =>
+            caches.match(event.request, { ignoreSearch: true })
+              .then(res => res || caches.match('/index.html') || caches.match('/'))
+          )
       );
       return;
     }
 
     // 靜態資源：Cache-First with Network Fallback
     event.respondWith(
-      caches.match(event.request).then(response => {
+      caches.match(event.request, { ignoreSearch: true }).then(response => {
         return response || fetch(event.request);
       })
     );

@@ -72,6 +72,17 @@ export class StorageManager {
     if (count >= limitPerMinute) {
       return false;
     }
+
+    // Prune stale buckets to avoid memory leaks in long-running isolates
+    if (memoryRateLimit.size > 200) {
+      const minBucket = bucket - 2;
+      for (const [k, v] of memoryRateLimit.entries()) {
+        if (v.bucket < minBucket) {
+          memoryRateLimit.delete(k);
+        }
+      }
+    }
+
     memoryRateLimit.set(rateKey, { count: count + 1, bucket });
     return true;
   }

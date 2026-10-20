@@ -95,12 +95,12 @@ function validatePayload(payload: unknown): { placeId: string; mode: AnalysisMod
   return { placeId, mode, windowDays };
 }
 
-function computeCacheKey(env: Env, placeId: string, mode: string, windowDays: number): string {
+function computeCacheKey(env: Env, placeId: string, mode: string, windowDays: number, sourceSha?: string): string {
   const modelUrl = env.MODEL_API_URL || '';
   const modelName = env.MODEL_NAME || '';
   const modelAuth = Boolean(env.MODEL_API_KEY);
   const analysisVersion = env.STORE_PULSE_ANALYSIS_VERSION || '2';
-  const material = [analysisVersion, modelUrl, modelName, String(modelAuth), 'zh-TW'].join('|');
+  const material = [analysisVersion, modelUrl, modelName, String(modelAuth), 'zh-TW', sourceSha || ''].join('|');
   const versionHash = createHash('sha256').update(material, 'utf8').digest('hex').slice(0, 16);
   return `cache:${versionHash}|${placeId}|${mode}|${windowDays}`;
 }
@@ -159,19 +159,15 @@ export default {
       const { placeId, mode, windowDays } = validated;
       const storage = new StorageManager(env);
 
-      // Cache lookup
-      const cacheKey = computeCacheKey(env, placeId, mode, windowDays);
-      const cached = await storage.get<AnalysisResponsePayload>(cacheKey);
-      if (cached) {
-        return jsonResponse(cached, 200, corsHeaders);
-      }
-
       // Rate limit check
       const clientIp = request.headers.get('cf-connecting-ip') || 'anonymous';
       const rateLimit = Number(env.STORE_PULSE_CLIENT_RATE_LIMIT) || 5;
       const allowed = await storage.allowClient(clientIp, rateLimit);
       if (!allowed) {
-        return errorResponse('rate_limited', '分析請求過於頻繁，請稍後再試。', 429, corsHeaders);
+        return errorResponse('rate_limited', '分析請求過於頻繁，請稍後再試。', 429, {
+          ...corsHeaders,
+          'Retry-After': '60',
+        });
       }
 
       // Process places & review evidence
@@ -203,6 +199,13 @@ export default {
       }
 
       const norm = normalizeEvidence(place, reviews, mode, windowDays);
+
+      // Cache lookup (using verified evidence fingerprint to prevent cache poisoning)
+      const cacheKey = computeCacheKey(env, placeId, mode, windowDays, norm.source_sha);
+      const cached = await storage.get<AnalysisResponsePayload>(cacheKey);
+      if (cached) {
+        return jsonResponse(cached, 200, corsHeaders);
+      }
       norm.sampling.truncated = (reqBody.reviews || []).length >= 5;
 
       const rawEvidence = norm.evidence.slice(0, 5);

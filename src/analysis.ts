@@ -192,7 +192,7 @@ export async function summarize(
       try {
         let raw: unknown;
         if (env.AI) {
-          const response = await env.AI.run(aiModel, {
+          const runPromise = env.AI.run(aiModel, {
             messages: [
               {
                 role: 'system',
@@ -207,7 +207,10 @@ export async function summarize(
             response_format: { type: 'json_object' },
             max_tokens: 2048,
           });
-          raw = response;
+          const timeoutPromise = new Promise((_, reject) =>
+            setTimeout(() => reject(new SummaryError('model_timeout')), timeoutMs)
+          );
+          raw = await Promise.race([runPromise, timeoutPromise]);
         } else {
           const controller = new AbortController();
           const timer = setTimeout(() => controller.abort(), timeoutMs);
@@ -263,6 +266,9 @@ export async function summarize(
         return parseModelObservations(raw, evidence, aiModel);
       } catch (err: any) {
         lastError = err;
+        if (err.name === 'AbortError' || err.message === 'model_timeout') {
+          throw new SummaryError('model_timeout');
+        }
         // If specific candidate model failed (e.g. 404 not available), try next candidate
         if (candidateModels.length > 1) {
           continue;
@@ -332,6 +338,9 @@ export function extractJsonFromText(text: string): any {
   // 6. Handle truncated JSON (e.g. unclosed open braces/brackets from max token cutoff)
   if (firstBrace !== -1) {
     let attempt = cleaned.slice(firstBrace).replace(/,\s*$/, '');
+    // If truncated mid-string, close the open quote before closing brackets
+    const quotes = (attempt.match(/(?<!\\)"/g) || []).length;
+    if (quotes % 2 !== 0) attempt += '"';
     const openBraces = (attempt.match(/{/g) || []).length - (attempt.match(/}/g) || []).length;
     const openBrackets = (attempt.match(/\[/g) || []).length - (attempt.match(/]/g) || []).length;
     if (openBrackets > 0) attempt += ']'.repeat(openBrackets);
