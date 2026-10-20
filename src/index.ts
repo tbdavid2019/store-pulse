@@ -106,20 +106,26 @@ function validatePayload(payload: unknown): { placeId: string; mode: AnalysisMod
   return { placeId, mode, windowDays };
 }
 
+function computeEvidenceFingerprint(items: EvidenceItem[]): string {
+  if (!items || items.length === 0) return 'empty';
+  const content = items.map(i => `${i.evidence_id}:${i.rating ?? 0}:${i.text}`).join('|');
+  return createHash('sha256').update(content, 'utf8').digest('hex').slice(0, 16);
+}
+
 function computeCacheKey(
   env: Env,
   placeId: string,
   mode: string,
   windowDays: number,
-  sourceSha?: string,
+  evidenceFingerprint = '',
   sourcePrefix = 'places',
   byokModel?: string
 ): string {
   const modelUrl = env.MODEL_API_URL || '';
   const modelName = env.MODEL_NAME || byokModel || '';
   const modelAuth = Boolean(env.MODEL_API_KEY || byokModel);
-  const analysisVersion = env.STORE_PULSE_ANALYSIS_VERSION || '7';
-  const material = [analysisVersion, modelUrl, modelName, String(modelAuth), 'zh-TW', sourceSha || '', sourcePrefix].join('|');
+  const analysisVersion = env.STORE_PULSE_ANALYSIS_VERSION || '8';
+  const material = [analysisVersion, modelUrl, modelName, String(modelAuth), 'zh-TW', evidenceFingerprint, sourcePrefix].join('|');
   const versionHash = createHash('sha256').update(material, 'utf8').digest('hex').slice(0, 24);
   return `cache:${versionHash}|${placeId}|${mode}|${windowDays}|${sourcePrefix}`;
 }
@@ -351,7 +357,6 @@ export default {
 
       if (rawSerpReviews && rawSerpReviews.length > 0) {
         norm = curateSerpApiReviews(rawSerpReviews, place, mode, windowDays);
-        cacheKey = computeCacheKey(env, placeId, mode, windowDays, norm.source_sha, 'serpapi', modelTag);
         usedEvidence = norm.evidence;
       } else {
         // Sort reviews based on mode
@@ -367,7 +372,6 @@ export default {
         }
 
         norm = normalizeEvidence(place, reviews, mode, windowDays);
-        cacheKey = computeCacheKey(env, placeId, mode, windowDays, norm.source_sha, 'places', modelTag);
         norm.sampling.truncated = (reqBody.reviews || []).length >= 5;
 
         const rawEvidence = norm.evidence.slice(0, 5);
@@ -393,6 +397,10 @@ export default {
 
         norm.sampling.used = usedEvidence.length;
       }
+
+      // Compute tamper-resistant cache key incorporating normalized review fingerprint
+      const evidenceFingerprint = computeEvidenceFingerprint(usedEvidence);
+      cacheKey = computeCacheKey(env, placeId, mode, windowDays, evidenceFingerprint, reviewSource, modelTag);
 
       // Cache lookup (using verified evidence fingerprint to prevent cache poisoning)
       const cached = await storage.get<AnalysisResponsePayload>(cacheKey);

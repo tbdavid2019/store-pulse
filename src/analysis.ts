@@ -300,13 +300,13 @@ export async function summarize(
       } catch (err: any) {
         lastError = err;
         const isTimeout = err.name === 'AbortError' || err.message === 'model_timeout';
+        if (isTimeout) {
+          throw new SummaryError('model_timeout');
+        }
         const hasMoreCandidates = candidateModels.indexOf(aiModel) < candidateModels.length - 1;
         if (hasMoreCandidates) {
           console.warn(`Model ${aiModel} attempt failed (${err.message || 'error'}). Trying fallback candidate.`);
           continue;
-        }
-        if (isTimeout) {
-          throw new SummaryError('model_timeout');
         }
         throw new SummaryError(err.message || 'model_request_failed');
       }
