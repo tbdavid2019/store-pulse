@@ -630,7 +630,7 @@
       font-size: 1.02rem;
       line-height: 1.68;
       color: var(--text);
-      white-space: pre-wrap;
+      white-space: pre-line;
       word-break: break-word;
     }
 
@@ -792,7 +792,11 @@
       font-size: 0.95rem;
       line-height: 1.58;
       word-break: break-word;
-      white-space: pre-wrap;
+    }
+
+    .card-review-text .text-content {
+      white-space: pre-line;
+      display: inline;
     }
 
     .card-review-item.is-low-rating .card-review-text {
@@ -2042,9 +2046,9 @@
             reviews.forEach((review, index) => {
                 const ratingNum = typeof review.rating === 'number' ? review.rating : null;
                 const isLow = ratingNum !== null && ratingNum <= 3;
-                const fullText = review.text || '（無文字評論）';
+                const fullText = (review.text || '（無文字評論）').trim();
                 const isLong = fullText.length > 130;
-                const shortText = isLong ? fullText.slice(0, 130) + '…' : fullText;
+                const shortText = isLong ? fullText.slice(0, 130).trim() + '…' : fullText;
 
                 reviewsSnippetHtml += `
                     <div class="card-review-item ${isLow ? 'is-low-rating' : 'is-normal-rating'}" data-is-low="${isLow}">
@@ -2056,12 +2060,7 @@
                             <span class="rating-pill rating-pill-high jetbrains-mono">${lucideSvg('star-fill', 11)} <span>${ratingNum ?? '—'}★</span></span>
                           `}
                         </div>
-                        <div class="card-review-text">
-                          <span class="text-content">${escapeHtml(shortText)}</span>
-                          ${isLong ? `
-                            <span class="review-expand-btn" data-full="${escapeHtml(fullText)}" data-short="${escapeHtml(shortText)}">展開全文</span>
-                          ` : ''}
-                        </div>
+                        <div class="card-review-text"><span class="text-content">${escapeHtml(shortText)}</span>${isLong ? `<span class="review-expand-btn" data-full="${escapeHtml(fullText)}" data-short="${escapeHtml(shortText)}">展開全文</span>` : ''}</div>
                     </div>
                 `;
             });
@@ -2222,7 +2221,7 @@
                 <span class="${ratingPillClass} jetbrains-mono">${ratingLabel}</span>
               </div>
             </div>
-            <div class="review-body">${escapeHtml(review.text || '')}</div>
+            <div class="review-body">${escapeHtml((review.text || '').trim())}</div>
           `;
           reviewsList.appendChild(item);
         });
