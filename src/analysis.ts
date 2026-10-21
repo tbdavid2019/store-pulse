@@ -89,18 +89,13 @@ export async function summarize(
         userInstruction,
         Math.max(timeoutMs, 35000)
       );
-      const parsedJson = extractJsonPayload(text);
-      const observations = parseModelObservations(parsedJson, evidence);
-      return {
-        summary: { observations },
-        usage: {
-          model_calls: 1,
-          model: `${options.byok.provider}:${options.byok.model}`,
-          status: 'success',
-        },
-      };
+      const parsedJson = extractJsonFromText(text);
+      return parseModelObservations(parsedJson, evidence, `${options.byok.provider}:${options.byok.model}`);
     } catch (err: any) {
-      console.warn(`BYOK LLM (${options.byok.provider}) failed: ${err.message}. Falling back to default Workers AI.`);
+      // Security & Budget Protection: If custom BYOK key fails, throw immediately.
+      // NEVER silently fall back to host Workers AI, which would allow attackers with invalid BYOK keys
+      // to bypass the host's daily model budget!
+      throw new SummaryError(`byok_failed: ${err.message || 'unknown'}`);
     }
   }
 
@@ -210,13 +205,12 @@ export async function summarize(
       await options.beforeRequest();
     }
 
-    // Primary stable model: OpenAI GPT-OSS-20B (@cf/openai/gpt-oss-20b)
+    // Primary stable model: OpenAI GPT-OSS-20B (@cf/openai/gpt-oss-20b) with single fallback to curb AI token cost
     const candidateModels = modelName
       ? [modelName]
       : [
           '@cf/openai/gpt-oss-20b',
           '@cf/meta/llama-3.3-70b-instruct-fp8-fast',
-          '@cf/meta/llama-4-scout-17b-16e-instruct',
         ];
 
     let lastError: any = null;
@@ -239,7 +233,7 @@ export async function summarize(
               },
             ],
             response_format: { type: 'json_object' },
-            max_tokens: 2048,
+            max_tokens: 1024,
           });
           const timeoutPromise = new Promise((_, reject) =>
             setTimeout(() => reject(new SummaryError('model_timeout')), perModelTimeoutMs)
@@ -266,7 +260,7 @@ export async function summarize(
                     content: userInstruction,
                   },
                 ],
-                max_tokens: 2048,
+                max_tokens: 1024,
               }),
               signal: controller.signal,
             });

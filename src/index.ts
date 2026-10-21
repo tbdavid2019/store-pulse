@@ -24,6 +24,7 @@ import type {
   AnalysisResponsePayload,
   Env,
   EvidenceItem,
+  NormalizedPlace,
 } from './types.ts';
 
 function createRequestId(): string {
@@ -211,6 +212,13 @@ export default {
         return errorResponse('method_not_allowed', 'Only POST is supported', 405, corsHeaders);
       }
 
+      const clientIp = request.headers.get('cf-connecting-ip') || 'anonymous';
+      const storage = new StorageManager(env);
+      const allowed = await storage.allowClient(`llm_models:${clientIp}`, 10);
+      if (!allowed) {
+        return errorResponse('rate_limited', '查詢模型請求過於頻繁，請稍後再試。', 429, corsHeaders);
+      }
+
       let provider = (request.headers.get('X-LLM-Provider')?.trim().toLowerCase() || '') as LLMProvider;
       let key = request.headers.get('X-LLM-Key')?.trim() || '';
 
@@ -242,6 +250,13 @@ export default {
     if (url.pathname === '/api/serpapi-reviews') {
       if (request.method !== 'POST') {
         return errorResponse('method_not_allowed', 'Only POST is supported', 405, corsHeaders);
+      }
+
+      const clientIp = request.headers.get('cf-connecting-ip') || 'anonymous';
+      const storage = new StorageManager(env);
+      const allowed = await storage.allowClient(`serp_reviews:${clientIp}`, 10);
+      if (!allowed) {
+        return errorResponse('rate_limited', '評論請求過於頻繁，請稍後再試。', 429, corsHeaders);
       }
 
       let key = request.headers.get('X-SerpApi-Key')?.trim() || '';

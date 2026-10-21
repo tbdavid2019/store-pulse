@@ -65,21 +65,12 @@ npx wrangler secret put MODEL_API_KEY
 
 並在 `wrangler.jsonc` 的 `vars` 中設定 `MODEL_API_URL` 與 `MODEL_NAME`。
 
-### 4. 綁定持久化 KV 快取（選填）
+### 4. 全球持久化 KV 綁定與雙層防禦
 
-Worker 預設已內建記憶體快取。若需要多節點持久化快取：
-
-```bash
-# 建立 KV 命名空間
-npx wrangler kv namespace create STORE_PULSE_KV
-```
-
-將終端機輸出的 ID 填入 `wrangler.jsonc`：
-```jsonc
-"kv_namespaces": [
-  { "binding": "STORE_PULSE_KV", "id": "<你的_KV_ID>" }
-]
-```
+專案在 `wrangler.jsonc` 中已綁定 `STORE_PULSE_KV`，結合 L1（Worker Isolate 記憶體）與 L2（Cloudflare KV 全球分散式儲存）：
+- **跨節點分析快取**：同一分店與評論特徵於 6 小時內在世界各地皆命中快取，避免重複呼叫模型。
+- **分散式 IP 限流**：每 IP 每分鐘限制 5 次，跨資料中心嚴格阻擋並發濫用。
+- **全域每日模型預算**：每日限制 100 次 Workers AI 呼叫，即使 Worker 實例輪替或冷啟動亦無法被繞過。
 
 ---
 

@@ -8,7 +8,7 @@ import {
   evidenceId,
   detectIncentiveSignals,
 } from '../src/reviews.ts';
-import { StorageManager } from '../src/storage.ts';
+import { StorageManager, _resetStorageMemoryForTest } from '../src/storage.ts';
 import {
   validateSerpApiKey,
   fetchSerpApiReviews,
@@ -131,6 +131,7 @@ test('detectIncentiveSignals - identifies marketing promotions in reviews', () =
 });
 
 test('StorageManager - in-memory rate limiting and daily budget', async () => {
+  _resetStorageMemoryForTest();
   const storage = new StorageManager({});
   
   // Rate limit: 2 per minute
@@ -143,6 +144,53 @@ test('StorageManager - in-memory rate limiting and daily budget', async () => {
   assert.equal(await storage.reserveDaily(2, testDate), true);
   assert.equal(await storage.reserveDaily(2, testDate), true);
   assert.equal(await storage.reserveDaily(2, testDate), false);
+});
+
+test('StorageManager - KV-backed distributed rate limiting and daily budget across instances and restarts', async () => {
+  _resetStorageMemoryForTest();
+  const kvData = new Map();
+  const mockKV = {
+    async get(key, type) {
+      const val = kvData.get(key);
+      if (val === undefined) return null;
+      if (type === 'json') return JSON.parse(val);
+      return val;
+    },
+    async put(key, val) {
+      kvData.set(key, String(val));
+    },
+  };
+
+  // Simulate Instance 1 (e.g. Taipei Colo)
+  const instance1 = new StorageManager({ STORE_PULSE_KV: mockKV });
+  // Simulate Instance 2 (e.g. Tokyo Colo - different isolate memory)
+  const instance2 = new StorageManager({ STORE_PULSE_KV: mockKV });
+
+  // Rate limiting across instances: limit 2 per minute for 'shared-client-ip'
+  assert.equal(await instance1.allowClient('shared-client-ip', 2), true);
+  assert.equal(await instance2.allowClient('shared-client-ip', 2), true);
+  // 3rd call from either instance should be blocked by KV distributed count!
+  assert.equal(await instance1.allowClient('shared-client-ip', 2), false);
+  assert.equal(await instance2.allowClient('shared-client-ip', 2), false);
+
+  // Daily budget across instances and restart simulation: limit 2 per day
+  const testDate = new Date('2026-10-21T10:00:00Z');
+  assert.equal(await instance1.reserveDaily(2, testDate), true);
+  assert.equal(await instance2.reserveDaily(2, testDate), true);
+
+  // Reset memory to simulate isolate restart / new isolate
+  _resetStorageMemoryForTest();
+  const newInstanceAfterRestart = new StorageManager({ STORE_PULSE_KV: mockKV });
+  // Fresh isolate sees KV count is already 2, so cannot bypass budget!
+  assert.equal(await newInstanceAfterRestart.reserveDaily(2, testDate), false);
+
+  // Cache test across instances
+  await instance1.put('test-cache-key', { foo: 'bar' }, 60);
+  _resetStorageMemoryForTest(); // clear memory cache
+  const cachedFromNewInstance = await newInstanceAfterRestart.get('test-cache-key');
+  assert.ok(cachedFromNewInstance);
+  assert.equal(cachedFromNewInstance.foo, 'bar');
+  assert.equal(cachedFromNewInstance.cache.hit, true);
 });
 
 test('Worker Fetch Handler - /api/health', async () => {
@@ -598,6 +646,122 @@ test('Worker Fetch Handler - /api/serpapi-reviews endpoint', async () => {
     const data = await res.json();
     assert.equal(data.status, 'success');
     assert.equal(data.evidence.length, 2);
+  } finally {
+    globalThis.fetch = originalFetch;
+  }
+});
+
+test('StorageManager - Fail-Closed on KV storage failure for daily budget', async () => {
+  _resetStorageMemoryForTest();
+  const brokenKV = {
+    async get() {
+      throw new Error('KV network timeout');
+    },
+    async put() {
+      throw new Error('KV write error');
+    },
+  };
+  const storage = new StorageManager({ STORE_PULSE_KV: brokenKV });
+  const testDate = new Date('2026-10-21T12:00:00Z');
+  // When KV fails, reserveDaily must fail closed (return false)
+  const allowed = await storage.reserveDaily(100, testDate);
+  assert.equal(allowed, false);
+});
+
+test('summarize - BYOK execution and strict non-fallback security', async () => {
+  const originalFetch = globalThis.fetch;
+  try {
+    // 1. Successful BYOK execution
+    globalThis.fetch = async (url) => {
+      if (url.includes('generativelanguage.googleapis.com')) {
+        return new Response(JSON.stringify({
+          candidates: [{
+            content: {
+              parts: [{
+                text: JSON.stringify({
+                  observations: [{ category: 'service', finding: '店員非常親切熱情', evidence_ids: ['ev_byok'] }]
+                })
+              }]
+            }
+          }]
+        }), { status: 200, headers: { 'Content-Type': 'application/json' } });
+      }
+      return new Response('Not Found', { status: 404 });
+    };
+
+    const evidence = [{ evidence_id: 'ev_byok', text: '店員非常親切熱情', author: 'ByokUser' }];
+    const successRes = await summarize(evidence, {}, {
+      byok: {
+        provider: 'gemini',
+        key: 'valid_gemini_key',
+        model: 'gemini-2.5-flash',
+      }
+    });
+
+    assert.ok(successRes.summary);
+    assert.equal(successRes.summary.observations.length, 1);
+    assert.equal(successRes.summary.observations[0].category, 'service');
+    assert.equal(successRes.usage.model, 'gemini:gemini-2.5-flash');
+
+    // 2. Failed BYOK execution: MUST throw byok_failed and NEVER fall back to host Workers AI
+    let aiCalled = false;
+    const mockAI = {
+      async run() {
+        aiCalled = true;
+        return { response: '{}' };
+      }
+    };
+
+    globalThis.fetch = async () => {
+      return new Response(JSON.stringify({ error: { message: 'API key not valid' } }), { status: 400 });
+    };
+
+    await assert.rejects(
+      async () => {
+        await summarize(evidence, { AI: mockAI }, {
+          byok: {
+            provider: 'gemini',
+            key: 'invalid_gemini_key',
+            model: 'gemini-2.5-flash',
+          }
+        });
+      },
+      (err) => {
+        assert.ok(err.message.includes('byok_failed'));
+        return true;
+      }
+    );
+
+    // Assert that host Workers AI was strictly NOT called
+    assert.equal(aiCalled, false, 'Host Workers AI must NEVER be called when user BYOK fails');
+  } finally {
+    globalThis.fetch = originalFetch;
+  }
+});
+
+test('Worker Fetch Handler - /api/llm-models rate limit', async () => {
+  _resetStorageMemoryForTest();
+  const originalFetch = globalThis.fetch;
+  try {
+    globalThis.fetch = async () => {
+      return new Response(JSON.stringify({ models: [{ id: 'gemini-2.5-flash' }] }), {
+        status: 200,
+        headers: { 'Content-Type': 'application/json' },
+      });
+    };
+
+    // Send 11 requests from same IP (limit is 10/min)
+    let lastStatus = 200;
+    for (let i = 0; i < 11; i++) {
+      const req = new Request('http://localhost:8787/api/llm-models', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'cf-connecting-ip': 'ratelimit-ip' },
+        body: JSON.stringify({ provider: 'gemini', api_key: 'test_key' }),
+      });
+      const res = await worker.fetch(req, {}, {});
+      lastStatus = res.status;
+    }
+    assert.equal(lastStatus, 429);
   } finally {
     globalThis.fetch = originalFetch;
   }
