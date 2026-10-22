@@ -422,6 +422,52 @@
       margin-bottom: 1rem;
     }
 
+    .store-header-top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 0.5rem;
+    }
+
+    .store-header-top .store-title {
+      margin-bottom: 0;
+      flex: 1;
+    }
+
+    .btn-share-store {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 5px 11px;
+      background: var(--card-bg);
+      border: 1.5px solid var(--card-border);
+      border-radius: var(--radius-sm);
+      color: var(--deep-blue);
+      font-size: 0.86rem;
+      font-weight: 700;
+      cursor: pointer;
+      white-space: nowrap;
+      flex-shrink: 0;
+      transition: all 0.16s ease;
+      font-family: inherit;
+    }
+
+    .btn-share-store:hover {
+      background: var(--deep-blue);
+      color: var(--warm-cream);
+      border-color: var(--deep-blue);
+    }
+
+    .btn-share-store:focus-visible {
+      outline: 2px solid var(--deep-blue);
+      outline-offset: 2px;
+    }
+
+    .btn-share-store:active {
+      transform: scale(0.96);
+    }
+
     .store-title {
       font-size: 1.4rem;
       font-weight: 800;
@@ -1009,6 +1055,46 @@
       color: var(--clay);
     }
 
+    .drawer-header-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-shrink: 0;
+    }
+
+    .drawer-action-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 14px;
+      height: 44px;
+      border-radius: var(--radius-sm);
+      background: var(--card-bg);
+      border: 1.5px solid var(--card-border);
+      color: var(--deep-blue);
+      font-size: 0.92rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.18s ease;
+      font-family: inherit;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+    }
+
+    .drawer-action-btn:hover {
+      background: var(--deep-blue);
+      color: var(--warm-cream);
+      border-color: var(--deep-blue);
+    }
+
+    .drawer-action-btn:focus-visible {
+      outline: 2px solid var(--deep-blue);
+      outline-offset: 2px;
+    }
+
+    .drawer-action-btn:active {
+      transform: scale(0.96);
+    }
+
     .drawer-close-btn {
       width: 44px;
       height: 44px;
@@ -1354,7 +1440,7 @@
       text-align: left;
       line-height: 1.55;
       font-size: 1rem;
-      min-width: 200px;
+      min-width: 220px;
     }
     .custom-infowindow strong {
       font-size: 1.15rem;
@@ -1368,7 +1454,87 @@
       font-weight: 700;
       text-decoration: underline;
       display: inline-block;
-      margin-top: 6px;
+    }
+    .infowindow-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: 8px;
+      flex-wrap: wrap;
+    }
+    .btn-infowindow-share {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 4px 9px;
+      background: var(--warm-cream);
+      border: 1.5px solid var(--card-border);
+      border-radius: 4px;
+      color: var(--deep-blue);
+      font-size: 0.84rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      font-family: inherit;
+    }
+    .btn-infowindow-share:hover {
+      background: var(--deep-blue);
+      color: var(--warm-cream);
+      border-color: var(--deep-blue);
+    }
+    .btn-infowindow-share:focus-visible {
+      outline: 2px solid var(--deep-blue);
+      outline-offset: 1px;
+    }
+    .btn-infowindow-share:active {
+      transform: scale(0.96);
+    }
+
+    /* Toast Notification */
+    #toastContainer {
+      position: fixed;
+      bottom: 28px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 99999;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      pointer-events: none;
+    }
+    .toast-item {
+      pointer-events: auto;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--deep-blue);
+      color: var(--warm-cream);
+      border: 1px solid rgba(255, 249, 232, 0.25);
+      padding: 10px 20px;
+      border-radius: 9999px;
+      font-size: 0.95rem;
+      font-weight: 700;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+      animation: toastIn 0.22s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+      max-width: 90vw;
+      text-align: center;
+      word-break: break-word;
+    }
+    .toast-item.toast-out {
+      animation: toastOut 0.18s ease forwards;
+    }
+    .toast-item svg {
+      color: var(--saffron);
+      flex-shrink: 0;
+    }
+    @keyframes toastIn {
+      from { opacity: 0; transform: translateY(12px) scale(0.96); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+    @keyframes toastOut {
+      from { opacity: 1; transform: translateY(0) scale(1); }
+      to { opacity: 0; transform: translateY(-8px) scale(0.96); }
     }
 
     /* Loader Overlay */
@@ -2250,12 +2416,18 @@
           <a id="drawerMapsLink" href="#" target="_blank" rel="noopener noreferrer">在 Google 地圖上查看</a>
         </div>
       </div>
-      <button type="button" class="drawer-close-btn" onclick="closeAnalysisDrawer()" aria-label="關閉分析面板">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-          <line x1="18" y1="6" x2="6" y2="18"></line>
-          <line x1="6" y1="6" x2="18" y2="18"></line>
-        </svg>
-      </button>
+      <div class="drawer-header-actions">
+        <button type="button" class="drawer-action-btn" onclick="copyCurrentDrawerShareLink(event)" title="複製此分店 AI 分析直達連結" aria-label="複製此分店 AI 分析直達連結">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+          <span>分享</span>
+        </button>
+        <button type="button" class="drawer-close-btn" onclick="closeAnalysisDrawer()" aria-label="關閉分析面板">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
     </div>
 
     <div class="drawer-body">
@@ -2557,6 +2729,9 @@
       'external-link': '<path d="M15 3h6v6"/><path d="M10 14 21 3"/><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>',
       'arrow-right': '<line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/>',
       'smartphone': '<rect width="14" height="20" x="5" y="2" rx="2" ry="2"/><line x1="12" x2="12.01" y1="18" y2="18"/>',
+      'share-2': '<circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/>',
+      'check': '<polyline points="20 6 9 17 4 12"/>',
+      'link': '<path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>',
       'info': '<circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/>'
     };
 
@@ -2571,20 +2746,191 @@
     let activeInfoWindow = null;
     let userLocation = null;
     let analysisGeneration = 0;
+    let currentSearchedQuery = '';
+    let isDrawerOpenState = false;
+
+    function getUrlState() {
+      const params = new URLSearchParams(window.location.search);
+      const q = (params.get('q') || '').trim();
+      const placeId = (params.get('place_id') || params.get('placeId') || '').trim();
+      const drawerParam = params.get('drawer');
+      const drawer = drawerParam === '1' || drawerParam === 'true';
+      return { q, placeId, drawer };
+    }
+
+    function setUrlState({ q, placeId, drawer }, replace = false) {
+      const currentParams = new URLSearchParams(window.location.search);
+      const currentQuery = (currentParams.get('q') || '').trim();
+      const currentPlaceId = (currentParams.get('place_id') || currentParams.get('placeId') || '').trim();
+      const currentDrawer = currentParams.get('drawer') === '1' || currentParams.get('drawer') === 'true';
+
+      const targetQ = (q !== undefined ? q : currentQuery).trim();
+      const targetPlaceId = placeId !== undefined ? (placeId || '').trim() : currentPlaceId;
+      const targetDrawer = drawer !== undefined ? Boolean(drawer) : currentDrawer;
+
+      const newParams = new URLSearchParams();
+      if (targetQ) {
+        newParams.set('q', targetQ);
+        if (targetPlaceId) {
+          newParams.set('place_id', targetPlaceId);
+        }
+        if (targetDrawer) {
+          newParams.set('drawer', '1');
+        }
+      }
+
+      const newSearch = newParams.toString();
+      const newUrl = newSearch ? `${window.location.pathname}?${newSearch}` : window.location.pathname;
+      const currentUrl = window.location.pathname + window.location.search;
+
+      if (newUrl === currentUrl) return;
+
+      const stateObj = { q: targetQ, placeId: targetPlaceId, drawer: targetDrawer };
+      try {
+        if (replace) {
+          window.history.replaceState(stateObj, '', newUrl);
+        } else {
+          window.history.pushState(stateObj, '', newUrl);
+        }
+      } catch (err) {
+        console.warn('URL state sync failed:', err);
+      }
+    }
+
+    let toastTimeout = null;
+    function showToast(message, type = 'success') {
+      let container = document.getElementById('toastContainer');
+      if (!container) {
+        container = document.createElement('div');
+        container.id = 'toastContainer';
+        container.setAttribute('role', 'status');
+        container.setAttribute('aria-live', 'polite');
+        document.body.appendChild(container);
+      }
+
+      container.innerHTML = '';
+      if (toastTimeout) {
+        clearTimeout(toastTimeout);
+        toastTimeout = null;
+      }
+
+      const toast = document.createElement('div');
+      toast.className = `toast-item toast-${type}`;
+      toast.innerHTML = `
+        ${lucideSvg(type === 'success' ? 'check' : 'info', 18)}
+        <span>${escapeHtml(message)}</span>
+      `;
+      container.appendChild(toast);
+
+      toastTimeout = setTimeout(() => {
+        toast.classList.add('toast-out');
+        setTimeout(() => {
+          if (toast.parentNode) {
+            toast.parentNode.removeChild(toast);
+          }
+        }, 200);
+      }, 2600);
+    }
+
+    function fallbackCopyText(text, successMessage) {
+      try {
+        const textArea = document.createElement('textarea');
+        textArea.value = text;
+        textArea.style.position = 'fixed';
+        textArea.style.left = '-9999px';
+        textArea.style.top = '-9999px';
+        textArea.setAttribute('readonly', '');
+        document.body.appendChild(textArea);
+        textArea.focus();
+        textArea.select();
+        const successful = document.execCommand('copy');
+        document.body.removeChild(textArea);
+        if (successful) {
+          showToast(successMessage, 'success');
+          return;
+        }
+      } catch (_) {}
+      window.prompt('請複製以下店家直達連結：', text);
+    }
+
+    function copyStoreShareLink(placeId, placeName = '', e = null, includeDrawer = false) {
+      if (e) {
+        if (typeof e.stopPropagation === 'function') e.stopPropagation();
+        if (typeof e.preventDefault === 'function') e.preventDefault();
+      }
+
+      const query = (document.getElementById("searchQuery")?.value || '').trim() || placeName || '';
+      const url = new URL(window.location.origin + window.location.pathname);
+      if (query) {
+        url.searchParams.set('q', query);
+      }
+      if (placeId) {
+        url.searchParams.set('place_id', placeId);
+      }
+      if (includeDrawer) {
+        url.searchParams.set('drawer', '1');
+      }
+      const shareUrl = url.toString();
+
+      const successMessage = placeName
+        ? `已複製「${placeName}」直達分享連結！`
+        : '已複製分店直達分享連結！';
+
+      if (navigator.clipboard && typeof navigator.clipboard.writeText === 'function') {
+        navigator.clipboard.writeText(shareUrl)
+          .then(() => {
+            showToast(successMessage, 'success');
+          })
+          .catch(() => {
+            fallbackCopyText(shareUrl, successMessage);
+          });
+      } else {
+        fallbackCopyText(shareUrl, successMessage);
+      }
+    }
+    window.copyStoreShareLink = copyStoreShareLink;
+
+    function copyCurrentDrawerShareLink(e) {
+      if (!currentDrawerPlace) return;
+      copyStoreShareLink(currentDrawerPlace.place_id, currentDrawerPlace.name, e, true);
+    }
+    window.copyCurrentDrawerShareLink = copyCurrentDrawerShareLink;
+
+    function activateStorePlace(place, card, openDrawer = false) {
+      if (!place) return;
+      document.querySelectorAll('.store-card').forEach(c => c.classList.remove('active'));
+      if (card) {
+        card.classList.add('active');
+        try {
+          card.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        } catch (_) {}
+      }
+
+      const marker = markerMap.get(place.place_id);
+      if (marker) {
+        google.maps.event.trigger(marker, 'click');
+      }
+
+      if (openDrawer) {
+        const openBtn = card ? card.querySelector('.btn-open-analysis') : null;
+        openAnalysisDrawer(place, openBtn);
+      }
+    }
 
     const EARTH_RADIUS_METERS = 6371000;
 
-    // 網頁一打開，游標自動聚焦在搜尋輸入窗
+    // 網頁一打開，若非直達模式則自動聚焦在搜尋輸入窗
     window.addEventListener('DOMContentLoaded', () => {
+      const urlState = getUrlState();
       const input = document.getElementById('searchQuery');
-      if (input) {
+      if (input && !urlState.q) {
         input.focus();
         input.select?.();
       }
     });
 
     // 點選 Logo 回到首頁與狀態重置
-    function resetToHome(e) {
+    function resetToHome(e, skipHistory = false) {
       if (e) {
         // 支援使用者中鍵、CMD、CTRL 或 Shift 點擊另開新分頁
         if (e.metaKey || e.ctrlKey || e.shiftKey || e.button !== 0) {
@@ -2594,6 +2940,14 @@
       }
 
       analysisGeneration += 1;
+      currentSearchedQuery = '';
+      currentDrawerPlace = null;
+      isDrawerOpenState = false;
+
+      // 優先清空搜尋關鍵字
+      const searchInput = document.getElementById('searchQuery');
+      if (searchInput) searchInput.value = '';
+
       if (typeof drawerAbortController !== 'undefined' && drawerAbortController) {
         drawerAbortController.abort();
         drawerAbortController = null;
@@ -2603,13 +2957,9 @@
       const loader = document.getElementById('loader');
       if (loader) loader.style.display = 'none';
 
-      // 關閉分析抽屜與設定彈窗
-      if (typeof closeAnalysisDrawer === 'function') closeAnalysisDrawer();
+      // 關閉分析抽屜（嚴禁同步舊狀態至 URL）與設定彈窗
+      if (typeof closeAnalysisDrawer === 'function') closeAnalysisDrawer(false);
       if (typeof closeSettingsModal === 'function') closeSettingsModal();
-
-      // 清空搜尋關鍵字
-      const searchInput = document.getElementById('searchQuery');
-      if (searchInput) searchInput.value = '';
 
       // 清除地圖標記與資訊彈窗
       if (Array.isArray(markers)) {
@@ -2641,6 +2991,11 @@
         const targetCenter = userLocation || { lat: 25.0330, lng: 121.5654 };
         map.panTo(targetCenter);
         map.setZoom(12);
+      }
+
+      // 清除 URL 參數回到首頁
+      if (!skipHistory) {
+        setUrlState({ q: '' }, false);
       }
 
       // 平滑滾動至頁面頂部
@@ -2702,14 +3057,23 @@
         document.querySelectorAll('.store-card').forEach(c => c.classList.remove('active'));
       });
 
+      const { q: initialQuery, placeId: initialPlaceId, drawer: initialDrawer } = getUrlState();
+
       if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(position => {
           userLocation = {
             lat: position.coords.latitude,
             lng: position.coords.longitude
           };
-          map.setCenter(userLocation);
-          map.setZoom(15);
+          // GPS 定位防衝突機制：
+          // 如果 URL 帶有 q 或 placeId，或者已有搜尋結果，嚴禁被使用者的 GPS 位置強制覆蓋地圖視野
+          const currentUrlState = getUrlState();
+          const hasQueryOrPlace = Boolean(currentUrlState.q || currentUrlState.placeId || markers.length > 0);
+
+          if (!hasQueryOrPlace) {
+            map.setCenter(userLocation);
+            map.setZoom(15);
+          }
           new google.maps.Marker({ map, position: userLocation, icon: 'https://maps.google.com/mapfiles/ms/icons/blue-dot.png', title: '您的位置' });
         }, () => {
           console.log("使用者未授權提供 GPS 位置。");
@@ -2719,7 +3083,106 @@
           maximumAge: 300000
         });
       }
+
+      // 網頁初始化載入直達（Deep Link Bootstrapping）
+      if (initialQuery) {
+        const searchInput = document.getElementById("searchQuery");
+        if (searchInput) {
+          searchInput.value = initialQuery;
+        }
+        searchStores(initialPlaceId, initialDrawer, 'replace');
+      } else if (initialPlaceId) {
+        // 直達連結僅帶 ?place_id=... (未帶 q) 的直接載入支援
+        const loader = document.getElementById('loader');
+        if (loader) loader.style.display = 'flex';
+        placesService.getDetails({
+          placeId: initialPlaceId,
+          fields: ['name', 'rating', 'user_ratings_total', 'vicinity', 'geometry', 'place_id', 'reviews', 'url']
+        }, (specificPlace, specificStatus) => {
+          if (loader) loader.style.display = 'none';
+          if (specificStatus === google.maps.places.PlacesServiceStatus.OK && specificPlace) {
+            const searchInput = document.getElementById("searchQuery");
+            if (searchInput && specificPlace.name) {
+              searchInput.value = specificPlace.name;
+              currentSearchedQuery = specificPlace.name;
+            }
+            if (userLocation && specificPlace.geometry && specificPlace.geometry.location) {
+              specificPlace.distanceFromUser = calculateDistanceMeters(userLocation, specificPlace.geometry.location);
+            }
+            if (specificPlace.geometry && specificPlace.geometry.location) {
+              map.setCenter(specificPlace.geometry.location);
+              map.setZoom(15);
+            }
+            const container = document.getElementById("restaurantCards");
+            if (container) {
+              container.innerHTML = '';
+              createMarker(specificPlace);
+              const card = createCardElement(specificPlace);
+              container.appendChild(card);
+              activateStorePlace(specificPlace, card, Boolean(initialDrawer));
+            }
+            const countEl = document.getElementById("resultsCount");
+            if (countEl) countEl.textContent = `找到 1 間相關分店`;
+            setUrlState({ q: specificPlace.name || '', placeId: initialPlaceId, drawer: Boolean(initialDrawer) }, true);
+          }
+        });
+      }
     }
+
+    window.addEventListener('popstate', () => {
+      if (!placesService) return;
+
+      const { q, placeId, drawer } = getUrlState();
+      const searchInput = document.getElementById('searchQuery');
+
+      if (!q && !placeId) {
+        resetToHome(null, true);
+        return;
+      }
+
+      if (q) {
+        if (searchInput) {
+          searchInput.value = q;
+        }
+        if (q !== currentSearchedQuery) {
+          searchStores(placeId, drawer, 'none');
+          return;
+        }
+      }
+
+      if (placeId) {
+        const card = document.querySelector(`.store-card[data-place-id="${placeId}"]`);
+        const marker = markerMap.get(placeId);
+        if (marker) {
+          google.maps.event.trigger(marker, 'click');
+        }
+        document.querySelectorAll('.store-card').forEach(c => c.classList.remove('active'));
+        if (card) {
+          card.classList.add('active');
+          try {
+            card.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+          } catch (_) {}
+        }
+        if (drawer) {
+          if (!currentDrawerPlace || currentDrawerPlace.place_id !== placeId) {
+            const openBtn = card ? card.querySelector('.btn-open-analysis') : null;
+            const targetPlace = (currentDrawerPlace && currentDrawerPlace.place_id === placeId) ? currentDrawerPlace : { place_id: placeId };
+            openAnalysisDrawer(targetPlace, openBtn);
+          }
+        } else {
+          closeAnalysisDrawer(false);
+        }
+      } else {
+        if (activeInfoWindow) {
+          activeInfoWindow.close();
+          activeInfoWindow = null;
+        }
+        document.querySelectorAll('.store-card').forEach(c => c.classList.remove('active'));
+        if (!drawer) {
+          closeAnalysisDrawer(false);
+        }
+      }
+    });
 
     function registerWebMCPTools() {
       const modelContext = document.modelContext;
@@ -2834,8 +3297,12 @@
       window.location.reload();
     }
 
-    function searchStores() {
-      const query = document.getElementById("searchQuery").value;
+    function searchStores(targetPlaceId = null, autoOpenDrawer = false, updateHistoryMode = 'push') {
+      if (targetPlaceId && typeof targetPlaceId === 'object') {
+        targetPlaceId = null;
+      }
+
+      const query = (document.getElementById("searchQuery")?.value || '').trim();
       if (!query) return alert("請輸入店家名稱");
 
       if (!placesService) {
@@ -2845,16 +3312,24 @@
 
       analysisGeneration += 1;
       const searchGeneration = analysisGeneration;
+      currentSearchedQuery = query;
+
+      if (updateHistoryMode === 'push') {
+        setUrlState({ q: query, placeId: targetPlaceId || '', drawer: Boolean(autoOpenDrawer) }, false);
+      } else if (updateHistoryMode === 'replace') {
+        setUrlState({ q: query, placeId: targetPlaceId || '', drawer: Boolean(autoOpenDrawer) }, true);
+      }
+
       if (drawerAbortController) {
         drawerAbortController.abort();
         drawerAbortController = null;
       }
       if (typeof closeAnalysisDrawer === 'function') {
-        closeAnalysisDrawer();
+        closeAnalysisDrawer(false);
       }
 
       const loader = document.getElementById('loader');
-      loader.style.display = 'flex';
+      if (loader) loader.style.display = 'flex';
 
       const container = document.getElementById("restaurantCards");
       container.innerHTML = "";
@@ -2876,7 +3351,7 @@
 
       placesService.textSearch(request, (results, status) => {
         if (searchGeneration !== analysisGeneration) return;
-        loader.style.display = 'none';
+        if (loader) loader.style.display = 'none';
         
         if (status === google.maps.places.PlacesServiceStatus.OK && results && results.length) {
           let processedResults = results.slice();
@@ -2888,14 +3363,28 @@
             processedResults.sort((a, b) => (a.distanceFromUser || Infinity) - (b.distanceFromUser || Infinity));
           }
 
+          // 若有指定目標分店且在結果中，確保其被收錄於前 10 筆
+          if (targetPlaceId) {
+            const matchedIdx = processedResults.findIndex(p => p.place_id === targetPlaceId);
+            if (matchedIdx >= 10) {
+              const [matchedItem] = processedResults.splice(matchedIdx, 1);
+              processedResults.unshift(matchedItem);
+            }
+          }
+
           const limitedResults = processedResults.slice(0, 10);
           const countEl = document.getElementById("resultsCount");
           if (countEl) countEl.textContent = `找到 ${limitedResults.length} 間相關分店`;
 
-          if (userLocation) {
+          // 地圖視野中心控制：優先店家/分店，若有 targetPlaceId 且在搜尋結果中，以 targetPlace 為中心
+          const targetPlaceInResults = targetPlaceId ? processedResults.find(p => p.place_id === targetPlaceId) : null;
+          if (targetPlaceInResults && targetPlaceInResults.geometry && targetPlaceInResults.geometry.location) {
+            map.setCenter(targetPlaceInResults.geometry.location);
+            map.setZoom(15);
+          } else if (!targetPlaceId && userLocation) {
             map.setCenter(userLocation);
             map.setZoom(14);
-          } else if (limitedResults.length > 0) {
+          } else if (limitedResults.length > 0 && limitedResults[0].geometry && limitedResults[0].geometry.location) {
             map.setCenter(limitedResults[0].geometry.location);
             map.setZoom(13);
           }
@@ -2907,7 +3396,9 @@
             slot.dataset.placeId = place.place_id;
             slot.innerHTML = `
               <div class="store-header">
-                <h3 class="store-title">${escapeHtml(place.name || '分店資料載入中…')}</h3>
+                <div class="store-header-top">
+                  <h3 class="store-title">${escapeHtml(place.name || '分店資料載入中…')}</h3>
+                </div>
                 <div class="store-meta-row">
                   <span class="rating-badge jetbrains-mono">${lucideSvg('star', 14)} <span>${place.rating || '—'}</span></span>
                   ${typeof place.distanceFromUser === 'number' ? `<span class="distance-badge jetbrains-mono">${lucideSvg('navigation', 13)} <span>${(place.distanceFromUser / 1000).toFixed(1)} km</span></span>` : ''}
@@ -2941,8 +3432,36 @@
               if (slot.parentNode) {
                 slot.replaceWith(card);
               }
+
+              // 直達聯動：若此分店即為 targetPlaceId
+              if (targetPlaceId && targetPlace.place_id === targetPlaceId) {
+                activateStorePlace(targetPlace, card, Boolean(autoOpenDrawer));
+              }
             });
           });
+
+          // Fallback: 如果 targetPlaceId 存在，但在 textSearch 結果中沒有找到，獨立載入此分店
+          if (targetPlaceId && !processedResults.some(p => p.place_id === targetPlaceId)) {
+            placesService.getDetails({
+              placeId: targetPlaceId,
+              fields: ['name', 'rating', 'user_ratings_total', 'vicinity', 'geometry', 'place_id', 'reviews', 'url']
+            }, (specificPlace, specificStatus) => {
+              if (searchGeneration !== analysisGeneration) return;
+              if (specificStatus === google.maps.places.PlacesServiceStatus.OK && specificPlace) {
+                if (userLocation && specificPlace.geometry && specificPlace.geometry.location) {
+                  specificPlace.distanceFromUser = calculateDistanceMeters(userLocation, specificPlace.geometry.location);
+                }
+                if (specificPlace.geometry && specificPlace.geometry.location) {
+                  map.setCenter(specificPlace.geometry.location);
+                  map.setZoom(15);
+                }
+                createMarker(specificPlace);
+                const card = createCardElement(specificPlace);
+                container.insertBefore(card, container.firstChild);
+                activateStorePlace(specificPlace, card, Boolean(autoOpenDrawer));
+              }
+            });
+          }
 
           // 若使用者有填入 SerpApi 金鑰，自動為前 2 間分店載入深度評論（突破 5 則）
           if (getStoredSerpApiKey()) {
@@ -3061,9 +3580,19 @@
             ? `<span class="badge-negative-summary jetbrains-mono">${googleSvg('warning', 13)} <span>含 ${lowRatingCount} 則負評</span></span>`
             : (reviews.length > 0 ? `<span class="badge-positive-summary jetbrains-mono">${googleSvg('auto-awesome', 13)} <span>零負評好評</span></span>` : '');
 
+        const shareButtonHtml = `
+          <button type="button" class="btn-share-store" title="複製此分店分享連結" aria-label="複製「${escapeHtml(place.name || '此分店')}」分享連結">
+            ${lucideSvg('share-2', 14)}
+            <span>分享</span>
+          </button>
+        `;
+
         card.innerHTML = `
             <div class="store-header">
-              <h3 class="store-title">${escapeHtml(place.name || '未命名分店')}</h3>
+              <div class="store-header-top">
+                <h3 class="store-title">${escapeHtml(place.name || '未命名分店')}</h3>
+                ${shareButtonHtml}
+              </div>
               <div class="store-meta-row">
                 ${ratingBadge}
                 <span class="reviews-total-text jetbrains-mono">(${place.user_ratings_total || 0} 則評論)</span>
@@ -3085,6 +3614,14 @@
 
         bindCardReviewInteractions(card);
 
+        const shareBtn = card.querySelector('.btn-share-store');
+        if (shareBtn) {
+          shareBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            copyStoreShareLink(place.place_id, place.name, e);
+          });
+        }
+
         const openBtn = card.querySelector('.btn-open-analysis');
         openBtn.addEventListener('click', (e) => {
           e.stopPropagation();
@@ -3098,9 +3635,9 @@
             const marker = markerMap.get(place.place_id);
             if (marker) {
                 google.maps.event.trigger(marker, 'click');
-                document.querySelectorAll('.store-card').forEach(c => c.classList.remove('active'));
-                card.classList.add('active');
             }
+            document.querySelectorAll('.store-card').forEach(c => c.classList.remove('active'));
+            card.classList.add('active');
             openAnalysisDrawer(place, openBtn);
         };
         return card;
@@ -3281,7 +3818,14 @@
         lastActiveTriggerElement = triggerEl;
       }
       currentDrawerPlace = place;
+      isDrawerOpenState = true;
       updateDrawerSourceIndicator();
+
+      // Sync URL State: drawer = 1
+      const currentQ = (document.getElementById("searchQuery")?.value || '').trim();
+      if (place && place.place_id) {
+        setUrlState({ q: currentQ, placeId: place.place_id, drawer: true }, true);
+      }
 
       // Populate Drawer Header
       document.getElementById('drawerTitle').textContent = place.name || '未命名分店';
@@ -3368,7 +3912,8 @@
       triggerDrawerAnalysis();
     }
 
-    function closeAnalysisDrawer() {
+    function closeAnalysisDrawer(syncUrl = true) {
+      isDrawerOpenState = false;
       const backdrop = document.getElementById('drawerBackdrop');
       const drawer = document.getElementById('analysisDrawer');
       if (drawerCloseTimer) {
@@ -3391,6 +3936,15 @@
           lastActiveTriggerElement = null;
         }
       }, 280);
+
+      // Sync URL State: remove drawer = 1 only if syncUrl is true
+      if (syncUrl) {
+        const currentQ = (document.getElementById("searchQuery")?.value || '').trim();
+        if (currentQ) {
+          const currentPlaceId = currentDrawerPlace?.place_id || getUrlState().placeId;
+          setUrlState({ q: currentQ, placeId: currentPlaceId, drawer: false }, true);
+        }
+      }
     }
 
     // --- Settings & BYOK SerpApi / LLM Management ---
@@ -4204,16 +4758,31 @@
             ? `<br>距離：約 ${(place.distanceFromUser / 1000).toFixed(1)} 公里`
             : '';
 
-        const infoWindowContent = `
-            <div class="custom-infowindow">
-                <strong>${escapeHtml(place.name || '未命名分店')}</strong>
-                評分: ${escapeHtml(place.rating || 'N/A')} | 評論: ${escapeHtml(place.user_ratings_total || 0)}<br>
-                <a href="${safeHttpUrl(place.url)}" target="_blank" rel="noopener">在 Google 地圖上查看</a>${distanceInfo}
+        const safePlaceName = escapeHtml(place.name || '未命名分店');
+
+        const infoWindowDiv = document.createElement('div');
+        infoWindowDiv.className = 'custom-infowindow';
+        infoWindowDiv.innerHTML = `
+            <strong>${safePlaceName}</strong>
+            評分: ${escapeHtml(place.rating || 'N/A')} | 評論: ${escapeHtml(place.user_ratings_total || 0)}${distanceInfo}<br>
+            <div class="infowindow-actions">
+              <a href="${safeHttpUrl(place.url)}" target="_blank" rel="noopener">在 Google 地圖上查看</a>
+              <button type="button" class="btn-infowindow-share" title="複製此分店分享連結" aria-label="複製「${safePlaceName}」分享連結">
+                ${lucideSvg('share-2', 13)}
+                <span>複製分享連結</span>
+              </button>
             </div>
         `;
 
+        const shareBtn = infoWindowDiv.querySelector('.btn-infowindow-share');
+        if (shareBtn) {
+          shareBtn.addEventListener('click', (e) => {
+            copyStoreShareLink(place.place_id, place.name, e);
+          });
+        }
+
         const infoWindow = new google.maps.InfoWindow({
-            content: infoWindowContent,
+            content: infoWindowDiv,
             ariaLabel: place.name,
         });
 
@@ -4227,6 +4796,26 @@
             });
             activeInfoWindow = infoWindow;
             map.panTo(marker.getPosition());
+
+            // Highlight corresponding card and scroll to it
+            document.querySelectorAll('.store-card').forEach(c => c.classList.remove('active'));
+            const card = document.querySelector(`.store-card[data-place-id="${place.place_id}"]`);
+            if (card) {
+              card.classList.add('active');
+              try {
+                card.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+              } catch (_) {}
+            }
+
+            // 若目前抽屜處於開啟狀態且點擊了不同分店，自動切換至該分店
+            if (isDrawerOpenState && currentDrawerPlace && currentDrawerPlace.place_id !== place.place_id) {
+              openAnalysisDrawer(place, card ? card.querySelector('.btn-open-analysis') : null);
+              return;
+            }
+
+            // Sync URL State (依 isDrawerOpenState 維持或同步抽屜狀態)
+            const currentQ = (document.getElementById("searchQuery")?.value || '').trim();
+            setUrlState({ q: currentQ, placeId: place.place_id, drawer: isDrawerOpenState }, true);
         });
 
         markers.push(marker);
@@ -4312,5 +4901,6 @@
       document.head.appendChild(script);
     })();
   </script>
+  <div id="toastContainer" role="status" aria-live="polite"></div>
 </body>
 </html>

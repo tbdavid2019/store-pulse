@@ -8,7 +8,7 @@
     "dev": "npm run build && wrangler dev",
     "deploy": "npm run build && wrangler deploy",
     "types": "wrangler types",
-    "test": "node --experimental-strip-types --test tests/worker.test.mjs"
+    "test": "node --experimental-strip-types --test tests/url-routing.test.mjs tests/worker.test.mjs"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^5.20261019.1",

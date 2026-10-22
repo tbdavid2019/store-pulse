@@ -4,6 +4,39 @@
 
 ---
 
+## [2026-10-22]
+
+### 🔗 搜尋與分店直達路由 (Deep Linking & URL State Routing)
+- **標準化 URL 規格**：
+  - 關鍵字搜尋：`?q={query}`（例如 `?q=川醉湘`）
+  - 選中分店 Place ID：`&place_id={place_id}`（例如 `&place_id=ChIJ...`）
+  - AI 分析抽屜狀態：`&drawer=1`（當使用者展開 AI 分析抽屜時自動附加）
+  - **純 `place_id` 直達支援**：若分享連結僅帶 `?place_id=...`，自動直達載入分店細節、設定中心、填寫店名並展開檢視。
+- **雙向狀態綁定與防競態 (Bidirectional URL Binding & Anti-Race)**：
+  - `getUrlState()` 與 `setUrlState()` 智慧處理 `window.location.search`，手動搜尋時觸發 `pushState` 記錄歷史，分店切換與抽屜開關使用 `replaceState` 避免產生冗餘瀏覽歷史。
+  - 消除抽屜展開與 Marker click 之間的競態條件，確保直達或切換時 `drawer=1` 參數穩定保留。
+  - 當抽屜處於開啟狀態時，點擊地圖上其他分店 Marker 自動連動切換至該分店，內容與 URL 即時同步。
+- **網頁初始化直達 (Deep Link Bootstrapping)**：
+  - 開啟帶有 URL 參數的連結時，自動填充搜尋框並立即觸發搜尋，自動鎖定指定分店並平移地圖視角，若包含 `drawer=1` 則自動就緒展開 AI 分析抽屜。
+  - 當直達的分店超出前 10 筆或搜尋文字不精確時，系統提供自動提權與獨立補抓機制，確保分享的分店 100% 正確顯示於頁面頂部。
+- **🛡️ GPS 定位防衝突機制 (Geolocation Conflict Protection)**：
+  - 若使用者透過帶有 `q` 或 `place_id` 的分享連結進入頁面，嚴禁使用者本機 GPS 定位回呼覆蓋地圖視角，確保地圖中心與縮放層級以目標店家分店為絕對第一優先。
+- **瀏覽器前進/後退歷程支援 (`popstate`)**：
+  - 完整支援瀏覽器上一頁/下一頁操作，自動同步搜尋框關鍵字、卡片高亮狀態、地圖 Marker 資訊窗與分析抽屜開關，若返回根目錄則乾淨重置至首頁，不污染瀏覽歷程。
+
+### 📋 一鍵複製分享連結與高對比 Toast (One-Click Store Sharing)
+- **分店卡片一鍵分享**：在各分店卡片標題右側新增高質感「分享」按鈕，點擊即時組合該分店之專屬直達連結並複製至剪貼簿。
+- **Google 地圖資訊窗分享 (安全 DOM 閉包綁定)**：在 Google Maps 的 Marker InfoWindow 內使用安全 DOM element 與標準 `addEventListener` 綁定，徹底杜絕單引號（如 `McDonald's`）語法錯誤與 DOM XSS 風險。
+- **AI 抽屜標題列分享**：在分析抽屜右上角提供專屬分享按鈕，產生含 `&drawer=1` 的完整分析直達網址。
+- **WCAG AAA 無障礙深藍/暖金 Toast**：
+  - 採用 `#17324d` 深藍底色搭配 `#fff9e8` 暖文字與 `#ffb010` 亮金圖示，對比度超過 13:1，全站嚴格遵循 Impeccable 工藝標準，絕無黃底白字等反模式。
+  - 具備 ARIA live (`role="status"`, `aria-live="polite"`) 與剪貼簿優雅降級容錯（fallback prompt）。
+
+### 🧪 單元測試覆蓋 (Unit Testing)
+- 新增 [`tests/url-routing.test.mjs`](file:///Users/david/Documents/git/tbdavid2019/store-pulse/tests/url-routing.test.mjs)，包含 URL 解析、純 `place_id` 直達、單/雙引號與特殊字元（如 `McDonald's`、`&`、`+`）、狀態更新組裝與分享連結產生的完整自動化測試，全套測試擴展至 27 項全面通過。
+
+---
+
 ## [2026-10-20]
 
 ### 🧠 自備 AI 模型金鑰 (BYOK LLM Hub & Get Model List)
